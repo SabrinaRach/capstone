@@ -18,9 +18,8 @@ const entrySchema = new Schema(
       default: "",
     },
     category: {
-      /* categories have to be defined later in the app, so that users can choose from a list of categories or add their own */
       type: String,
-      enum: ["A", "B", "C", "D"],
+      enum: ["recipes", "how-to-instructions", "guides", "other"],
       required: true,
     },
     steps: {
