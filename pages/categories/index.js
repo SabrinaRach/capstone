@@ -5,22 +5,22 @@ export default function CategoriesPage() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold">
           Categories
         </h1>
 
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-secondary-700">
           Find and access your content by category.
         </p>
       </div>
 
       {categories.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-dashed border-gray-300 p-10 text-center">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <div className="mt-8 rounded-xl border border-dashed border-border-300 p-10 text-center">
+          <h2 className="text-lg font-semibold">
             No categories available
           </h2>
 
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-secondary-700">
             There are currently no categories to display.
           </p>
         </div>

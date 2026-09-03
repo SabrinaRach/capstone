@@ -13,6 +13,8 @@
   --secondary-700: #334155;
 
   --accent-500: #ea580c;
+
+  --border: #2f2f30;
 }
 
 @theme inline {
@@ -22,7 +24,7 @@
   --font-mono: var(--font-geist-mono);
 
   --color-primary-100: var(--primary-100);
-  --color-primary-500: var(--color-500);
+  --color-primary-500: var(--primary-500);
   --color-primary-700: var(--primary-700);
 
   --color-secondary-100: var(--secondary-100);
