@@ -1,13 +1,10 @@
-
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
 
+//To test if the connection is working, I will create a new entry in the database when this API route is called. This is just for testing purposes and will be removed/adjusted later.
 export default async function handler(request, response) {
-  console.log("1 - API");
-
   try {
     await dbConnect();
-    console.log("2 - DB");
 
     const entry = new Entry({
       title: "Test",
@@ -16,19 +13,13 @@ export default async function handler(request, response) {
       items: ["Test Item"],
     });
 
-    console.log("3 - Entry erstellt");
-
     await entry.save();
-
-    console.log("4 - Entry gespeichert");
 
     return response.status(201).json({
       success: true,
       entry,
     });
   } catch (error) {
-    console.error("FEHLER:", error);
-
     return response.status(500).json({
       success: false,
       error: error.message,
