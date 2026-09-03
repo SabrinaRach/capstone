@@ -6,7 +6,7 @@ export default function CategoryPage() {
   const router = useRouter();
   const { category: categorySlug } = router.query;
 
-  const category = categories.find((item) => item.slug === categorySlug);
+  const category = categories.find((item) => item.slug.toLowerCase()  === categorySlug.toLowerCase());
 
   if (!category) {
     return (
