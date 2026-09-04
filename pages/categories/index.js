@@ -1,6 +1,7 @@
 import CategoryCard from "../../components/CategoryCard";
 import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
+import CategoryForm from "../../components/CategoryForm.js";
 
 export default function CategoriesPage({ categories }) {
   return (
@@ -28,6 +29,13 @@ export default function CategoriesPage({ categories }) {
           ))}
         </div>
       )}
+      <div className="mt-8">
+        <CategoryForm
+          onCreated={() => {
+            window.location.reload();
+          }}
+        />
+      </div>
     </main>
   );
 }
