@@ -1,13 +1,14 @@
 import Link from "next/link";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
+import NewEntryButton from "../../components/NewEntryButton.js";
 
 export default function EntriesPage({ entries }) {
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div>
         <h1 className="text-3xl font-bold">All Entries</h1>
-
+        <NewEntryButton />
         <p className="mt-2 text-secondary-700">
           Find and access all your entries in one place.
         </p>

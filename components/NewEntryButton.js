@@ -9,7 +9,7 @@ export default function NewEntryButton() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="rounded-lg bg-primary-500 px-4 py-2 font-medium text-background hover:bg-primary-700"
+        className="rounded-full border border-primary-500 bg-background px-4 py-2 font-medium"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -17,7 +17,8 @@ export default function NewEntryButton() {
           height="24"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="var(--accent-500)"
+          className="text-background group-hover:text-accent-500"
+          stroke="var(--primary-500)"
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
