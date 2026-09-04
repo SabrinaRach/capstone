@@ -1,5 +1,5 @@
-import dbConnect from "../../db/connect.js";
-import Category from "../../db/models/Category.js";
+import dbConnect from "../../../db/connect.js";
+import Category from "../../../db/models/Category.js";
 
 function createSlug(name) {
   return name
