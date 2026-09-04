@@ -1,3 +1,5 @@
+import EntryForm from "./EntryForm.js";
+
 export default function EntryModal({ onClose }) {
   return (
     <div
@@ -23,7 +25,7 @@ export default function EntryModal({ onClose }) {
         </div>
 
         <div className="mt-6">
-          <p className="text-secondary-700">Entry form will be added here.</p>
+          <EntryForm />
         </div>
       </div>
     </div>

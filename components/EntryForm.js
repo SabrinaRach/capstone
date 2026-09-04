@@ -26,13 +26,11 @@ export default function EntryForm() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    imageUrl: "",
     category: "other",
     items: "",
     steps: "",
     notes: "",
     source: "",
-    rating: "",
   });
 
   const [error, setError] = useState("");
@@ -85,7 +83,6 @@ export default function EntryForm() {
             .split("\n")
             .map((step) => step.trim())
             .filter(Boolean),
-          rating: formData.rating ? Number(formData.rating) : undefined,
         }),
       });
 
@@ -140,21 +137,6 @@ export default function EntryForm() {
           value={formData.description}
           onChange={handleChange}
           rows={4}
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="imageUrl" className="block text-sm font-medium">
-          Image URL
-        </label>
-
-        <input
-          id="imageUrl"
-          name="imageUrl"
-          type="url"
-          value={formData.imageUrl}
-          onChange={handleChange}
           className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
         />
       </div>
@@ -244,24 +226,6 @@ export default function EntryForm() {
           name="source"
           type="text"
           value={formData.source}
-          onChange={handleChange}
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="rating" className="block text-sm font-medium">
-          Rating
-        </label>
-
-        <input
-          id="rating"
-          name="rating"
-          type="number"
-          min="1"
-          max="5"
-          step="1"
-          value={formData.rating}
           onChange={handleChange}
           className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
         />
