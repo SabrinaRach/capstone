@@ -1,7 +1,7 @@
 import Link from "next/link";
 import EditCategoryCard from "./EditCategoryCard.js";
 
-export default function CategoryCard({ category }) {
+export default function CategoryCard({ category, onUpdated, onDeleted }) {
   return (
     <div
       className="rounded-xl border p-6 transition hover:-translate-y-1"
@@ -15,7 +15,7 @@ export default function CategoryCard({ category }) {
       </Link>
       {!category.isSystem && (
         <div className="mt-5">
-          <EditCategoryCard category={category} />
+          <EditCategoryCard category={category} onUpdated={onUpdated} onDeleted={onDeleted} />
         </div>
       )}
     </div>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Image from "next/image";
 
 export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -41,8 +40,6 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
 
       if (onUpdated) {
         onUpdated(data.category);
-      } else {
-        window.location.reload();
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
@@ -96,8 +93,6 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
 
       if (onDeleted) {
         onDeleted(category._id);
-      } else {
-        window.location.reload();
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
@@ -156,7 +151,9 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
   if (isConfirmingDelete) {
     return (
       <div>
-        <p className="text-sm font-medium">Delete `${category.name}`?</p>
+        <p className="text-sm font-medium">
+          Delete &quot;{category.name}&quot;?
+        </p>
 
         <p className="mt-2 text-sm text-secondary-700">
           Entries in this category will be moved to &quot;Other / Not
@@ -174,7 +171,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             type="button"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="rounded-lg bg-accent-600 px-3 py-2 text-sm font-medium text-background hover:bg-accent-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg border border-secondary-100 bg-primary-500 px-3 py-2 text-sm font-medium text-background hover:bg-primary-700 disabled:opacity-50"
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </button>
@@ -183,7 +180,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             type="button"
             onClick={handleCancelDelete}
             disabled={isDeleting}
-            className="rounded-lg border border-secondary-100 bg-background px-3 py-2 text-sm font-medium hover:bg-secondary-100 disabled:opacity-50"
+            className="rounded-lg border border-secondary-100 bg-accent-500 px-3 py-2 text-sm font-medium text-background hover:bg-accent-700 disabled:opacity-50"
           >
             Cancel
           </button>
