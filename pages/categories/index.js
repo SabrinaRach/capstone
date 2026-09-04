@@ -1,7 +1,8 @@
 import CategoryCard from "../../components/CategoryCard";
-import { categories } from "../../data/categories";
+import dbConnect from "../../db/connect.js";
+import Category from "../../db/models/Category.js";
 
-export default function CategoriesPage() {
+export default function CategoriesPage({ categories }) {
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div>
@@ -29,4 +30,18 @@ export default function CategoriesPage() {
       )}
     </main>
   );
+}
+
+export async function getServerSideProps() {
+  await dbConnect();
+
+  const categories = await Category.find()
+    .sort({ isSystem: -1, name: 1 })
+    .lean();
+
+  return {
+    props: {
+      categories: JSON.parse(JSON.stringify(categories)),
+    },
+  };
 }
