@@ -19,6 +19,10 @@ const categorySchema = new Schema(
       type: String,
       required: true,
     },
+    backgroundColor: {
+      type: String,
+      required: true,
+    },
     isSystem: {
       type: Boolean,
       default: false,

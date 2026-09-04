@@ -11,24 +11,28 @@ const systemCategories = [
     name: "Recipes",
     slug: "recipes",
     color: "#6B8F71",
+    backgroundColor: "#e8f0e9",
     isSystem: true,
   },
   {
     name: "How-to / Instructions",
     slug: "how-to-instructions",
     color: "#7C6F8F",
+    backgroundColor: "#eeebf2",
     isSystem: true,
   },
   {
     name: "Guides",
     slug: "guides",
     color: "#B08A4A",
+    backgroundColor: "#f3eddf",
     isSystem: true,
   },
   {
     name: "Other / Not assigned",
     slug: "other",
     color: "#7D8587",
+    backgroundColor: "#dbeaee",
     isSystem: true,
   },
 ];
@@ -39,7 +43,7 @@ async function seedCategories() {
   for (const category of systemCategories) {
     await Category.updateOne(
       { slug: category.slug },
-      { $setOnInsert: category },
+      { $set: category },
       { upsert: true },
     );
   }

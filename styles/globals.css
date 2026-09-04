@@ -16,15 +16,15 @@
 
   --border: #2f2f30;
 
-  --category-recipes: #6B8F71;
---category-howto: #7C6F8F;
---category-guides: #B08A4A;
---category-other: #7D8587;
+  --category-recipes: #6b8f71;
+  --category-howto: #7c6f8f;
+  --category-guides: #b08a4a;
+  --category-other: #7d8587;
 
---category-recipes-bg: #E8F0E9;
---category-howto-bg: #EEEBF2;
---category-guides-bg: #F3EDDF;
---category-other-bg: #dbeaee;
+  --category-recipes-bg: #e8f0e9;
+  --category-howto-bg: #eeebf2;
+  --category-guides-bg: #f3eddf;
+  --category-other-bg: #dbeaee;
 }
 
 @theme inline {
