@@ -15,6 +15,16 @@
   --accent-500: #ea580c;
 
   --border: #2f2f30;
+
+  --category-recipes: #6B8F71;
+--category-howto: #7C6F8F;
+--category-guides: #B08A4A;
+--category-other: #7D8587;
+
+--category-recipes-bg: #E8F0E9;
+--category-howto-bg: #EEEBF2;
+--category-guides-bg: #F3EDDF;
+--category-other-bg: #dbeaee;
 }
 
 @theme inline {
