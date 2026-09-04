@@ -1,5 +1,6 @@
 import CategoryCard from "../../components/CategoryCard";
 import { categories } from "../../data/categories";
+import NewEntryButton from "../../components/NewEntryButton.js";
 
 export default function CategoriesPage() {
   return (
@@ -10,6 +11,10 @@ export default function CategoriesPage() {
         <p className="mt-2 text-secondary-700">
           Find and access your content by category.
         </p>
+      </div>
+
+      <div className="mt-6">
+        <NewEntryButton />
       </div>
 
       {categories.length === 0 ? (

@@ -1,8 +1,11 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import BackLink from "../../components/BackLink.js";
 import { categories } from "../../data/categories";
+import dbConnect from "../../db/connect.js";
+import Entry from "../../db/models/Entry.js";
 
-export default function CategoryPage() {
+export default function CategoryPage({ entries }) {
   const router = useRouter();
   const { category: categorySlug } = router.query;
 
@@ -26,11 +29,49 @@ export default function CategoryPage() {
 
       <h1 className="text-3xl font-bold">{category.name}</h1>
 
-      <p className="mt-2">{category.description}</p>
-
-      <div className="mt-8 rounded-xl border border-dashed border-border p-10 text-center">
-        <p className="text-secondary-700">No entries in this category yet.</p>
-      </div>
+      {entries.length === 0 ? (
+        <div className="mt-8 rounded-xl border border-dashed border-border p-10 text-center">
+          <p className="text-secondary-700">No entries in this category yet.</p>
+        </div>
+      ) : (
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {entries.map((entry) => (
+            <Link
+              key={entry._id}
+              href={`/entries/${entry._id}`}
+              className="rounded-xl border border-border bg-background p-6 transition hover:-translate-y-1"
+            >
+              <h2 className="text-xl font-semibold">{entry.title}</h2>
+            </Link>
+          ))}
+        </div>
+      )}
     </main>
   );
+}
+
+export async function getServerSideProps({ params }) {
+  const category = categories.find(
+    (item) => item.slug === params.category
+  );
+
+  if (!category) {
+    return {
+      notFound: true,
+    };
+  }
+
+  await dbConnect();
+
+  const entries = await Entry.find({
+    category: params.category,
+  })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return {
+    props: {
+      entries: JSON.parse(JSON.stringify(entries)),
+    },
+  };
 }

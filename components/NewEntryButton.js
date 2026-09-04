@@ -21,7 +21,7 @@ export default function NewEntryButton() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          class="lucide lucide-plus-icon lucide-plus text-background group-hover:text-accent-500"
+          className="lucide lucide-plus-icon lucide-plus text-background group-hover:text-accent-500"
         >
           <path d="M5 12h14" />
           <path d="M12 5v14" />
