@@ -1,4 +1,5 @@
 import BackLink from "../../components/BackLink.js";
+import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
 import Entry from "../../db/models/Entry.js";
 
