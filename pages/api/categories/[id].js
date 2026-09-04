@@ -2,6 +2,18 @@ import dbConnect from "../../../db/connect.js";
 import Category from "../../../db/models/Category.js";
 import Entry from "../../../db/models/Entry.js";
 
+function createSlug(name) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export default async function handler(req, res) {
   await dbConnect();
 
@@ -43,14 +55,28 @@ export default async function handler(req, res) {
     }
 
     const trimmedName = name.trim();
+    const slug = createSlug(trimmedName);
+
+    if (!slug) {
+      return res.status(400).json({
+        message: "Please enter a valid category name.",
+      });
+    }
 
     const escapedName = trimmedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     const existingCategory = await Category.findOne({
-      name: {
-        $regex: `^${escapedName}$`,
-        $options: "i",
-      },
+      $or: [
+        {
+          slug,
+        },
+        {
+          name: {
+            $regex: `^${escapedName}$`,
+            $options: "i",
+          },
+        },
+      ],
       _id: { $ne: category._id },
     });
 
