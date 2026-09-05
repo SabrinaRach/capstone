@@ -1,5 +1,6 @@
 import dbConnect from "../../../db/connect.js";
 import Entry from "../../../db/models/Entry.js";
+import Category from "../../../db/models/Category.js";
 
 export default async function handler(req, res) {
   await dbConnect();
@@ -31,10 +32,24 @@ export default async function handler(req, res) {
     });
   }
 
+  if (!category) {
+    return res.status(400).json({
+      message: "Category is required.",
+    });
+  }
+
+  const existingCategory = await Category.findById(category);
+
+  if (!existingCategory) {
+    return res.status(400).json({
+      message: "Invalid category.",
+    });
+  }
+
   const entry = await Entry.create({
     title: title.trim(),
     description: description?.trim() || "",
-    category: category || "other",
+    category,
     items,
     steps,
     notes: notes?.trim() || "",

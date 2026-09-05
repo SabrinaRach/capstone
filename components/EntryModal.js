@@ -1,6 +1,22 @@
+import { useEffect, useState } from "react";
 import EntryForm from "./EntryForm.js";
 
 export default function EntryModal({ onClose }) {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    async function loadCategories() {
+      const response = await fetch("/api/categories");
+      const data = await response.json();
+
+      if (response.ok) {
+        setCategories(data);
+      }
+    }
+
+    loadCategories();
+  }, []);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-6"
@@ -25,7 +41,7 @@ export default function EntryModal({ onClose }) {
         </div>
 
         <div className="mt-6">
-          <EntryForm />
+          {categories.length > 0 && <EntryForm categories={categories} />}
         </div>
       </div>
     </div>

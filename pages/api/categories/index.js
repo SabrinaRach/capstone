@@ -35,6 +35,14 @@ function createBackgroundColor(hexColor) {
 export default async function handler(req, res) {
   await dbConnect();
 
+  if (req.method === "GET") {
+    const categories = await Category.find()
+      .sort({ isSystem: -1, name: 1 })
+      .lean();
+
+    return res.status(200).json(JSON.parse(JSON.stringify(categories)));
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({
       message: "Method not allowed",

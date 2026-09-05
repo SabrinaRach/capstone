@@ -35,7 +35,7 @@ export default function EntriesPage({ entries }) {
               <h2 className="text-xl font-semibold">{entry.title}</h2>
 
               <p className="mt-2 text-sm text-secondary-700">
-                {entry.category}
+                {entry.category?.name || "Not assigned"}
               </p>
             </Link>
           ))}
@@ -48,7 +48,12 @@ export default function EntriesPage({ entries }) {
 export async function getServerSideProps() {
   await dbConnect();
 
-  const entries = await Entry.find().sort({ createdAt: -1 }).lean();
+  await import("../../db/models/Category.js");
+
+  const entries = await Entry.find()
+    .populate("category")
+    .sort({ createdAt: -1 })
+    .lean();
 
   return {
     props: {
