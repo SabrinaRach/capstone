@@ -3,6 +3,7 @@ import CategoryCard from "../../components/CategoryCard";
 import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
 import CategoryForm from "../../components/CategoryForm.js";
+import NewEntryButton from "../../components/NewEntryButton.js";
 
 export default function CategoriesPage({ categories }) {
   const [categoryList, setCategoryList] = useState(categories);
@@ -33,6 +34,10 @@ export default function CategoriesPage({ categories }) {
         <p className="mt-2 text-secondary-700">
           Find and access your content by category.
         </p>
+      </div>
+
+      <div className="mt-6">
+        <NewEntryButton />
       </div>
 
       {categoryList.length === 0 ? (
