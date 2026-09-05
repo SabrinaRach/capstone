@@ -1,6 +1,7 @@
 import Link from "next/link";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
+import NewEntryButton from "../../components/NewEntryButton.js";
 
 export default function EntriesPage({ entries }) {
   return (
@@ -11,6 +12,8 @@ export default function EntriesPage({ entries }) {
         <p className="mt-2 text-secondary-700">
           Find and access all your entries in one place.
         </p>
+
+        <NewEntryButton />
       </div>
 
       {entries.length === 0 ? (
