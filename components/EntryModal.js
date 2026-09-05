@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import EntryForm from "./EntryForm.js";
+import CategoryForm from "./CategoryForm.js";
 
 export default function EntryModal({ onClose }) {
   const [categories, setCategories] = useState([]);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const categoryFormRef = useRef(null);
 
   useEffect(() => {
     async function loadCategories() {
@@ -41,7 +45,37 @@ export default function EntryModal({ onClose }) {
         </div>
 
         <div className="mt-6">
-          {categories.length > 0 && <EntryForm categories={categories} />}
+          {categories.length > 0 && (
+            <EntryForm
+              categories={categories}
+              selectedCategoryId={selectedCategoryId}
+              onCreateCategory={() => {
+                setShowCategoryForm(true);
+                setTimeout(() => {
+                  categoryFormRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }, 0);
+              }}
+              onCategoryChange={setSelectedCategoryId}
+            />
+          )}
+          {showCategoryForm && (
+            <div ref={categoryFormRef} className="mt-6">
+              <CategoryForm
+                onCreated={(newCategory) => {
+                  setCategories((currentCategories) => [
+                    ...currentCategories,
+                    newCategory,
+                  ]);
+                  setSelectedCategoryId(newCategory._id);
+                  setShowCategoryForm(false);
+                }}
+                onCancel={() => setShowCategoryForm(false)}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function CategoryForm({ onCreated }) {
+export default function CategoryForm({ onCreated, onCancel }) {
   const [name, setName] = useState("");
   const [color, setColor] = useState("#6B8F71");
   const [error, setError] = useState("");
@@ -58,10 +58,7 @@ export default function CategoryForm({ onCreated }) {
       <h2 className="text-xl font-semibold">Create category</h2>
 
       <div className="mt-6">
-        <label
-          htmlFor="category-name"
-          className="block text-sm font-medium"
-        >
+        <label htmlFor="category-name" className="block text-sm font-medium">
           Name
         </label>
 
@@ -76,10 +73,7 @@ export default function CategoryForm({ onCreated }) {
       </div>
 
       <div className="mt-6">
-        <label
-          htmlFor="category-color"
-          className="block text-sm font-medium"
-        >
+        <label htmlFor="category-color" className="block text-sm font-medium">
           Color
         </label>
 
@@ -100,6 +94,16 @@ export default function CategoryForm({ onCreated }) {
         <p className="mt-4 text-sm text-red-600" role="alert">
           {error}
         </p>
+      )}
+
+      {onCancel && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="mr-3 rounded-lg border border-foreground px-5 py-2 font-medium"
+        >
+          Cancel
+        </button>
       )}
 
       <button

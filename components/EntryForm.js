@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-export default function EntryForm({ categories }) {
+export default function EntryForm({ categories, onCreateCategory, selectedCategoryId, onCategoryChange }) {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category:
-      categories.find((category) => category.slug === "other")?._id || "",
+    category: selectedCategoryId || categories.find((category) => category.slug === "other")?._id || "",
     items: "",
     steps: "",
     notes: "",
@@ -21,10 +20,19 @@ export default function EntryForm({ categories }) {
   function handleChange(event) {
     const { name, value } = event.target;
 
+    if (name === "category" && value === "create-new") {
+      onCreateCategory();
+      return;
+    }
+
     setFormData((currentData) => ({
       ...currentData,
       [name]: value,
     }));
+
+    if (name === "category" && onCategoryChange) {
+      onCategoryChange(value);
+    }
   }
 
   async function handleSubmit(event) {
@@ -57,6 +65,7 @@ export default function EntryForm({ categories }) {
         },
         body: JSON.stringify({
           ...formData,
+          category: selectedCategoryId || formData.category,
           items: formData.items
             .split("\n")
             .map((item) => item.trim())
@@ -131,19 +140,16 @@ export default function EntryForm({ categories }) {
         <select
           id="category"
           name="category"
-          value={formData.category}
+          value={selectedCategoryId || formData.category}
           onChange={handleChange}
           className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
         >
-          {categories.length === 0 ? (
-            <option value="">Loading categories...</option>
-          ) : (
-            categories.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))
-          )}
+          {categories.map((category) => (
+            <option key={category._id} value={category._id}>
+              {category.name}
+            </option>
+          ))}
+          <option value="create-new">Create new category</option>
         </select>
       </div>
 
