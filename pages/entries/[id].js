@@ -28,7 +28,9 @@ export default function EntryPage({ entry }) {
 
       <h1 className="text-3xl font-bold">{entry.title}</h1>
 
-      <p className="mt-2 text-secondary-700">Category: {entry.category}</p>
+      <p className="mt-2 text-secondary-700">
+        Category: {entry.category?.name || "Not assigned"}
+      </p>
     </main>
   );
 }
@@ -36,7 +38,9 @@ export default function EntryPage({ entry }) {
 export async function getServerSideProps({ params }) {
   await dbConnect();
 
-  const entry = await Entry.findById(params.id).lean();
+  await import("../../db/models/Category.js");
+
+  const entry = await Entry.findById(params.id).populate("category").lean();
 
   return {
     props: {

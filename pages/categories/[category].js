@@ -1,16 +1,10 @@
 import Link from "next/link";
-import { useRouter } from "next/router";
 import BackLink from "../../components/BackLink.js";
-import { categories } from "../../data/categories";
 import dbConnect from "../../db/connect.js";
+import Category from "../../db/models/Category.js";
 import Entry from "../../db/models/Entry.js";
 
-export default function CategoryPage({ entries }) {
-  const router = useRouter();
-  const { category: categorySlug } = router.query;
-
-  const category = categories.find((item) => item.slug === categorySlug);
-
+export default function CategoryPage({ category, entries }) {
   if (!category) {
     return (
       <main className="mx-auto max-w-6xl px-6 py-10">
@@ -51,26 +45,30 @@ export default function CategoryPage({ entries }) {
 }
 
 export async function getServerSideProps({ params }) {
-  const category = categories.find(
-    (item) => item.slug === params.category
-  );
+  await dbConnect();
+
+  const category = await Category.findOne({
+    slug: params.category,
+  }).lean();
 
   if (!category) {
     return {
-      notFound: true,
+      props: {
+        category: null,
+        entries: [],
+      },
     };
   }
 
-  await dbConnect();
-
   const entries = await Entry.find({
-    category: params.category,
+    category: category._id,
   })
     .sort({ createdAt: -1 })
     .lean();
 
   return {
     props: {
+      category: JSON.parse(JSON.stringify(category)),
       entries: JSON.parse(JSON.stringify(entries)),
     },
   };

@@ -1,32 +1,14 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-const categories = [
-  {
-    value: "recipes",
-    label: "Recipes",
-  },
-  {
-    value: "how-to-instructions",
-    label: "How-to / Instructions",
-  },
-  {
-    value: "guides",
-    label: "Guides",
-  },
-  {
-    value: "other",
-    label: "Other / Not assigned",
-  },
-];
-
-export default function EntryForm() {
+export default function EntryForm({ categories }) {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category: "other",
+    category:
+      categories.find((category) => category.slug === "other")?._id || "",
     items: "",
     steps: "",
     notes: "",
@@ -153,11 +135,15 @@ export default function EntryForm() {
           onChange={handleChange}
           className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
         >
-          {categories.map((category) => (
-            <option key={category.value} value={category.value}>
-              {category.label}
-            </option>
-          ))}
+          {categories.length === 0 ? (
+            <option value="">Loading categories...</option>
+          ) : (
+            categories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))
+          )}
         </select>
       </div>
 

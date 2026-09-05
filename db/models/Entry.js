@@ -18,8 +18,8 @@ const entrySchema = new Schema(
       default: "",
     },
     category: {
-      type: String,
-      enum: ["recipes", "how-to-instructions", "guides", "other"],
+      type: Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
     steps: {
