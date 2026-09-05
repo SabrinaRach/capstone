@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import EntryForm from "./EntryForm.js";
+import CategoryForm from "./CategoryForm.js";
 
 export default function EntryModal({ onClose }) {
   const [categories, setCategories] = useState([]);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
 
   useEffect(() => {
     async function loadCategories() {
@@ -41,7 +43,26 @@ export default function EntryModal({ onClose }) {
         </div>
 
         <div className="mt-6">
-          {categories.length > 0 && <EntryForm categories={categories} />}
+          {categories.length > 0 && (
+            <EntryForm
+              categories={categories}
+              onCreateCategory={() => setShowCategoryForm(true)}
+            />
+          )}
+          {showCategoryForm && (
+            <div className="mt-6">
+              <CategoryForm
+                onCreated={(newCategory) => {
+                  setCategories((currentCategories) => [
+                    ...currentCategories,
+                    newCategory,
+                  ]);
+                  setShowCategoryForm(false);
+                }}
+                onCancel={() => setShowCategoryForm(false)}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
