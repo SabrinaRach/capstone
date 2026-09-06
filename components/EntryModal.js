@@ -2,10 +2,18 @@ import { useEffect, useState, useRef } from "react";
 import EntryForm from "./EntryForm.js";
 import CategoryForm from "./CategoryForm.js";
 
-export default function EntryModal({ onClose }) {
+export default function EntryModal({
+  onClose,
+  initialData,
+  isEditing = false,
+  entryId,
+  onSaved,
+}) {
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(
+    initialData?.category?._id || initialData?.category || "",
+  );
   const categoryFormRef = useRef(null);
 
   useEffect(() => {
@@ -31,7 +39,7 @@ export default function EntryModal({ onClose }) {
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-background p-6 shadow-xl">
         <div className="flex items-center justify-between">
           <h2 id="create-entry-title" className="text-2xl font-bold">
-            Create Entry
+            {isEditing ? "Edit Entry" : "Create Entry"}
           </h2>
 
           <button
@@ -49,6 +57,10 @@ export default function EntryModal({ onClose }) {
             <EntryForm
               categories={categories}
               selectedCategoryId={selectedCategoryId}
+              initialData={initialData}
+              isEditing={isEditing}
+              entryId={initialData?._id}
+              onSaved={onSaved}
               onCreateCategory={() => {
                 setShowCategoryForm(true);
                 setTimeout(() => {
