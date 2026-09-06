@@ -1,13 +1,16 @@
 import { useRouter } from "next/router";
+import { useState } from "react";
 import BackLink from "../../components/BackLink.js";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
 import EntrySection from "../../components/EntrySection.js";
 import EntryList from "../../components/EntryList.js";
 import EntrySteps from "../../components/EntrySteps.js";
+import EntryModal from "../../components/EntryModal.js";
 
 export default function EntryPage({ entry }) {
   const router = useRouter();
+  const [showEditModal, setShowEditModal] = useState(false);
 
   if (router.isFallback) {
     return <p>Loading...</p>;
@@ -35,6 +38,40 @@ export default function EntryPage({ entry }) {
         Category: {entry.category?.name || "Not assigned"}
       </p>
 
+      <div className="mt-6 flex gap-3">
+        <button
+          type="button"
+          onClick={() => setShowEditModal(true)}
+          className="rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100"
+        >
+          Edit
+        </button>
+
+        <button
+          type="button"
+          onClick={async () => {
+            const confirmed = window.confirm(
+              "Are you sure you want to permanently delete this entry?",
+            );
+
+            if (!confirmed) {
+              return;
+            }
+
+            const response = await fetch(`/api/entries/${entry._id}`, {
+              method: "DELETE",
+            });
+
+            if (response.ok) {
+              router.push("/entries");
+            }
+          }}
+          className="rounded-full border border-accent-500 px-5 py-2 font-medium text-accent-500 hover:bg-accent-500 hover:text-foreground"
+        >
+          Delete
+        </button>
+      </div>
+
       <div className="mt-8 space-y-8">
         {entry.description && (
           <EntrySection title="Description">
@@ -58,6 +95,18 @@ export default function EntryPage({ entry }) {
           </EntrySection>
         )}
       </div>
+
+      {showEditModal && (
+        <EntryModal
+          onClose={() => setShowEditModal(false)}
+          initialData={entry}
+          isEditing={true}
+          onSaved={(updatedEntry) => {
+            setShowEditModal(false);
+            router.reload();
+          }}
+        />
+      )}
     </main>
   );
 }
