@@ -75,7 +75,7 @@ export default function EntryForm({
       const response = await fetch(
         isEditing ? `/api/entries/${entryId}` : "/api/entries",
         {
-          method: "POST",
+          method: isEditing ? "PATCH" : "POST",
           headers: {
             "Content-Type": "application/json",
           },
