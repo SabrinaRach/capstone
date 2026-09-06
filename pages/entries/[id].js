@@ -1,13 +1,18 @@
 import { useRouter } from "next/router";
+import { useState } from "react";
 import BackLink from "../../components/BackLink.js";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
 import EntrySection from "../../components/EntrySection.js";
 import EntryList from "../../components/EntryList.js";
 import EntrySteps from "../../components/EntrySteps.js";
+import EntryModal from "../../components/EntryModal.js";
 
 export default function EntryPage({ entry }) {
   const router = useRouter();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   if (router.isFallback) {
     return <p>Loading...</p>;
@@ -35,6 +40,65 @@ export default function EntryPage({ entry }) {
         Category: {entry.category?.name || "Not assigned"}
       </p>
 
+      <div className="mt-6 flex gap-3">
+        <button
+          type="button"
+          onClick={() => setShowEditModal(true)}
+          className="rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100"
+        >
+          Edit
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setShowDeleteConfirmation(true)}
+          className="rounded-full border border-accent-500 px-5 py-2 font-medium text-accent-500 hover:bg-accent-500 hover:text-foreground"
+        >
+          Delete
+        </button>
+      </div>
+
+      {showDeleteConfirmation && (
+        <div className="mt-4 rounded-xl border border-accent-500 bg-accent-500/10 p-5">
+          <p className="mt-2 text-sm text-secondary-700">
+            Are you sure you want to delete this entry?
+          </p>
+
+          <div className="mt-4 flex gap-3">
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirmation(false)}
+              disabled={isDeleting}
+              className="rounded-full border border-secondary-500 bg-secondary-100 px-5 py-2 font-medium text-secondary-700 hover:bg-secondary-500 hover:text-background"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              disabled={isDeleting}
+              onClick={async () => {
+                setIsDeleting(true);
+
+                const response = await fetch(`/api/entries/${entry._id}`, {
+                  method: "DELETE",
+                });
+
+                if (response.ok) {
+                  router.push("/entries");
+                  return;
+                }
+
+                setIsDeleting(false);
+              }}
+              className="rounded-full bg-accent-500 px-5 py-2 font-medium text-background hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {isDeleting ? "Deleting..." : "Delete permanently"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="mt-8 space-y-8">
         {entry.description && (
           <EntrySection title="Description">
@@ -58,6 +122,18 @@ export default function EntryPage({ entry }) {
           </EntrySection>
         )}
       </div>
+
+      {showEditModal && (
+        <EntryModal
+          onClose={() => setShowEditModal(false)}
+          initialData={entry}
+          isEditing={true}
+          onSaved={(updatedEntry) => {
+            setShowEditModal(false);
+            router.reload();
+          }}
+        />
+      )}
     </main>
   );
 }
