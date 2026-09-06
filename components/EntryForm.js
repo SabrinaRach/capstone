@@ -1,17 +1,31 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-export default function EntryForm({ categories, onCreateCategory, selectedCategoryId, onCategoryChange }) {
+export default function EntryForm({
+  categories,
+  onCreateCategory,
+  selectedCategoryId,
+  onCategoryChange,
+  initialData,
+  isEditing = false,
+  entryId,
+  onSaved,
+}) {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category: selectedCategoryId || categories.find((category) => category.slug === "other")?._id || "",
-    items: "",
-    steps: "",
-    notes: "",
-    source: "",
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    category:
+      initialData?.category?._id ||
+      initialData?.category ||
+      selectedCategoryId ||
+      categories.find((category) => category.slug === "other")?._id ||
+      "",
+    items: initialData?.items?.join("\n") || "",
+    steps: initialData?.steps?.join("\n") || "",
+    notes: initialData?.notes || "",
+    source: initialData?.source || "",
   });
 
   const [error, setError] = useState("");
@@ -58,29 +72,37 @@ export default function EntryForm({ categories, onCreateCategory, selectedCatego
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/entries", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        isEditing ? `/api/entries/${entryId}` : "/api/entries",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            category: selectedCategoryId || formData.category,
+            items: formData.items
+              .split("\n")
+              .map((item) => item.trim())
+              .filter(Boolean),
+            steps: formData.steps
+              .split("\n")
+              .map((step) => step.trim())
+              .filter(Boolean),
+          }),
         },
-        body: JSON.stringify({
-          ...formData,
-          category: selectedCategoryId || formData.category,
-          items: formData.items
-            .split("\n")
-            .map((item) => item.trim())
-            .filter(Boolean),
-          steps: formData.steps
-            .split("\n")
-            .map((step) => step.trim())
-            .filter(Boolean),
-        }),
-      });
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to create entry.");
+      }
+
+      if (isEditing && onSaved) {
+        onSaved(data.entry);
+        return;
       }
 
       router.push(`/entries/${data._id}`);
@@ -229,7 +251,11 @@ export default function EntryForm({ categories, onCreateCategory, selectedCatego
           disabled={isSubmitting}
           className="rounded-full border border-foreground bg-primary-500 px-6 py-2 font-medium text-background hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? "Saving..." : "Save Entry"}
+          {isSubmitting
+            ? "Saving..."
+            : isEditing
+              ? "Save Changes"
+              : "Save Entry"}
         </button>
       </div>
     </form>
