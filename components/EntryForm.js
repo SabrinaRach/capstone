@@ -117,7 +117,7 @@ export default function EntryForm({
       {error && (
         <div
           role="alert"
-          className="rounded-lg border border-accent-500 bg-white p-4 text-accent-500"
+          className="rounded-lg border border-accent-500 bg-foreground p-4 text-accent-500"
         >
           {error}
         </div>
