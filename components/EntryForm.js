@@ -352,7 +352,7 @@ export default function EntryForm({
 
               const totalImages = existingImages.length + combinedFiles.length;
 
-              if (combinedFiles.length > 5) {
+              if (totalImages > 5) {
                 setError("You can have a maximum of 5 images.");
                 return currentFiles;
               }
