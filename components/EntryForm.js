@@ -297,6 +297,8 @@ export default function EntryForm({
                     src={imageUrl}
                     alt={`${formData.title || "Entry"} - Image ${index + 1}`}
                     className="h-32 w-full object-cover"
+                    width={200}
+                    height={200}
                   />
 
                   <button
