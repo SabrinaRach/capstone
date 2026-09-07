@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 export default function EntryForm({
   categories,
@@ -30,6 +31,10 @@ export default function EntryForm({
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [existingImages, setExistingImages] = useState(
+    initialData?.images || [],
+  );
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -72,6 +77,33 @@ export default function EntryForm({
     setIsSubmitting(true);
 
     try {
+      let newImageUrls = [];
+
+      if (selectedFiles.length > 0) {
+        const imageFormData = new FormData();
+
+        selectedFiles.forEach((file) => {
+          imageFormData.append("file", file);
+        });
+
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          body: imageFormData,
+        });
+
+        const uploadData = await uploadResponse.json();
+
+        if (!uploadResponse.ok) {
+          throw new Error(uploadData.error || "Image upload failed.");
+        }
+
+        newImageUrls = uploadData.images.map((image) => image.url);
+      }
+
+      const imageUrls = isEditing
+        ? [...existingImages, ...newImageUrls]
+        : newImageUrls;
+
       const response = await fetch(
         isEditing ? `/api/entries/${entryId}` : "/api/entries",
         {
@@ -90,6 +122,7 @@ export default function EntryForm({
               .split("\n")
               .map((step) => step.trim())
               .filter(Boolean),
+            images: imageUrls,
           }),
         },
       );
@@ -97,7 +130,7 @@ export default function EntryForm({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to create entry.");
+        throw new Error(data.message || "Failed to save entry.");
       }
 
       if (isEditing && onSaved) {
@@ -242,6 +275,85 @@ export default function EntryForm({
           value={formData.source}
           onChange={handleChange}
           className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="images" className="block text-sm font-medium">
+          Images
+        </label>
+
+        {isEditing && existingImages.length > 0 && (
+          <div className="mt-4">
+            <p className="text-sm font-medium">Existing images</p>
+
+            <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {existingImages.map((imageUrl, index) => (
+                <div
+                  key={imageUrl}
+                  className="relative overflow-hidden rounded-lg border border-foreground"
+                >
+                  <Image
+                    src={imageUrl}
+                    alt={`${formData.title || "Entry"} - Image ${index + 1}`}
+                    className="h-32 w-full object-cover"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExistingImages((currentImages) =>
+                        currentImages.filter((image) => image !== imageUrl),
+                      );
+                    }}
+                    className="absolute right-2 top-2 rounded-full bg-accent-500 px-3 py-1 text-sm font-medium text-background"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <p className="mt-4 text-sm text-secondary-700">
+          {isEditing
+            ? "Keep the existing images or delete them. You can also add new images."
+            : "You can select up to 5 images."}
+        </p>
+
+        <input
+          id="images"
+          name="images"
+          type="file"
+          accept="image/jpeg,image/png"
+          multiple
+          onChange={(event) => {
+            const files = Array.from(event.target.files || []);
+            const maxFileSize = 5 * 1024 * 1024;
+
+            const totalImages = existingImages.length + files.length;
+
+            if (totalImages > 5) {
+              setError("You can have a maximum of 5 images.");
+              event.target.value = "";
+              setSelectedFiles([]);
+              return;
+            }
+
+            const oversizedFile = files.find((file) => file.size > maxFileSize);
+
+            if (oversizedFile) {
+              setError(`${oversizedFile.name} must not exceed 5 MB.`);
+              event.target.value = "";
+              setSelectedFiles([]);
+              return;
+            }
+
+            setError("");
+            setSelectedFiles(files);
+          }}
+          className="mt-2 w-full"
         />
       </div>
 

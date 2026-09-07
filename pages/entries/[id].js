@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Image from "next/image";
 import BackLink from "../../components/BackLink.js";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
@@ -35,6 +36,19 @@ export default function EntryPage({ entry }) {
       <BackLink href="/entries" text="All Entries" />
 
       <h1 className="text-3xl font-bold">{entry.title}</h1>
+
+      {entry.images?.length > 0 && (
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {entry.images.map((imageUrl, index) => (
+            <Image
+              key={imageUrl}
+              src={imageUrl}
+              alt={`${entry.title} - Image ${index + 1}`}
+              className="h-auto w-full rounded-xl object-cover"
+            />
+          ))}
+        </div>
+      )}
 
       <p className="mt-2 text-secondary-700">
         Category: {entry.category?.name || "Not assigned"}
