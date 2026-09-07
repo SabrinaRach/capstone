@@ -153,7 +153,10 @@ export default function EntryPage({ entry }) {
                     key={imageUrl}
                     className="w-full min-w-full shrink-0 snap-center"
                   >
-                    <img
+                    <Image
+                      width={600}
+                      height={600}
+                      loading="eager"
                       src={imageUrl}
                       alt={`${entry.title} - Image ${index + 1}`}
                       className="aspect-square w-full rounded-xl object-cover"

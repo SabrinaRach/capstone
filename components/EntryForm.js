@@ -331,32 +331,80 @@ export default function EntryForm({
           accept="image/jpeg,image/png"
           multiple
           onChange={(event) => {
-            const files = Array.from(event.target.files || []);
+            const newFiles = Array.from(event.target.files || []);
             const maxFileSize = 5 * 1024 * 1024;
 
-            const totalImages = existingImages.length + files.length;
-
-            if (totalImages > 5) {
-              setError("You can have a maximum of 5 images.");
-              event.target.value = "";
-              setSelectedFiles([]);
+            if (newFiles.length === 0) {
               return;
             }
-
-            const oversizedFile = files.find((file) => file.size > maxFileSize);
+            const oversizedFile = newFiles.find(
+              (file) => file.size > maxFileSize,
+            );
 
             if (oversizedFile) {
               setError(`${oversizedFile.name} must not exceed 5 MB.`);
               event.target.value = "";
-              setSelectedFiles([]);
               return;
             }
 
-            setError("");
-            setSelectedFiles(files);
+            setSelectedFiles((currentFiles) => {
+              const combinedFiles = [...currentFiles, ...newFiles];
+
+              const totalImages = existingImages.length + combinedFiles.length;
+
+              if (combinedFiles.length > 5) {
+                setError("You can have a maximum of 5 images.");
+                return currentFiles;
+              }
+
+              setError("");
+              return combinedFiles;
+            });
+
+            event.target.value = "";
           }}
-          className="mt-2 w-full"
+          className="sr-only"
         />
+
+        <label
+          htmlFor="images"
+          className="mt-2 inline-block cursor-pointer rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100"
+        >
+          Choose images
+        </label>
+
+        {/* Newly selected images */}
+        {selectedFiles.length > 0 && (
+          <div className="mt-3 space-y-2">
+            <p className="text-sm font-medium">
+              {selectedFiles.length}{" "}
+              {selectedFiles.length === 1 ? "image" : "images"} selected
+            </p>
+
+            {selectedFiles.map((file, index) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${index}`}
+                className="flex items-center justify-between rounded-lg bg-secondary-100 px-3 py-2 text-sm"
+              >
+                <span className="truncate">{file.name}</span>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedFiles((currentFiles) =>
+                      currentFiles.filter(
+                        (_, fileIndex) => fileIndex !== index,
+                      ),
+                    );
+                  }}
+                  className="ml-3 shrink-0 font-medium text-accent-500 hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end">
