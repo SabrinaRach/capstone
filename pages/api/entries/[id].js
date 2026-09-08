@@ -1,3 +1,4 @@
+import { del } from "@vercel/blob";
 import dbConnect from "../../../db/connect.js";
 import Entry from "../../../db/models/Entry.js";
 import Category from "../../../db/models/Category.js";
@@ -30,8 +31,16 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "PATCH") {
-    const { title, description, category, items, steps, notes, source } =
-      req.body;
+    const {
+      title,
+      description,
+      category,
+      items,
+      steps,
+      notes,
+      source,
+      images,
+    } = req.body;
 
     if (!title?.trim()) {
       return res.status(400).json({
@@ -73,6 +82,28 @@ export default async function handler(req, res) {
     entry.notes = notes?.trim() || "";
     entry.source = source?.trim() || "";
 
+    if (Array.isArray(images)) {
+      if (images.length > 5) {
+        return res.status(400).json({
+          message: "You can have a maximum of 5 images.",
+        });
+      }
+      const oldImages = entry.images || [];
+
+      const imagesToDelete = oldImages.filter(
+        (oldImage) => !images.includes(oldImage),
+      );
+
+      for (const imageUrl of imagesToDelete) {
+        try {
+          await del(imageUrl);
+        } catch (error) {
+          console.error("Failed to delete blob:", imageUrl, error);
+        }
+      }
+      entry.images = images;
+    }
+
     await entry.save();
 
     return res.status(200).json({
@@ -81,6 +112,15 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "DELETE") {
+    const imagesToDelete = entry.images || [];
+
+    for (const imageUrl of imagesToDelete) {
+      try {
+        await del(imageUrl);
+      } catch (error) {
+        console.error("Failed to delete blob:", imageUrl, error);
+      }
+    }
     await entry.deleteOne();
 
     return res.status(200).json({

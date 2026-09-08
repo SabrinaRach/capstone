@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const { title, description, category, steps, items, notes, source } =
+  const { title, description, category, steps, items, notes, source, images } =
     req.body;
 
   if (!title?.trim()) {
@@ -38,6 +38,12 @@ export default async function handler(req, res) {
     });
   }
 
+  if (images?.length > 5) {
+    return res
+      .status(400)
+      .json({ message: "You can upload a maximum of 5 images." });
+  }
+
   const existingCategory = await Category.findById(category);
 
   if (!existingCategory) {
@@ -54,6 +60,7 @@ export default async function handler(req, res) {
     steps,
     notes: notes?.trim() || "",
     source: source?.trim() || "",
+    images: images || [],
   });
 
   return res.status(201).json(entry);

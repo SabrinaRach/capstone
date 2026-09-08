@@ -13,9 +13,9 @@ const entrySchema = new Schema(
       type: String,
       trim: true,
     },
-    imageUrl: {
-      type: String,
-      default: "",
+    images: {
+      type: [{ type: String, trim: true }],
+      default: [],
     },
     category: {
       type: Schema.Types.ObjectId,
