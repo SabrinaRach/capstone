@@ -10,8 +10,8 @@ import {
 
 export const CATEGORIES = [
   {
-    id: "recipes",
-    name: "Recipes",
+    id: "kitchen",
+    name: "Kitchen",
     icon: ChefHat,
     color: "#0F766E",
   },
@@ -41,7 +41,7 @@ export const CATEGORIES = [
   },
   {
     id: "tips",
-    name: "Tipps",
+    name: "Tips",
     icon: Lightbulb,
     color: "#F59E0B",
   },

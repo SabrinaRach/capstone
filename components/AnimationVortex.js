@@ -7,8 +7,8 @@ const CANVAS_SIZE = 600;
 const PARTICLE_COUNT = 120;
 
 const SORT_DURATION = 1050;
-const IMPACT_DELAY = 150;
 const NAVIGATION_DELAY = 1550;
+const VORTEX_CATEGORIES = [...CATEGORIES, ...CATEGORIES];
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -50,7 +50,7 @@ export default function AnimationVortex() {
 
   const categoryNodesRef = useRef([]);
   useEffect(() => {
-    categoryNodesRef.current = CATEGORIES.map((category, index) => {
+    categoryNodesRef.current = VORTEX_CATEGORIES.map((category, index) => {
       const targetAngle =
         -Math.PI / 2 + (Math.PI * 2 * index) / CATEGORIES.length;
 
@@ -121,7 +121,7 @@ export default function AnimationVortex() {
    */
 
   const getTargetAngle = (index) => {
-    return -Math.PI / 2 + (Math.PI * 2 * index) / CATEGORIES.length;
+    return -Math.PI / 2 + (Math.PI * 2 * index) / VORTEX_CATEGORIES.length;
   };
 
   /**
@@ -227,11 +227,9 @@ export default function AnimationVortex() {
        * ----------------------------------------------
        */
 
-      const vortexSpeed = isSortingRef.current
-        ? lerp(0.018, 0, sortEase)
-        : 0.008;
-
-      const vortexRotation = time * vortexSpeed;
+      const vortexRotation = isSortingRef.current
+        ? easeOutCubic(sortProgress) * Math.PI * 2
+        : 0;
 
       /**
        * ----------------------------------------------
@@ -267,12 +265,6 @@ export default function AnimationVortex() {
        */
 
       particlesRef.current.forEach((particle) => {
-        if (!isSortingRef.current) {
-          particle.angle += particle.speed;
-
-          particle.wobble += particle.wobbleSpeed;
-        }
-
         const categoryIndex = CATEGORIES.findIndex(
           (category) => category.id === particle.category.id,
         );
@@ -413,13 +405,6 @@ export default function AnimationVortex() {
 
       categoryNodesRef.current.forEach((node, index) => {
         const targetAngle = getTargetAngle(index);
-
-        if (!isSortingRef.current) {
-          node.angle += node.speed;
-
-          node.wobble += node.wobbleSpeed;
-        }
-
         /**
          * Sortierung
          */
@@ -558,7 +543,7 @@ export default function AnimationVortex() {
             }
       }
       transition={{
-        duration: isSortingRef ? 1.35 : 0.2,
+        duration: isSorting ? 1.35 : 0.2,
         ease: "easeInOut",
       }}
       className="
@@ -597,12 +582,12 @@ export default function AnimationVortex() {
           inset-0
         "
       >
-        {CATEGORIES.map((category, index) => {
+        {VORTEX_CATEGORIES.map((category, index) => {
           const Icon = category.icon;
 
           return (
             <div
-              key={category.id}
+              key={`${category.id}-${index}`}
               ref={(element) => {
                 iconRefs.current[index] = element;
               }}
@@ -635,49 +620,6 @@ export default function AnimationVortex() {
           );
         })}
       </div>
-
-      {/* ------------------------------------------- */}
-      {/* Center Core                                */}
-      {/* ------------------------------------------- */}
-
-      <motion.div
-        className="
-          pointer-events-none
-          absolute
-          left-1/2
-          top-1/2
-          flex
-          h-20
-          w-20
-          -translate-x-1/2
-          -translate-y-1/2
-          items-center
-          justify-center
-          rounded-full
-          border
-          border-white/10
-          bg-black/25
-          backdrop-blur-xl
-        "
-        animate={{
-          scale: [1, 1.035, 1],
-        }}
-        transition={{
-          duration: 2.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      >
-        <div
-          className="
-            h-4
-            w-4
-            rounded-full
-            bg-white
-            shadow-[0_0_30px_rgba(255,255,255,0.8)]
-          "
-        />
-      </motion.div>
 
       {/* ------------------------------------------- */}
       {/* Explore Label                              */}
