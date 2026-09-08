@@ -1,0 +1,695 @@
+import { useEffect, useRef } from "react";
+import { motion } from "motion/react";
+import { useRouter } from "next/router";
+import { CATEGORIES } from "./categoryConfig";
+
+const CANVAS_SIZE = 600;
+const PARTICLE_COUNT = 120;
+
+const SORT_DURATION = 1050;
+const IMPACT_DELAY = 150;
+const NAVIGATION_DELAY = 1550;
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const lerp = (start, end, amount) => start + (end - start) * amount;
+
+const easeInOutCubic = (t) => {
+  if (t < 0.5) {
+    return 4 * t * t * t;
+  }
+
+  return 1 - Math.pow(-2 * t + 2, 3) / 2;
+};
+
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+export default function AnimationVortex() {
+  const router = useRouter();
+
+  const canvasRef = useRef(null);
+  const iconRefs = useRef([]);
+
+  const animationFrameRef = useRef(null);
+  const navigationTimeoutRef = useRef(null);
+
+  const isSortingRef = useRef(false);
+  const sortStartRef = useRef(0);
+
+  /**
+   * --------------------------------------------------
+   * Kategorie-Nodes
+   * --------------------------------------------------
+   *
+   * Jeder Node entspricht einem der 7 Lucide-Icons.
+   * Die Icons selbst werden als React/SVG gerendert,
+   * ihre Position wird aber direkt im Animation-Loop
+   * aktualisiert.
+   */
+
+  const categoryNodesRef = useRef(
+    CATEGORIES.map((category, index) => {
+      const targetAngle =
+        -Math.PI / 2 + (Math.PI * 2 * index) / CATEGORIES.length;
+
+      return {
+        category,
+
+        angle: targetAngle + (Math.random() - 0.5) * Math.PI * 2,
+
+        radius: 100 + Math.random() * 150,
+
+        targetRadius: 210,
+
+        speed:
+          (Math.random() > 0.5 ? 1 : -1) * (0.0015 + Math.random() * 0.003),
+
+        wobble: Math.random() * Math.PI * 2,
+
+        wobbleSpeed: 0.008 + Math.random() * 0.012,
+
+        scale: 0.7 + Math.random() * 0.2,
+      };
+    }),
+  );
+
+  /**
+   * --------------------------------------------------
+   * Partikel
+   * --------------------------------------------------
+   */
+
+  const particlesRef = useRef(
+    Array.from({ length: PARTICLE_COUNT }, (_, index) => {
+      const category = CATEGORIES[index % CATEGORIES.length];
+
+      return {
+        category,
+
+        angle: Math.random() * Math.PI * 2,
+
+        radius: 55 + Math.random() * 245,
+
+        speed: (Math.random() > 0.5 ? 1 : -1) * (0.003 + Math.random() * 0.009),
+
+        size: 1.2 + Math.random() * 2.4,
+
+        alpha: 0.25 + Math.random() * 0.55,
+
+        wobble: Math.random() * Math.PI * 2,
+
+        wobbleSpeed: 0.008 + Math.random() * 0.018,
+
+        phase: Math.random() * Math.PI * 2,
+      };
+    }),
+  );
+
+  /**
+   * --------------------------------------------------
+   * Zielwinkel
+   * --------------------------------------------------
+   */
+
+  const getTargetAngle = (index) => {
+    return -Math.PI / 2 + (Math.PI * 2 * index) / CATEGORIES.length;
+  };
+
+  /**
+   * --------------------------------------------------
+   * Klick
+   * --------------------------------------------------
+   */
+
+  const handleActivate = () => {
+    if (isSortingRef.current) {
+      return;
+    }
+
+    isSortingRef.current = true;
+    sortStartRef.current = performance.now();
+
+    /**
+     * Navigation etwas nach dem Impact.
+     */
+    navigationTimeoutRef.current = setTimeout(() => {
+      router.push("/entry-overview");
+    }, NAVIGATION_DELAY);
+  };
+
+  /**
+   * --------------------------------------------------
+   * Keyboard
+   * --------------------------------------------------
+   */
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+
+      handleActivate();
+    }
+  };
+
+  /**
+   * --------------------------------------------------
+   * Canvas Animation
+   * --------------------------------------------------
+   */
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+
+    if (!canvas) {
+      return;
+    }
+
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      return;
+    }
+
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = CANVAS_SIZE * dpr;
+
+    canvas.height = CANVAS_SIZE * dpr;
+
+    canvas.style.width = `${CANVAS_SIZE}px`;
+
+    canvas.style.height = `${CANVAS_SIZE}px`;
+
+    context.scale(dpr, dpr);
+
+    const center = CANVAS_SIZE / 2;
+
+    /**
+     * ------------------------------------------------
+     * Render Loop
+     * ------------------------------------------------
+     */
+
+    const render = (time) => {
+      context.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      /**
+       * ----------------------------------------------
+       * Sort Progress
+       * ----------------------------------------------
+       */
+
+      let sortProgress = 0;
+
+      if (isSortingRef.current) {
+        sortProgress = clamp(
+          (time - sortStartRef.current) / SORT_DURATION,
+          0,
+          1,
+        );
+      }
+
+      const sortEase = easeInOutCubic(sortProgress);
+
+      /**
+       * ----------------------------------------------
+       * Globale Vortex-Rotation
+       * ----------------------------------------------
+       */
+
+      const vortexSpeed = isSortingRef.current
+        ? lerp(0.018, 0, sortEase)
+        : 0.008;
+
+      const vortexRotation = time * vortexSpeed;
+
+      /**
+       * ----------------------------------------------
+       * Background Glow
+       * ----------------------------------------------
+       */
+
+      const backgroundGlow = context.createRadialGradient(
+        center,
+        center,
+        10,
+        center,
+        center,
+        310,
+      );
+
+      backgroundGlow.addColorStop(0, "rgba(96, 165, 250, 0.15)");
+
+      backgroundGlow.addColorStop(0.35, "rgba(59, 130, 246, 0.07)");
+
+      backgroundGlow.addColorStop(0.7, "rgba(37, 99, 235, 0.025)");
+
+      backgroundGlow.addColorStop(1, "rgba(37, 99, 235, 0)");
+
+      context.fillStyle = backgroundGlow;
+
+      context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+      /**
+       * ----------------------------------------------
+       * Partikel
+       * ----------------------------------------------
+       */
+
+      particlesRef.current.forEach((particle) => {
+        if (!isSortingRef.current) {
+          particle.angle += particle.speed;
+
+          particle.wobble += particle.wobbleSpeed;
+        }
+
+        const categoryIndex = CATEGORIES.findIndex(
+          (category) => category.id === particle.category.id,
+        );
+
+        const targetAngle = getTargetAngle(categoryIndex);
+
+        /**
+         * Beim Sortieren werden die Partikel
+         * zu ihrer jeweiligen Kategorie gezogen.
+         */
+
+        if (isSortingRef.current) {
+          const angleDifference = Math.atan2(
+            Math.sin(targetAngle - particle.angle),
+            Math.cos(targetAngle - particle.angle),
+          );
+
+          particle.angle += angleDifference * sortEase * 0.035;
+
+          const targetRadius = 110 + (particle.radius % 80);
+
+          particle.radius = lerp(
+            particle.radius,
+            targetRadius,
+            sortEase * 0.035,
+          );
+        }
+
+        /**
+         * Leichtes Wobbeln.
+         */
+
+        const wobble =
+          Math.sin(particle.wobble + particle.phase) *
+          (isSortingRef.current ? lerp(5, 0, sortEase) : 9);
+
+        const radius = particle.radius + wobble;
+
+        const angle = particle.angle + vortexRotation;
+
+        const x = center + Math.cos(angle) * radius;
+
+        const y = center + Math.sin(angle) * radius;
+
+        /**
+         * Particle Glow
+         */
+
+        const glowRadius = particle.size * 5;
+
+        const glow = context.createRadialGradient(x, y, 0, x, y, glowRadius);
+
+        glow.addColorStop(0, `${particle.category.color}99`);
+
+        glow.addColorStop(1, `${particle.category.color}00`);
+
+        context.beginPath();
+
+        context.arc(x, y, glowRadius, 0, Math.PI * 2);
+
+        context.fillStyle = glow;
+
+        context.fill();
+
+        /**
+         * Particle
+         */
+
+        context.beginPath();
+
+        context.arc(x, y, particle.size, 0, Math.PI * 2);
+
+        context.globalAlpha = particle.alpha;
+
+        context.fillStyle = particle.category.color;
+
+        context.fill();
+
+        context.globalAlpha = 1;
+      });
+
+      /**
+       * ----------------------------------------------
+       * Zentrum
+       * ----------------------------------------------
+       */
+
+      const centerPulse = 1 + Math.sin(time * 0.002) * 0.035;
+
+      const centerRadius = 80 * centerPulse;
+
+      const centerGlow = context.createRadialGradient(
+        center,
+        center,
+        0,
+        center,
+        center,
+        centerRadius,
+      );
+
+      centerGlow.addColorStop(0, "rgba(255,255,255,0.22)");
+
+      centerGlow.addColorStop(0.2, "rgba(147,197,253,0.15)");
+
+      centerGlow.addColorStop(0.55, "rgba(59,130,246,0.08)");
+
+      centerGlow.addColorStop(1, "rgba(59,130,246,0)");
+
+      context.beginPath();
+
+      context.arc(center, center, centerRadius, 0, Math.PI * 2);
+
+      context.fillStyle = centerGlow;
+
+      context.fill();
+
+      /**
+       * Zentrum-Ringe
+       */
+
+      [45, 75, 110].forEach((radius, index) => {
+        context.beginPath();
+
+        context.arc(center, center, radius, 0, Math.PI * 2);
+
+        context.strokeStyle = `rgba(147,197,253,${0.09 - index * 0.02})`;
+
+        context.lineWidth = 1;
+
+        context.stroke();
+      });
+
+      /**
+       * ----------------------------------------------
+       * Kategorie Icons
+       * ----------------------------------------------
+       */
+
+      categoryNodesRef.current.forEach((node, index) => {
+        const targetAngle = getTargetAngle(index);
+
+        if (!isSortingRef.current) {
+          node.angle += node.speed;
+
+          node.wobble += node.wobbleSpeed;
+        }
+
+        /**
+         * Sortierung
+         */
+
+        if (isSortingRef.current) {
+          const angleDifference = Math.atan2(
+            Math.sin(targetAngle - node.angle),
+            Math.cos(targetAngle - node.angle),
+          );
+
+          node.angle += angleDifference * sortEase * 0.065;
+
+          node.radius = lerp(node.radius, node.targetRadius, sortEase * 0.065);
+
+          node.scale = lerp(node.scale, 1, sortEase * 0.06);
+        }
+
+        const wobble =
+          Math.sin(node.wobble + time * 0.001) *
+          (isSortingRef.current ? lerp(2, 0, sortEase) : 8);
+
+        const radius = node.radius + wobble;
+
+        const angle = node.angle + vortexRotation;
+
+        const x = center + Math.cos(angle) * radius;
+
+        const y = center + Math.sin(angle) * radius;
+
+        const icon = iconRefs.current[index];
+
+        if (!icon) {
+          return;
+        }
+
+        /**
+         * Impact
+         */
+
+        let impactScale = 1;
+
+        if (isSortingRef.current && sortProgress > 0.8) {
+          const impactProgress = clamp((sortProgress - 0.8) / 0.2, 0, 1);
+
+          const impactEase = easeOutCubic(impactProgress);
+
+          impactScale = 1 + Math.sin(impactEase * Math.PI) * 0.18;
+        }
+
+        const finalScale = node.scale * impactScale;
+
+        icon.style.transform = `
+            translate3d(
+              ${x}px,
+              ${y}px,
+              0
+            )
+            translate(-50%, -50%)
+            scale(${finalScale})
+            rotate(${angle * 8}rad)
+          `;
+
+        /**
+         * Während des Impacts kurz heller.
+         */
+
+        if (isSortingRef.current && sortProgress > 0.8) {
+          icon.style.boxShadow = `
+                0 0 35px
+                ${node.category.color}66
+              `;
+        } else {
+          icon.style.boxShadow = `
+                0 0 24px
+                ${node.category.color}33
+              `;
+        }
+      });
+
+      /**
+       * ----------------------------------------------
+       * Animation fortsetzen
+       * ----------------------------------------------
+       */
+
+      animationFrameRef.current = requestAnimationFrame(render);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(render);
+
+    return () => {
+      cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, []);
+
+  /**
+   * --------------------------------------------------
+   * Cleanup
+   * --------------------------------------------------
+   */
+
+  useEffect(() => {
+    return () => {
+      if (navigationTimeoutRef.current) {
+        clearTimeout(navigationTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  /**
+   * --------------------------------------------------
+   * Render
+   * --------------------------------------------------
+   */
+
+  return (
+    <motion.div
+      role="button"
+      tabIndex={0}
+      aria-label="Vortex öffnen"
+      onClick={handleActivate}
+      onKeyDown={handleKeyDown}
+      whileHover={{
+        scale: 1.025,
+      }}
+      whileTap={{
+        scale: 0.985,
+      }}
+      animate={
+        isSortingRef.current
+          ? {
+              scale: [1, 1.025, 1.09, 1],
+            }
+          : {
+              scale: 1,
+            }
+      }
+      transition={{
+        duration: isSortingRef.current ? 1.35 : 0.2,
+        ease: "easeInOut",
+      }}
+      className="
+        relative
+        mx-auto
+        aspect-square
+        w-full
+        max-w-[600px]
+        cursor-pointer
+        select-none
+        outline-none
+      "
+    >
+      {/* ------------------------------------------- */}
+      {/* Canvas                                      */}
+      {/* ------------------------------------------- */}
+
+      <canvas
+        ref={canvasRef}
+        className="
+          absolute
+          inset-0
+          h-full
+          w-full
+        "
+      />
+
+      {/* ------------------------------------------- */}
+      {/* Lucide Icons                                */}
+      {/* ------------------------------------------- */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+        "
+      >
+        {CATEGORIES.map((category, index) => {
+          const Icon = category.icon;
+
+          return (
+            <div
+              key={category.id}
+              ref={(element) => {
+                iconRefs.current[index] = element;
+              }}
+              className="
+                  absolute
+                  left-0
+                  top-0
+                  flex
+                  h-14
+                  w-14
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  border
+                  border-white/10
+                  bg-black/25
+                  backdrop-blur-md
+                  will-change-transform
+                "
+              style={{
+                color: category.color,
+                boxShadow: `
+                    0 0 24px
+                    ${category.color}33
+                  `,
+              }}
+            >
+              <Icon size={27} strokeWidth={1.8} />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ------------------------------------------- */}
+      {/* Center Core                                */}
+      {/* ------------------------------------------- */}
+
+      <motion.div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-1/2
+          flex
+          h-20
+          w-20
+          -translate-x-1/2
+          -translate-y-1/2
+          items-center
+          justify-center
+          rounded-full
+          border
+          border-white/10
+          bg-black/25
+          backdrop-blur-xl
+        "
+        animate={{
+          scale: [1, 1.035, 1],
+        }}
+        transition={{
+          duration: 2.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        <div
+          className="
+            h-4
+            w-4
+            rounded-full
+            bg-white
+            shadow-[0_0_30px_rgba(255,255,255,0.8)]
+          "
+        />
+      </motion.div>
+
+      {/* ------------------------------------------- */}
+      {/* Explore Label                              */}
+      {/* ------------------------------------------- */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          bottom-[13%]
+          left-1/2
+          -translate-x-1/2
+          whitespace-nowrap
+          text-[10px]
+          font-medium
+          uppercase
+          tracking-[0.35em]
+          text-white/35
+        "
+      >
+        Explore
+      </div>
+    </motion.div>
+  );
+}
