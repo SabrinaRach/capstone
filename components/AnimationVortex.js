@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useRouter } from "next/router";
 import { CATEGORIES } from "./categoryConfig";
@@ -33,6 +33,7 @@ export default function AnimationVortex() {
   const animationFrameRef = useRef(null);
   const navigationTimeoutRef = useRef(null);
 
+  const [isSorting, setIsSorting] = useState(false);
   const isSortingRef = useRef(false);
   const sortStartRef = useRef(0);
 
@@ -47,31 +48,50 @@ export default function AnimationVortex() {
    * aktualisiert.
    */
 
-  const categoryNodesRef = useRef(
-    CATEGORIES.map((category, index) => {
+  const categoryNodesRef = useRef([]);
+    useEffect(() => {
+  categoryNodesRef.current = CATEGORIES.map(
+    (category, index) => {
       const targetAngle =
-        -Math.PI / 2 + (Math.PI * 2 * index) / CATEGORIES.length;
+        -Math.PI / 2 +
+        (Math.PI * 2 * index) /
+          CATEGORIES.length;
 
       return {
         category,
 
-        angle: targetAngle + (Math.random() - 0.5) * Math.PI * 2,
+        angle:
+          targetAngle +
+          (Math.random() - 0.5) *
+            Math.PI *
+            2,
 
-        radius: 100 + Math.random() * 150,
+        radius:
+          100 +
+          Math.random() * 150,
 
         targetRadius: 210,
 
         speed:
-          (Math.random() > 0.5 ? 1 : -1) * (0.0015 + Math.random() * 0.003),
+          (Math.random() > 0.5 ? 1 : -1) *
+          (0.0015 + Math.random() * 0.003),
 
-        wobble: Math.random() * Math.PI * 2,
+        wobble:
+          Math.random() *
+          Math.PI *
+          2,
 
-        wobbleSpeed: 0.008 + Math.random() * 0.012,
+        wobbleSpeed:
+          0.008 +
+          Math.random() * 0.012,
 
-        scale: 0.7 + Math.random() * 0.2,
+        scale:
+          0.7 +
+          Math.random() * 0.2,
       };
-    }),
+    }
   );
+}, []);
 
   /**
    * --------------------------------------------------
@@ -79,31 +99,60 @@ export default function AnimationVortex() {
    * --------------------------------------------------
    */
 
-  const particlesRef = useRef(
-    Array.from({ length: PARTICLE_COUNT }, (_, index) => {
-      const category = CATEGORIES[index % CATEGORIES.length];
+  const particlesRef = useRef([]);
+  useEffect(() => {
+  particlesRef.current = Array.from(
+    {
+      length: PARTICLE_COUNT,
+    },
+    (_, index) => {
+      const category =
+        CATEGORIES[
+          index % CATEGORIES.length
+        ];
 
       return {
         category,
 
-        angle: Math.random() * Math.PI * 2,
+        angle:
+          Math.random() *
+          Math.PI *
+          2,
 
-        radius: 55 + Math.random() * 245,
+        radius:
+          55 +
+          Math.random() * 245,
 
-        speed: (Math.random() > 0.5 ? 1 : -1) * (0.003 + Math.random() * 0.009),
+        speed:
+          (Math.random() > 0.5 ? 1 : -1) *
+          (0.003 +
+            Math.random() * 0.009),
 
-        size: 1.2 + Math.random() * 2.4,
+        size:
+          1.2 +
+          Math.random() * 2.4,
 
-        alpha: 0.25 + Math.random() * 0.55,
+        alpha:
+          0.25 +
+          Math.random() * 0.55,
 
-        wobble: Math.random() * Math.PI * 2,
+        wobble:
+          Math.random() *
+          Math.PI *
+          2,
 
-        wobbleSpeed: 0.008 + Math.random() * 0.018,
+        wobbleSpeed:
+          0.008 +
+          Math.random() * 0.018,
 
-        phase: Math.random() * Math.PI * 2,
+        phase:
+          Math.random() *
+          Math.PI *
+          2,
       };
-    }),
+    }
   );
+}, []);
 
   /**
    * --------------------------------------------------
@@ -539,7 +588,7 @@ export default function AnimationVortex() {
         scale: 0.985,
       }}
       animate={
-        isSortingRef.current
+        isSorting
           ? {
               scale: [1, 1.025, 1.09, 1],
             }
@@ -548,7 +597,7 @@ export default function AnimationVortex() {
             }
       }
       transition={{
-        duration: isSortingRef.current ? 1.35 : 0.2,
+        duration: isSortingRef ? 1.35 : 0.2,
         ease: "easeInOut",
       }}
       className="
