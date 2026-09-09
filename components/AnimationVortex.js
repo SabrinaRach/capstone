@@ -456,10 +456,10 @@ export default function AnimationVortex() {
                   w-14
                   items-center
                   justify-center
-                  rounded-2xl
+                  rounded-full
                   border
-                  border-white/10
-                  bg-black/25
+                  border-white/20
+                  bg-black/10
                   backdrop-blur-md
                   will-change-transform
                 "
