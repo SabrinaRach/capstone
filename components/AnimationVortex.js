@@ -37,17 +37,6 @@ export default function AnimationVortex() {
   const isSortingRef = useRef(false);
   const sortStartRef = useRef(0);
 
-  /**
-   * --------------------------------------------------
-   * Kategorie-Nodes
-   * --------------------------------------------------
-   *
-   * Jeder Node entspricht einem der 7 Lucide-Icons.
-   * Die Icons selbst werden als React/SVG gerendert,
-   * ihre Position wird aber direkt im Animation-Loop
-   * aktualisiert.
-   */
-
   const categoryNodesRef = useRef([]);
   useEffect(() => {
     categoryNodesRef.current = VORTEX_CATEGORIES.map((category, index) => {
@@ -74,12 +63,6 @@ export default function AnimationVortex() {
       };
     });
   }, []);
-
-  /**
-   * --------------------------------------------------
-   * Partikel
-   * --------------------------------------------------
-   */
 
   const particlesRef = useRef([]);
   useEffect(() => {
@@ -114,21 +97,9 @@ export default function AnimationVortex() {
     );
   }, []);
 
-  /**
-   * --------------------------------------------------
-   * Zielwinkel
-   * --------------------------------------------------
-   */
-
   const getTargetAngle = (index) => {
     return -Math.PI / 2 + (Math.PI * 2 * index) / VORTEX_CATEGORIES.length;
   };
-
-  /**
-   * --------------------------------------------------
-   * Klick
-   * --------------------------------------------------
-   */
 
   const handleActivate = () => {
     if (isSortingRef.current) {
@@ -139,19 +110,10 @@ export default function AnimationVortex() {
     setIsSorting(true);
     sortStartRef.current = performance.now();
 
-    /**
-     * Navigation etwas nach dem Impact.
-     */
     navigationTimeoutRef.current = setTimeout(() => {
       router.push("/entries");
     }, NAVIGATION_DELAY);
   };
-
-  /**
-   * --------------------------------------------------
-   * Keyboard
-   * --------------------------------------------------
-   */
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -160,12 +122,6 @@ export default function AnimationVortex() {
       handleActivate();
     }
   };
-
-  /**
-   * --------------------------------------------------
-   * Canvas Animation
-   * --------------------------------------------------
-   */
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -194,20 +150,8 @@ export default function AnimationVortex() {
 
     const center = CANVAS_SIZE / 2;
 
-    /**
-     * ------------------------------------------------
-     * Render Loop
-     * ------------------------------------------------
-     */
-
     const render = (time) => {
       context.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-      /**
-       * ----------------------------------------------
-       * Sort Progress
-       * ----------------------------------------------
-       */
 
       let sortProgress = 0;
 
@@ -221,21 +165,9 @@ export default function AnimationVortex() {
 
       const sortEase = easeInOutCubic(sortProgress);
 
-      /**
-       * ----------------------------------------------
-       * Globale Vortex-Rotation
-       * ----------------------------------------------
-       */
-
       const vortexRotation = isSortingRef.current
         ? easeOutCubic(sortProgress) * Math.PI * 2
         : 0;
-
-      /**
-       * ----------------------------------------------
-       * Background Glow
-       * ----------------------------------------------
-       */
 
       const backgroundGlow = context.createRadialGradient(
         center,
@@ -258,23 +190,12 @@ export default function AnimationVortex() {
 
       context.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-      /**
-       * ----------------------------------------------
-       * Partikel
-       * ----------------------------------------------
-       */
-
       particlesRef.current.forEach((particle) => {
         const categoryIndex = CATEGORIES.findIndex(
           (category) => category.id === particle.category.id,
         );
 
         const targetAngle = getTargetAngle(categoryIndex);
-
-        /**
-         * Beim Sortieren werden die Partikel
-         * zu ihrer jeweiligen Kategorie gezogen.
-         */
 
         if (isSortingRef.current) {
           const angleDifference = Math.atan2(
@@ -293,10 +214,6 @@ export default function AnimationVortex() {
           );
         }
 
-        /**
-         * Leichtes Wobbeln.
-         */
-
         const wobble =
           Math.sin(particle.wobble + particle.phase) *
           (isSortingRef.current ? lerp(5, 0, sortEase) : 9);
@@ -308,10 +225,6 @@ export default function AnimationVortex() {
         const x = center + Math.cos(angle) * radius;
 
         const y = center + Math.sin(angle) * radius;
-
-        /**
-         * Particle Glow
-         */
 
         const glowRadius = particle.size * 5;
 
@@ -329,10 +242,6 @@ export default function AnimationVortex() {
 
         context.fill();
 
-        /**
-         * Particle
-         */
-
         context.beginPath();
 
         context.arc(x, y, particle.size, 0, Math.PI * 2);
@@ -345,12 +254,6 @@ export default function AnimationVortex() {
 
         context.globalAlpha = 1;
       });
-
-      /**
-       * ----------------------------------------------
-       * Zentrum
-       * ----------------------------------------------
-       */
 
       const centerPulse = 1 + Math.sin(time * 0.002) * 0.035;
 
@@ -381,10 +284,6 @@ export default function AnimationVortex() {
 
       context.fill();
 
-      /**
-       * Zentrum-Ringe
-       */
-
       [45, 75, 110].forEach((radius, index) => {
         context.beginPath();
 
@@ -397,17 +296,8 @@ export default function AnimationVortex() {
         context.stroke();
       });
 
-      /**
-       * ----------------------------------------------
-       * Kategorie Icons
-       * ----------------------------------------------
-       */
-
       categoryNodesRef.current.forEach((node, index) => {
         const targetAngle = getTargetAngle(index);
-        /**
-         * Sortierung
-         */
 
         if (isSortingRef.current) {
           const angleDifference = Math.atan2(
@@ -440,10 +330,6 @@ export default function AnimationVortex() {
           return;
         }
 
-        /**
-         * Impact
-         */
-
         let impactScale = 1;
 
         if (isSortingRef.current && sortProgress > 0.8) {
@@ -467,10 +353,6 @@ export default function AnimationVortex() {
             rotate(${angle * 8}rad)
           `;
 
-        /**
-         * Während des Impacts kurz heller.
-         */
-
         if (isSortingRef.current && sortProgress > 0.8) {
           icon.style.boxShadow = `
                 0 0 35px
@@ -484,12 +366,6 @@ export default function AnimationVortex() {
         }
       });
 
-      /**
-       * ----------------------------------------------
-       * Animation fortsetzen
-       * ----------------------------------------------
-       */
-
       animationFrameRef.current = requestAnimationFrame(render);
     };
 
@@ -500,12 +376,6 @@ export default function AnimationVortex() {
     };
   }, []);
 
-  /**
-   * --------------------------------------------------
-   * Cleanup
-   * --------------------------------------------------
-   */
-
   useEffect(() => {
     return () => {
       if (navigationTimeoutRef.current) {
@@ -513,12 +383,6 @@ export default function AnimationVortex() {
       }
     };
   }, []);
-
-  /**
-   * --------------------------------------------------
-   * Render
-   * --------------------------------------------------
-   */
 
   return (
     <motion.div
@@ -557,10 +421,6 @@ export default function AnimationVortex() {
         outline-none
       "
     >
-      {/* ------------------------------------------- */}
-      {/* Canvas                                      */}
-      {/* ------------------------------------------- */}
-
       <canvas
         ref={canvasRef}
         className="
@@ -570,10 +430,6 @@ export default function AnimationVortex() {
           w-full
         "
       />
-
-      {/* ------------------------------------------- */}
-      {/* Lucide Icons                                */}
-      {/* ------------------------------------------- */}
 
       <div
         className="
@@ -619,28 +475,6 @@ export default function AnimationVortex() {
             </div>
           );
         })}
-      </div>
-
-      {/* ------------------------------------------- */}
-      {/* Explore Label                              */}
-      {/* ------------------------------------------- */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          bottom-[13%]
-          left-1/2
-          -translate-x-1/2
-          whitespace-nowrap
-          text-[10px]
-          font-medium
-          uppercase
-          tracking-[0.35em]
-          text-white/35
-        "
-      >
-        Explore
       </div>
     </motion.div>
   );
