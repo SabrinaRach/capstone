@@ -78,7 +78,7 @@ export default function AnimationVortex() {
 
           angle: Math.random() * Math.PI * 2,
 
-          radius: 55 + Math.random() * 245,
+          radius: 55 + Math.random() * 215,
 
           speed:
             (Math.random() > 0.5 ? 1 : -1) * (0.003 + Math.random() * 0.009),
