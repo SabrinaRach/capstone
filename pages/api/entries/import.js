@@ -52,14 +52,7 @@ const extractionTool = {
           "The original website URL. Always return the provided URL.",
       },
     },
-    required: [
-      "title",
-      "description",
-      "items",
-      "steps",
-      "notes",
-      "source",
-    ],
+    required: ["title", "description", "items", "steps", "notes", "source"],
   },
 };
 
@@ -79,14 +72,9 @@ function cleanHtml(html) {
   $("script, style, noscript, iframe, svg").remove();
 
   const mainContent =
-    $("article").first().text() ||
-    $("main").first().text() ||
-    $("body").text();
+    $("article").first().text() || $("main").first().text() || $("body").text();
 
-  return mainContent
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, MAX_HTML_LENGTH);
+  return mainContent.replace(/\s+/g, " ").trim().slice(0, MAX_HTML_LENGTH);
 }
 
 export default async function handler(req, res) {
@@ -114,8 +102,7 @@ export default async function handler(req, res) {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(FETCH_TIMEOUT),
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (compatible; EntryImporter/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; EntryImporter/1.0)",
       },
     });
 
@@ -137,7 +124,8 @@ export default async function handler(req, res) {
 
     if (!content) {
       return res.status(400).json({
-        message: "No readable content was found on the website.",
+        message:
+          "No readable content was found on the website. Please fill out manually.",
       });
     }
 
@@ -184,9 +172,7 @@ ${content}
       ],
     });
 
-    const toolUse = message.content.find(
-      (block) => block.type === "tool_use"
-    );
+    const toolUse = message.content.find((block) => block.type === "tool_use");
 
     if (!toolUse) {
       throw new Error("Claude did not return structured extraction data.");
@@ -200,8 +186,7 @@ ${content}
     console.error("Entry import error:", error);
 
     return res.status(500).json({
-      message:
-        "The website could not be processed. Please try again.",
+      message: "The website could not be processed. Please try again.",
     });
   }
 }
