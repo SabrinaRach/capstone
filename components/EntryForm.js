@@ -35,6 +35,8 @@ export default function EntryForm({
   const [existingImages, setExistingImages] = useState(
     initialData?.images || [],
   );
+  const [importUrl, setImportUrl] = useState("");
+  const [isImporting, setIsImporting] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -51,6 +53,66 @@ export default function EntryForm({
 
     if (name === "category" && onCategoryChange) {
       onCategoryChange(value);
+    }
+  }
+
+  async function handleImport() {
+    if (!importUrl.trim()) {
+      setError("Please enter a website URL.");
+      return;
+    }
+
+    const hasExistingData =
+      formData.title.trim() ||
+      formData.description.trim() ||
+      formData.items.trim() ||
+      formData.steps.trim() ||
+      formData.notes.trim() ||
+      formData.source.trim();
+
+    if (hasExistingData) {
+      const confirmed = window.confirm(
+        "Importing this website will replace the existing entry fields. Do you want to continue?",
+      );
+
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    setError("");
+    setIsImporting(true);
+
+    try {
+      const response = await fetch("/api/entries/import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: importUrl.trim(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Website import failed.");
+      }
+
+      setFormData((currentData) => ({
+        ...currentData,
+        title: result.data.title || "",
+        description: result.data.description || "",
+        items: (result.data.items || []).join("\n"),
+        steps: (result.data.steps || []).join("\n"),
+        notes: result.data.notes || "",
+        source: importUrl.trim(),
+      }));
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsImporting(false);
     }
   }
 
@@ -155,6 +217,37 @@ export default function EntryForm({
           {error}
         </div>
       )}
+
+      <div className="rounded-lg border border-foreground p-4">
+        <label htmlFor="importUrl" className="block text-sm font-medium">
+          Import from website
+        </label>
+
+        <p className="mt-1 text-sm text-secondary-700">
+          Enter a website URL and AI will extract the relevant information into
+          the fields below.
+        </p>
+
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <input
+            id="importUrl"
+            type="url"
+            value={importUrl}
+            onChange={(event) => setImportUrl(event.target.value)}
+            placeholder="https://example.com/..."
+            className="w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          />
+
+          <button
+            type="button"
+            onClick={handleImport}
+            disabled={isImporting}
+            className="rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isImporting ? "Importing..." : "Import with AI"}
+          </button>
+        </div>
+      </div>
 
       <div>
         <label htmlFor="title" className="block text-sm font-medium">
