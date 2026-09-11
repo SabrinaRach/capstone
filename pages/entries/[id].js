@@ -255,7 +255,14 @@ export default function EntryPage({ entry }) {
 
         {entry.source && (
           <EntrySection title="Source">
-            <p className="whitespace-pre-line">{entry.source}</p>
+            <a
+              href={entry.source}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all underline hover:no-underline text-primary-500"
+            >
+              {entry.source}
+            </a>
           </EntrySection>
         )}
       </div>

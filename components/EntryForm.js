@@ -37,6 +37,7 @@ export default function EntryForm({
   );
   const [importUrl, setImportUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
+  const [showImportConfirmation, setShowImportConfirmation] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -70,15 +71,12 @@ export default function EntryForm({
       formData.notes.trim() ||
       formData.source.trim();
 
-    if (hasExistingData) {
-      const confirmed = window.confirm(
-        "Importing this website will replace the existing entry fields. Do you want to continue?",
-      );
-
-      if (!confirmed) {
-        return;
-      }
+    if (hasExistingData && !showImportConfirmation) {
+      setShowImportConfirmation(true);
+      return;
     }
+
+    setShowImportConfirmation(false);
 
     setError("");
     setIsImporting(true);
@@ -247,6 +245,35 @@ export default function EntryForm({
             {isImporting ? "Importing..." : "Import with AI"}
           </button>
         </div>
+
+        {showImportConfirmation && (
+          <div className="mt-4 rounded-lg border border-accent-500 bg-background p-4">
+            <p className="text-sm font-medium text-accent-500">
+              This will replace the existing entry fields with the imported
+              information. Do you want to continue?
+            </p>
+
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={handleImport}
+                disabled={isImporting}
+                className="rounded-full border border-foreground bg-primary-500 px-5 py-2 font-medium text-background hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isImporting ? "Importing..." : "Continue"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowImportConfirmation(false)}
+                disabled={isImporting}
+                className="rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div>
