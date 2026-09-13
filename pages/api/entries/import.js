@@ -69,7 +69,12 @@ function isValidHttpUrl(value) {
 function cleanHtml(html) {
   const $ = cheerio.load(html);
 
-  return $.text().replace(/\s+/g, " ").trim().slice(0, MAX_HTML_LENGTH);
+  $("script, style, noscript, iframe, svg").remove();
+
+  const mainContent =
+    $("main").first().text() || $("article").first().text() || $("body").text();
+
+  return mainContent.replace(/\s+/g, " ").trim().slice(0, MAX_HTML_LENGTH);
 }
 
 export default async function handler(req, res) {
@@ -136,6 +141,7 @@ Rules:
 - Never invent or guess information.
 - Only use the predefined fields.
 - Ignore navigation, advertisements, cookie notices, comments, unrelated links, and other irrelevant content.
+- For the steps field, return each step without its original numbering.
 - If a field cannot be identified, return an empty string or empty array.
 - Do not determine or return a category.
 - Preserve the meaning of the original information.
