@@ -69,12 +69,7 @@ function isValidHttpUrl(value) {
 function cleanHtml(html) {
   const $ = cheerio.load(html);
 
-  $("script, style, noscript, iframe, svg").remove();
-
-  const mainContent =
-    $("article").first().text() || $("main").first().text() || $("body").text();
-
-  return mainContent.replace(/\s+/g, " ").trim().slice(0, MAX_HTML_LENGTH);
+  return $.text().replace(/\s+/g, " ").trim().slice(0, MAX_HTML_LENGTH);
 }
 
 export default async function handler(req, res) {

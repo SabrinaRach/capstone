@@ -76,10 +76,7 @@ export default async function handler(req, res) {
     $or: [
       { slug },
       {
-        name: {
-          $regex: `^${trimmedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-          $options: "i",
-        },
+        name: trimmedName,
       },
     ],
   });
