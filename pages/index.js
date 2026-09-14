@@ -9,7 +9,7 @@ export default function Home() {
     <main className="flex min-h-screen w-full items-center justify-center bg-background dark:bg-foreground sm:items-start">
       <div className="w-full max-w-[600px] px-4 sm:px-6">
         <AnimationVortex onAnimationComplete={() => setShowLogin(true)} />
-        {showLogin && <Login />}
+        {showLogin && (<div className="fixed inset-x-0 bottom-8 z-10 flex justify-center px-4"> <Login /> </div>)}
       </div>
     </main>
   );
