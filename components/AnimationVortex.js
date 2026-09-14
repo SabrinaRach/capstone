@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { useRouter } from "next/router";
 import { CATEGORIES } from "./categoryConfig";
 
 const CANVAS_SIZE = 600;
 const PARTICLE_COUNT = 120;
 
 const SORT_DURATION = 1050;
-const NAVIGATION_DELAY = 1550;
 const VORTEX_CATEGORIES = [...CATEGORIES, ...CATEGORIES];
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -24,18 +22,21 @@ const easeInOutCubic = (t) => {
 
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
-export default function AnimationVortex() {
-  const router = useRouter();
-
+export default function AnimationVortex({ onAnimationComplete }) {
   const canvasRef = useRef(null);
   const iconRefs = useRef([]);
 
   const animationFrameRef = useRef(null);
-  const navigationTimeoutRef = useRef(null);
 
   const [isSorting, setIsSorting] = useState(false);
   const isSortingRef = useRef(false);
   const sortStartRef = useRef(0);
+  const animationCompleteRef = useRef(false);
+  const onAnimationCompleteRef = useRef(onAnimationComplete);
+
+  useEffect(() => {
+    onAnimationCompleteRef.current = onAnimationComplete;
+  }, [onAnimationComplete]);
 
   const categoryNodesRef = useRef([]);
   useEffect(() => {
@@ -109,10 +110,6 @@ export default function AnimationVortex() {
     isSortingRef.current = true;
     setIsSorting(true);
     sortStartRef.current = performance.now();
-
-    navigationTimeoutRef.current = setTimeout(() => {
-      router.push("/entries");
-    }, NAVIGATION_DELAY);
   };
 
   const handleKeyDown = (event) => {
@@ -161,6 +158,15 @@ export default function AnimationVortex() {
           0,
           1,
         );
+      }
+
+      if (
+        isSortingRef.current &&
+        sortProgress >= 1 &&
+        !animationCompleteRef.current
+      ) {
+        animationCompleteRef.current = true;
+        onAnimationCompleteRef.current?.();
       }
 
       const sortEase = easeInOutCubic(sortProgress);
@@ -373,14 +379,6 @@ export default function AnimationVortex() {
 
     return () => {
       cancelAnimationFrame(animationFrameRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (navigationTimeoutRef.current) {
-        clearTimeout(navigationTimeoutRef.current);
-      }
     };
   }, []);
 
