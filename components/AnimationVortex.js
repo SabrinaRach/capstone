@@ -408,16 +408,16 @@ export default function AnimationVortex({ onAnimationComplete }) {
         duration: isSorting ? 1.35 : 0.2,
         ease: "easeInOut",
       }}
-      className="
-        relative
-        mx-auto
-        aspect-square
-        w-full
-        max-w-[600px]
-        cursor-pointer
-        select-none
-        outline-none
-      "
+      className={`
+    relative
+    mx-auto
+    aspect-square
+    w-full
+    max-w-[600px]
+    select-none
+    outline-none
+    ${isSorting ? "pointer-events-none" : "cursor-pointer"}
+  `}
     >
       <canvas
         ref={canvasRef}

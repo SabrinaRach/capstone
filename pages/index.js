@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AnimationVortex from "@/components/AnimationVortex";
-import Login from "@components/Login";
+import Login from "@/components/Login";
 
 export default function Home() {
   const [showLogin, setShowLogin] = useState(false);
