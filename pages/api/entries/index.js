@@ -69,7 +69,10 @@ export default async function handler(req, res) {
       .json({ message: "You can upload a maximum of 5 images." });
   }
 
-  const existingCategory = await Category.findById(category);
+  const existingCategory = await Category.findOne({
+    _id: category,
+    $or: [{ owner: userId }, { isSystem: true }],
+  });
 
   if (!existingCategory) {
     return res.status(400).json({
