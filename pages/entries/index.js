@@ -5,6 +5,9 @@ import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
 import NewEntryButton from "../../components/NewEntryButton.js";
 import SearchBar from "../../components/SearchBar.js";
+import { getServerSession } from "next-auth/next";
+import { getToken } from "next-auth/jwt";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function EntriesPage({ entries }) {
   const { status } = useSession();
@@ -92,12 +95,26 @@ export default function EntriesPage({ entries }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const token = await getToken({ req: context.req });
+  const userId = token?.sub;
+
   await dbConnect();
 
   await import("../../db/models/Category.js");
 
-  const entries = await Entry.find()
+  const entries = await Entry.find({ owner: userId })
     .populate("category")
     .sort({ createdAt: -1 })
     .lean();
