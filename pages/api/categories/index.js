@@ -89,13 +89,20 @@ export default async function handler(req, res) {
   }
 
   const existingCategory = await Category.findOne({
-    $or: [
-      { slug },
+    $and: [
       {
-        name: {
-          $regex: `^${trimmedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-          $options: "i",
-        },
+        $or: [
+          { slug },
+          {
+            name: {
+              $regex: `^${trimmedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+              $options: "i",
+            },
+          },
+        ],
+      },
+      {
+        $or: [{ owner: userId }, { isSystem: true }],
       },
     ],
   });
