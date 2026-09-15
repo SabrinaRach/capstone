@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import CategoryCard from "../../components/CategoryCard";
 import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
@@ -6,7 +7,20 @@ import CategoryForm from "../../components/CategoryForm.js";
 import NewEntryButton from "../../components/NewEntryButton.js";
 
 export default function CategoriesPage({ categories }) {
+  const { status } = useSession();
   const [categoryList, setCategoryList] = useState(categories);
+
+  if (status !== "authenticated") {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-background px-6">
+      <div className="w-full max-w-md rounded-2xl border border-secondary-100/80 bg-background/80 p-8 text-center shadow-xl backdrop-blur-md">
+      <h2 className="mt-2 text-sm text-accent-500">
+        Access denied! Please log in first.
+      </h2>
+      </div>
+      </main>
+    );
+  }
 
   function handleCreated(category) {
     setCategoryList((currentCategories) => [...currentCategories, category]);
