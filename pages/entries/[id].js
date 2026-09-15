@@ -8,6 +8,9 @@ import EntrySection from "../../components/EntrySection.js";
 import EntryList from "../../components/EntryList.js";
 import EntrySteps from "../../components/EntrySteps.js";
 import EntryModal from "../../components/EntryModal.js";
+import { getServerSession } from "next-auth/next";
+import { getToken } from "next-auth/jwt";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function EntryPage({ entry }) {
   const router = useRouter();
@@ -275,12 +278,29 @@ export default function EntryPage({ entry }) {
   );
 }
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, req, res }) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const token = await getToken({ req });
+  const userId = token?.sub;
+
   await dbConnect();
 
   await import("../../db/models/Category.js");
 
-  const entry = await Entry.findById(params.id).populate("category").lean();
+  const entry = await Entry.findOne({
+    _id: params.id,
+    owner: userId,
+  }).populate("category").lean();
 
   if (!entry) {
     return {
