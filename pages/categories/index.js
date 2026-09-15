@@ -5,6 +5,9 @@ import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
 import CategoryForm from "../../components/CategoryForm.js";
 import NewEntryButton from "../../components/NewEntryButton.js";
+import { getServerSession } from "next-auth/next";
+import { getToken } from "next-auth/jwt";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function CategoriesPage({ categories }) {
   const { status } = useSession();
@@ -13,11 +16,11 @@ export default function CategoriesPage({ categories }) {
   if (status !== "authenticated") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-background px-6">
-      <div className="w-full max-w-md rounded-2xl border border-secondary-100/80 bg-background/80 p-8 text-center shadow-xl backdrop-blur-md">
-      <h2 className="mt-2 text-sm text-accent-500">
-        Access denied! Please log in first.
-      </h2>
-      </div>
+        <div className="w-full max-w-md rounded-2xl border border-secondary-100/80 bg-background/80 p-8 text-center shadow-xl backdrop-blur-md">
+          <h2 className="mt-2 text-sm text-accent-500">
+            Access denied! Please log in first.
+          </h2>
+        </div>
       </main>
     );
   }
@@ -81,10 +84,26 @@ export default function CategoriesPage({ categories }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const token = await getToken({ req: context.req });
+  const userId = token?.sub;
+
   await dbConnect();
 
-  const categories = await Category.find()
+  const categories = await Category.find({
+    $or: [{ owner: userId }, { isSystem: true }],
+  })
     .sort({ isSystem: -1, name: 1 })
     .lean();
 
