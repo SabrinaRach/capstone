@@ -1,6 +1,8 @@
 import dbConnect from "../../../db/connect.js";
 import Category from "../../../db/models/Category.js";
 import Entry from "../../../db/models/Entry.js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 function createSlug(name) {
   return name
@@ -15,6 +17,14 @@ function createSlug(name) {
 }
 
 export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return res.status(401).json({
+      message: "Not authorized",
+    });
+  }
+
   await dbConnect();
 
   const { id } = req.query;

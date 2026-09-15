@@ -1,8 +1,18 @@
 import dbConnect from "../../../db/connect.js";
 import Entry from "../../../db/models/Entry.js";
 import Category from "../../../db/models/Category.js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return res.status(401).json({
+      message: "Not authorized",
+    });
+  }
+
   await dbConnect();
 
   if (req.method !== "POST") {
