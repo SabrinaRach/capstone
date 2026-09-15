@@ -12,10 +12,9 @@ export default function LogoutButton() {
   async function handleLogout() {
     await signOut({ redirect: false });
 
-    router.push({
-      pathname: "/",
-      query: { loggedOut: "true" },
-    });
+    sessionStorage.setItem("loggedOut", "true");
+
+    router.push("/");
   }
 
   return (

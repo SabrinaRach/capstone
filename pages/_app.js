@@ -16,17 +16,23 @@ export default function App({
   const [showLogoutToast, setShowLogoutToast] = useState(false);
 
   useEffect(() => {
-    if (router.query.loggedOut === "true") {
-      setShowLogoutToast(true);
+    const handleRouteChange = () => {
+      if (sessionStorage.getItem("loggedOut") === "true") {
+        sessionStorage.removeItem("loggedOut");
+        setShowLogoutToast(true);
 
-      const timer = setTimeout(() => {
-        setShowLogoutToast(false);
-        router.replace("/", undefined, { shallow: true });
-      }, 3000);
+        setTimeout(() => {
+          setShowLogoutToast(false);
+        }, 3000);
+      }
+    };
 
-      return () => clearTimeout(timer);
-    }
-  }, [router.query.loggedOut]);
+    router.events.on("routeChangeComplete", handleRouteChange);
+
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
 
   return (
     <SessionProvider session={session}>
