@@ -3,6 +3,7 @@ import Entry from "../../../db/models/Entry.js";
 import Category from "../../../db/models/Category.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
+import { getToken } from "next-auth/jwt";
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
@@ -13,7 +14,16 @@ export default async function handler(req, res) {
     });
   }
 
+  const token = await getToken({ req });
+  const userId = token?.sub;
+
   await dbConnect();
+
+  if (req.method === "GET") {
+    const entries = await Entry.find({ owner: userId }).populate("category");
+
+    return res.status(200).json(entries);
+  }
 
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -71,6 +81,7 @@ export default async function handler(req, res) {
     notes: notes?.trim() || "",
     source: source?.trim() || "",
     images: images || [],
+    owner: userId,
   });
 
   return res.status(201).json(entry);

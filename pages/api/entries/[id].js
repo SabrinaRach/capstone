@@ -4,6 +4,7 @@ import Entry from "../../../db/models/Entry.js";
 import Category from "../../../db/models/Category.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
+import { getToken } from "next-auth/jwt";
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
@@ -13,6 +14,9 @@ export default async function handler(req, res) {
       message: "Not authorized",
     });
   }
+
+  const token = await getToken({ req });
+  const userId = token?.sub;
 
   await dbConnect();
 
@@ -24,7 +28,10 @@ export default async function handler(req, res) {
     });
   }
 
-  const entry = await Entry.findById(id);
+  const entry = await Entry.findOne({
+    _id: id,
+    owner: userId,
+  });
 
   if (!entry) {
     return res.status(404).json({
@@ -76,7 +83,10 @@ export default async function handler(req, res) {
       });
     }
 
-    const existingCategory = await Category.findById(category);
+    const existingCategory = await Category.findOne({
+      _id: category,
+      $or: [{ owner: userId }, { isSystem: true }],
+    });
 
     if (!existingCategory) {
       return res.status(400).json({

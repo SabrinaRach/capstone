@@ -3,6 +3,7 @@ import Category from "../../../db/models/Category.js";
 import Entry from "../../../db/models/Entry.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
+import { getToken } from "next-auth/jwt";
 
 function createSlug(name) {
   return name
@@ -25,6 +26,9 @@ export default async function handler(req, res) {
     });
   }
 
+  const token = await getToken({ req });
+  const userId = token?.sub;
+
   await dbConnect();
 
   const { id } = req.query;
@@ -35,7 +39,10 @@ export default async function handler(req, res) {
     });
   }
 
-  const category = await Category.findById(id);
+  const category = await Category.findOne({
+    _id: id,
+    $or: [{ owner: userId }, { isSystem: true }],
+  });
 
   if (!category) {
     return res.status(404).json({
@@ -124,7 +131,7 @@ export default async function handler(req, res) {
     }
 
     await Entry.updateMany(
-      { category: category._id },
+      { category: category._id, owner: userId },
       { $set: { category: otherCategory._id } },
     );
 
