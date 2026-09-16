@@ -102,6 +102,7 @@ export default function EntryForm({
         ...currentData,
         title: result.data.title || "",
         description: result.data.description || "",
+        category: result.data.category || currentData.category,
         items: (result.data.items || []).join("\n"),
         steps: (result.data.steps || []).join("\n"),
         notes: result.data.notes || "",

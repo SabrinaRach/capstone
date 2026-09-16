@@ -1,5 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import * as cheerio from "cheerio";
+import Category from "../../../db/models/Category.js";
+import dbConnect from "../../../db/connect.js";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -8,53 +10,69 @@ const anthropic = new Anthropic({
 const MAX_HTML_LENGTH = 50_000;
 const FETCH_TIMEOUT = 10_000;
 
-const extractionTool = {
-  name: "extract_entry",
-  description:
-    "Extract only information from the website that belongs to the predefined entry fields.",
-  input_schema: {
-    type: "object",
-    properties: {
-      title: {
-        type: "string",
-        description:
-          "The title of the entry. Return an empty string if it cannot be identified.",
-      },
-      description: {
-        type: "string",
-        description:
-          "A relevant description or summary. Return an empty string if none can be identified.",
-      },
-      items: {
-        type: "array",
-        items: {
+function createExtractionTool(categories) {
+  return {
+    name: "extract_entry",
+    description:
+      "Extract only information from the website that belongs to the predefined entry fields.",
+    input_schema: {
+      type: "object",
+      properties: {
+        title: {
           type: "string",
+          description:
+            "The title of the entry. Return an empty string if it cannot be identified.",
         },
-        description:
-          "The relevant items, ingredients, materials, components, or things needed for the entry. Return an empty array if none can be identified.",
-      },
-      steps: {
-        type: "array",
-        items: {
+        description: {
           type: "string",
+          description:
+            "A relevant description or summary. Return an empty string if none can be identified.",
         },
-        description:
-          "The relevant instructions or steps. Return an empty array if none can be identified.",
+        category: {
+          type: "string",
+          enum: categories.map((category) => category._id.toString()),
+          description:
+            "The ID of the default category that best matches the website content.",
+        },
+        items: {
+          type: "array",
+          items: {
+            type: "string",
+          },
+          description:
+            "The relevant items, ingredients, materials, components, or things needed for the entry. Return an empty array if none can be identified.",
+        },
+        steps: {
+          type: "array",
+          items: {
+            type: "string",
+          },
+          description:
+            "The relevant instructions or steps. Return an empty array if none can be identified.",
+        },
+        notes: {
+          type: "string",
+          description:
+            "Additional relevant notes that do not belong to the other fields. Return an empty string if none can be identified.",
+        },
+        source: {
+          type: "string",
+          description:
+            "The original website URL. Always return the provided URL.",
+        },
       },
-      notes: {
-        type: "string",
-        description:
-          "Additional relevant notes that do not belong to the other fields. Return an empty string if none can be identified.",
-      },
-      source: {
-        type: "string",
-        description:
-          "The original website URL. Always return the provided URL.",
-      },
+      required: [
+        "title",
+        "description",
+        "category",
+        "items",
+        "steps",
+        "notes",
+        "source",
+      ],
     },
-    required: ["title", "description", "items", "steps", "notes", "source"],
-  },
-};
+  };
+}
 
 function isValidHttpUrl(value) {
   try {
@@ -129,6 +147,25 @@ export default async function handler(req, res) {
       });
     }
 
+    await dbConnect();
+
+    const categories = await Category.find({ isSystem: true })
+      .select("_id name slug")
+      .lean();
+
+    if (categories.length === 0) {
+      return res.status(500).json({
+        message: "No default categories are available.",
+      });
+    }
+
+    const categoryOptions = categories
+      .map(
+        (category) =>
+          `ID: ${category._id}\nName: ${category.name}\nSlug: ${category.slug}`,
+      )
+      .join("\n\n");
+
     const message = await anthropic.messages.create({
       model: "claude-sonnet-5",
       max_tokens: 2000,
@@ -143,12 +180,15 @@ Rules:
 - Ignore navigation, advertisements, cookie notices, comments, unrelated links, and other irrelevant content.
 - For the steps field, return each step without its original numbering.
 - If a field cannot be identified, return an empty string or empty array.
-- Do not determine or return a category.
+- Choose the single default category that best matches the website content.
+- Only choose from the provided category IDs.
+- Never invent a category.
+- Return the category ID, not the category name.
 - Preserve the meaning of the original information.
 - The source field must contain the original URL provided by the application.
       `,
 
-      tools: [extractionTool],
+      tools: [createExtractionTool(categories)],
 
       tool_choice: {
         type: "tool",
@@ -164,6 +204,10 @@ Extract the relevant entry information from this website.
 <source_url>
 ${url}
 </source_url>
+
+<available_categories>
+${categoryOptions}
+</available_categories>
 
 <website_content>
 ${content}
