@@ -6,7 +6,6 @@ import Entry from "../../db/models/Entry.js";
 import NewEntryButton from "../../components/NewEntryButton.js";
 import SearchBar from "../../components/SearchBar.js";
 import { getServerSession } from "next-auth/next";
-import { getToken } from "next-auth/jwt";
 import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function EntriesPage({ entries }) {
@@ -107,8 +106,7 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const token = await getToken({ req: context.req });
-  const userId = token?.sub;
+  const userId = session.user.id;
 
   await dbConnect();
 

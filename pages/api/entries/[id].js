@@ -4,7 +4,6 @@ import Entry from "../../../db/models/Entry.js";
 import Category from "../../../db/models/Category.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
-import { getToken } from "next-auth/jwt";
 
 export default async function handler(req, res) {
   const session = await getServerSession(req, res, authOptions);
@@ -15,8 +14,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const token = await getToken({ req });
-  const userId = token?.sub;
+  const userId = session.user.id;
 
   await dbConnect();
 

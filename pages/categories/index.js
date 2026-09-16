@@ -6,7 +6,6 @@ import Category from "../../db/models/Category.js";
 import CategoryForm from "../../components/CategoryForm.js";
 import NewEntryButton from "../../components/NewEntryButton.js";
 import { getServerSession } from "next-auth/next";
-import { getToken } from "next-auth/jwt";
 import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function CategoriesPage({ categories }) {
@@ -96,8 +95,7 @@ export async function getServerSideProps(context) {
     };
   }
 
-  const token = await getToken({ req: context.req });
-  const userId = token?.sub;
+  const userId = session.user.id;
 
   await dbConnect();
 

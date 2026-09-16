@@ -9,7 +9,6 @@ import EntryList from "../../components/EntryList.js";
 import EntrySteps from "../../components/EntrySteps.js";
 import EntryModal from "../../components/EntryModal.js";
 import { getServerSession } from "next-auth/next";
-import { getToken } from "next-auth/jwt";
 import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function EntryPage({ entry }) {
@@ -290,8 +289,7 @@ export async function getServerSideProps({ params, req, res }) {
     };
   }
 
-  const token = await getToken({ req });
-  const userId = token?.sub;
+  const userId = session.user.id;
 
   await dbConnect();
 
@@ -300,7 +298,9 @@ export async function getServerSideProps({ params, req, res }) {
   const entry = await Entry.findOne({
     _id: params.id,
     owner: userId,
-  }).populate("category").lean();
+  })
+    .populate("category")
+    .lean();
 
   if (!entry) {
     return {

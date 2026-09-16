@@ -3,7 +3,6 @@ import Category from "../../../db/models/Category.js";
 import Entry from "../../../db/models/Entry.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
-import { getToken } from "next-auth/jwt";
 
 function createSlug(name) {
   return name
@@ -26,8 +25,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const token = await getToken({ req });
-  const userId = token?.sub;
+  const userId = session.user.id;
 
   await dbConnect();
 
