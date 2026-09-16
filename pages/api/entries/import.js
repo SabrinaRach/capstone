@@ -130,6 +130,13 @@ export default async function handler(req, res) {
       });
     }
 
+    const contentLength = response.headers.get("content-length");
+    if (contentLength && Number(contentLength) > MAX_HTML_LENGTH) {
+      return res.status(400).json({
+        message: "The website is too large.",
+      });
+    }
+
     const html = await response.text();
 
     if (!html) {
