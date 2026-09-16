@@ -69,7 +69,7 @@ function isValidHttpUrl(value) {
 function cleanHtml(html) {
   const $ = cheerio.load(html);
 
-  $("script, style, noscript, iframe, svg").remove();
+  $("style, noscript, iframe, svg").remove();
 
   const mainContent =
     $("main").first().text() || $("article").first().text() || $("body").text();
