@@ -11,9 +11,7 @@ export default function LogoutButton() {
 
   async function handleLogout() {
     await signOut({ redirect: false });
-
     sessionStorage.setItem("loggedOut", "true");
-
     router.push("/");
   }
 

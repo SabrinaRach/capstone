@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
 import NewEntryButton from "../../components/NewEntryButton.js";
@@ -9,20 +8,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function EntriesPage({ entries }) {
-  const { status } = useSession();
   const [searchTerm, setSearchTerm] = useState("");
-
-  if (status !== "authenticated") {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-6">
-        <div className="w-full max-w-md rounded-2xl border border-secondary-100/80 bg-background/80 p-8 text-center shadow-xl backdrop-blur-md">
-          <h2 className="mt-2 text-sm text-accent-500">
-            Access denied! Please log in first.
-          </h2>
-        </div>
-      </main>
-    );
-  }
 
   const filteredEntries = entries.filter((entry) => {
     const search = searchTerm.trim().toLowerCase();

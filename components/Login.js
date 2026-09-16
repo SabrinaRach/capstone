@@ -5,7 +5,7 @@ export default function Login() {
   const router = useRouter();
 
   async function handleLogin() {
-    const result = await signIn(undefined, {
+    const result = await signIn("github", {
       callbackUrl: "/entries",
     });
   }
