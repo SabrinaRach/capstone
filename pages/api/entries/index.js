@@ -17,11 +17,6 @@ export default async function handler(req, res) {
   const token = await getToken({ req });
   const userId = token?.sub;
 
-  console.log("AUTH DEBUG", {
-    sessionUser: session.user,
-    tokenSub: token?.sub,
-  });
-
   await dbConnect();
 
   if (req.method === "GET") {
