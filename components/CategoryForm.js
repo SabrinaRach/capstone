@@ -53,7 +53,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl border border-border bg-white p-6"
+      className="rounded-xl border border-border bg-background p-6"
     >
       <h2 className="text-xl font-semibold">Create category</h2>
 
@@ -91,7 +91,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
       </div>
 
       {error && (
-        <p className="mt-4 text-sm text-red-600" role="alert">
+        <p className="mt-4 text-sm text-accent-500" role="alert">
           {error}
         </p>
       )}
@@ -109,7 +109,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-6 rounded-lg bg-primary-500 px-5 py-2 font-medium text-white transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-6 rounded-lg bg-primary-500 px-5 py-2 font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? "Creating..." : "Create category"}
       </button>

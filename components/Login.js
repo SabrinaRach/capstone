@@ -11,16 +11,16 @@ export default function Login() {
   }
 
   return (
-    <div className="w-full max-w-sm rounded-2xl border border-white/15 bg-background/90 p-8 text-center shadow-[0_0_50px_rgba(59,130,246,0.2)] backdrop-blur-xl">
+    <div className="w-full max-w-sm rounded-2xl border border-secondary-100/60 bg-background/90 p-8 text-center shadow-[0_0_50px_rgba(2,132,199,0.2)] backdrop-blur-xl">
       {" "}
       <div className="mb-6">
         {" "}
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-primary-500/40 bg-primary-500/10 text-2xl text-primary-700 shadow-[0_0_25px_rgba(96,165,250,0.25)]">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-primary-500/40 bg-primary-500/10 text-2xl text-primary-700 shadow-[0_0_25px_rgba(2,132,199,0.25)]">
           {" "}
           ◉{" "}
         </div>{" "}
-        <h2 className="text-xl font-semibold text-slate-900"> Welcome </h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+        <h2 className="text-xl font-semibold text-foreground"> Welcome </h2>
+        <p className="mt-2 text-sm leading-relaxed text-secondary-500">
           {" "}
           Log in to manage your content.{" "}
         </p>{" "}

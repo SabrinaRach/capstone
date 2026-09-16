@@ -184,13 +184,13 @@ export default function AnimationVortex({ onAnimationComplete }) {
         310,
       );
 
-      backgroundGlow.addColorStop(0, "rgba(96, 165, 250, 0.15)");
+      backgroundGlow.addColorStop(0, "rgba(2, 132, 199, 0.15)");
 
-      backgroundGlow.addColorStop(0.35, "rgba(59, 130, 246, 0.07)");
+      backgroundGlow.addColorStop(0.35, "rgba(2, 132, 199, 0.07)");
 
-      backgroundGlow.addColorStop(0.7, "rgba(37, 99, 235, 0.025)");
+      backgroundGlow.addColorStop(0.7, "rgba(2, 132, 199, 0.025)");
 
-      backgroundGlow.addColorStop(1, "rgba(37, 99, 235, 0)");
+      backgroundGlow.addColorStop(1, "rgba(2, 132, 199, 0)");
 
       context.fillStyle = backgroundGlow;
 
@@ -274,13 +274,10 @@ export default function AnimationVortex({ onAnimationComplete }) {
         centerRadius,
       );
 
-      centerGlow.addColorStop(0, "rgba(255,255,255,0.22)");
-
-      centerGlow.addColorStop(0.2, "rgba(147,197,253,0.15)");
-
-      centerGlow.addColorStop(0.55, "rgba(59,130,246,0.08)");
-
-      centerGlow.addColorStop(1, "rgba(59,130,246,0)");
+      centerGlow.addColorStop(0, "rgba(244,244,245,0.22)");
+      centerGlow.addColorStop(0.2, "rgba(2,132,199,0.15)");
+      centerGlow.addColorStop(0.55, "rgba(2,132,199,0.08)");
+      centerGlow.addColorStop(1, "rgba(2,132,199,0)");
 
       context.beginPath();
 
@@ -295,7 +292,7 @@ export default function AnimationVortex({ onAnimationComplete }) {
 
         context.arc(center, center, radius, 0, Math.PI * 2);
 
-        context.strokeStyle = `rgba(147,197,253,${0.09 - index * 0.02})`;
+        context.strokeStyle = `rgba(2,132,199,${0.09 - index * 0.02})`;
 
         context.lineWidth = 1;
 
@@ -456,8 +453,8 @@ export default function AnimationVortex({ onAnimationComplete }) {
                   justify-center
                   rounded-full
                   border
-                  border-white/20
-                  bg-black/10
+                  border-secondary-100/20
+                  bg-background/10
                   backdrop-blur-md
                   will-change-transform
                 "
