@@ -5,7 +5,7 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const MAX_HTML_LENGTH = 2_000_000;
+const MAX_HTML_LENGTH = 50_000;
 const FETCH_TIMEOUT = 10_000;
 
 const extractionTool = {
