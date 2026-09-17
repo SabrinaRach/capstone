@@ -1,8 +1,8 @@
-
 import { put } from "@vercel/blob";
 import formidable from "formidable";
 import fs from "fs/promises";
-
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./auth/[...nextauth]";
 
 export const config = {
   api: {
@@ -11,7 +11,14 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return res.status(401).json({
+      error: "Not authorized",
+    });
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({
       error: "Method not allowed",
@@ -19,7 +26,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    
     const maxImages = 5;
 
     const maxFileSize = 5 * 1024 * 1024;
@@ -31,7 +37,6 @@ export default async function handler(req, res) {
       maxFiles: maxImages,
       maxFileSize: maxFileSize,
     });
-
 
     const [fields, files] = await form.parse(req);
 
@@ -76,7 +81,7 @@ export default async function handler(req, res) {
         {
           access: "public",
           addRandomSuffix: true,
-        }
+        },
       );
 
       uploadedImages.push({

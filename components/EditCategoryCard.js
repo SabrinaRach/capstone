@@ -121,7 +121,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
         />
 
         {error && (
-          <p className="mt-2 text-sm text-red-600" role="alert">
+          <p className="mt-2 text-sm text-accent-500" role="alert">
             {error}
           </p>
         )}
@@ -161,7 +161,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
         </p>
 
         {error && (
-          <p className="mt-3 text-sm text-red-600" role="alert">
+          <p className="mt-3 text-sm text-accent-500" role="alert">
             {error}
           </p>
         )}
@@ -192,7 +192,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
   return (
     <>
       {error && (
-        <p className="mb-3 text-sm text-red-600" role="alert">
+        <p className="mb-3 text-sm text-accent-500" role="alert">
           {error}
         </p>
       )}

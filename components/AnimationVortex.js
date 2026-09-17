@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { useRouter } from "next/router";
 import { CATEGORIES } from "./categoryConfig";
 
 const CANVAS_SIZE = 600;
 const PARTICLE_COUNT = 120;
 
 const SORT_DURATION = 1050;
-const NAVIGATION_DELAY = 1550;
 const VORTEX_CATEGORIES = [...CATEGORIES, ...CATEGORIES];
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -24,18 +22,21 @@ const easeInOutCubic = (t) => {
 
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
-export default function AnimationVortex() {
-  const router = useRouter();
-
+export default function AnimationVortex({ onAnimationComplete }) {
   const canvasRef = useRef(null);
   const iconRefs = useRef([]);
 
   const animationFrameRef = useRef(null);
-  const navigationTimeoutRef = useRef(null);
 
   const [isSorting, setIsSorting] = useState(false);
   const isSortingRef = useRef(false);
   const sortStartRef = useRef(0);
+  const animationCompleteRef = useRef(false);
+  const onAnimationCompleteRef = useRef(onAnimationComplete);
+
+  useEffect(() => {
+    onAnimationCompleteRef.current = onAnimationComplete;
+  }, [onAnimationComplete]);
 
   const categoryNodesRef = useRef([]);
   useEffect(() => {
@@ -109,10 +110,6 @@ export default function AnimationVortex() {
     isSortingRef.current = true;
     setIsSorting(true);
     sortStartRef.current = performance.now();
-
-    navigationTimeoutRef.current = setTimeout(() => {
-      router.push("/entries");
-    }, NAVIGATION_DELAY);
   };
 
   const handleKeyDown = (event) => {
@@ -163,6 +160,15 @@ export default function AnimationVortex() {
         );
       }
 
+      if (
+        isSortingRef.current &&
+        sortProgress >= 1 &&
+        !animationCompleteRef.current
+      ) {
+        animationCompleteRef.current = true;
+        onAnimationCompleteRef.current?.();
+      }
+
       const sortEase = easeInOutCubic(sortProgress);
 
       const vortexRotation = isSortingRef.current
@@ -178,13 +184,13 @@ export default function AnimationVortex() {
         310,
       );
 
-      backgroundGlow.addColorStop(0, "rgba(96, 165, 250, 0.15)");
+      backgroundGlow.addColorStop(0, "rgba(2, 132, 199, 0.15)");
 
-      backgroundGlow.addColorStop(0.35, "rgba(59, 130, 246, 0.07)");
+      backgroundGlow.addColorStop(0.35, "rgba(2, 132, 199, 0.07)");
 
-      backgroundGlow.addColorStop(0.7, "rgba(37, 99, 235, 0.025)");
+      backgroundGlow.addColorStop(0.7, "rgba(2, 132, 199, 0.025)");
 
-      backgroundGlow.addColorStop(1, "rgba(37, 99, 235, 0)");
+      backgroundGlow.addColorStop(1, "rgba(2, 132, 199, 0)");
 
       context.fillStyle = backgroundGlow;
 
@@ -268,13 +274,10 @@ export default function AnimationVortex() {
         centerRadius,
       );
 
-      centerGlow.addColorStop(0, "rgba(255,255,255,0.22)");
-
-      centerGlow.addColorStop(0.2, "rgba(147,197,253,0.15)");
-
-      centerGlow.addColorStop(0.55, "rgba(59,130,246,0.08)");
-
-      centerGlow.addColorStop(1, "rgba(59,130,246,0)");
+      centerGlow.addColorStop(0, "rgba(244,244,245,0.22)");
+      centerGlow.addColorStop(0.2, "rgba(2,132,199,0.15)");
+      centerGlow.addColorStop(0.55, "rgba(2,132,199,0.08)");
+      centerGlow.addColorStop(1, "rgba(2,132,199,0)");
 
       context.beginPath();
 
@@ -289,7 +292,7 @@ export default function AnimationVortex() {
 
         context.arc(center, center, radius, 0, Math.PI * 2);
 
-        context.strokeStyle = `rgba(147,197,253,${0.09 - index * 0.02})`;
+        context.strokeStyle = `rgba(2,132,199,${0.09 - index * 0.02})`;
 
         context.lineWidth = 1;
 
@@ -376,14 +379,6 @@ export default function AnimationVortex() {
     };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (navigationTimeoutRef.current) {
-        clearTimeout(navigationTimeoutRef.current);
-      }
-    };
-  }, []);
-
   return (
     <motion.div
       role="button"
@@ -410,16 +405,16 @@ export default function AnimationVortex() {
         duration: isSorting ? 1.35 : 0.2,
         ease: "easeInOut",
       }}
-      className="
-        relative
-        mx-auto
-        aspect-square
-        w-full
-        max-w-[600px]
-        cursor-pointer
-        select-none
-        outline-none
-      "
+      className={`
+    relative
+    mx-auto
+    aspect-square
+    w-full
+    max-w-[600px]
+    select-none
+    outline-none
+    ${isSorting ? "pointer-events-none" : "cursor-pointer"}
+  `}
     >
       <canvas
         ref={canvasRef}
@@ -458,8 +453,8 @@ export default function AnimationVortex() {
                   justify-center
                   rounded-full
                   border
-                  border-white/20
-                  bg-black/10
+                  border-secondary-100/20
+                  bg-background/10
                   backdrop-blur-md
                   will-change-transform
                 "

@@ -43,6 +43,10 @@ const entrySchema = new Schema(
       min: 1,
       max: 5,
     },
+    owner: {
+      type: String,
+      required: true,
+    },
   },
 
   { timestamps: true },

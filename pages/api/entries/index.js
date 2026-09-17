@@ -1,9 +1,27 @@
 import dbConnect from "../../../db/connect.js";
 import Entry from "../../../db/models/Entry.js";
 import Category from "../../../db/models/Category.js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return res.status(401).json({
+      message: "Not authorized",
+    });
+  }
+
+  const userId = session.user.id;
+
   await dbConnect();
+
+  if (req.method === "GET") {
+    const entries = await Entry.find({ owner: userId }).populate("category");
+
+    return res.status(200).json(entries);
+  }
 
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -44,7 +62,10 @@ export default async function handler(req, res) {
       .json({ message: "You can upload a maximum of 5 images." });
   }
 
-  const existingCategory = await Category.findById(category);
+  const existingCategory = await Category.findOne({
+    _id: category,
+    $or: [{ owner: userId }, { isSystem: true }],
+  });
 
   if (!existingCategory) {
     return res.status(400).json({
@@ -61,6 +82,7 @@ export default async function handler(req, res) {
     notes: notes?.trim() || "",
     source: source?.trim() || "",
     images: images || [],
+    owner: userId,
   });
 
   return res.status(201).json(entry);

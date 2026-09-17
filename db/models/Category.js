@@ -27,6 +27,10 @@ const categorySchema = new Schema(
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true },
 );
