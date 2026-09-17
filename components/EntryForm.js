@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useRouter } from "next/router";
 import Image from "next/image";
 
 export default function EntryForm({
@@ -12,8 +11,6 @@ export default function EntryForm({
   entryId,
   onSaved,
 }) {
-  const router = useRouter();
-
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     description: initialData?.description || "",
@@ -194,12 +191,7 @@ export default function EntryForm({
         throw new Error(data.message || "Failed to save entry.");
       }
 
-      if (isEditing && onSaved) {
-        onSaved(data.entry);
-        return;
-      }
-
-      router.push(`/entries/${data._id}`);
+      if (onSaved) { onSaved(data.entry || data); return; } setIsSubmitting(false);
     } catch (error) {
       setError(error.message);
       setIsSubmitting(false);

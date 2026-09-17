@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/router";
 import EntryForm from "./EntryForm.js";
 import CategoryForm from "./CategoryForm.js";
 
@@ -9,6 +10,7 @@ export default function EntryModal({
   entryId,
   onSaved,
 }) {
+  const router = useRouter();
   const [categories, setCategories] = useState([]);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(
@@ -60,7 +62,14 @@ export default function EntryModal({
               initialData={initialData}
               isEditing={isEditing}
               entryId={initialData?._id}
-              onSaved={onSaved}
+              onSaved={(entry) => {
+                if (onSaved) {
+                  onSaved(entry);
+                }
+
+                onClose();
+                router.push(`/entries/${entry._id}`);
+              }}
               onCreateCategory={() => {
                 setShowCategoryForm(true);
                 setTimeout(() => {
