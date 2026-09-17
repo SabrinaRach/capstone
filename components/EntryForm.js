@@ -207,48 +207,48 @@ export default function EntryForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {error && (
         <div
           role="alert"
-          className="rounded-lg border border-accent-500 bg-background p-4 text-accent-500"
+          className="rounded-xl border border-accent-500/40 bg-background px-4 py-3 text-sm text-accent-500"
         >
           {error}
         </div>
       )}
 
-      <div className="rounded-lg border border-foreground p-4">
+      <div className="rounded-xl border border-secondary-100 bg-background p-5">
         <label htmlFor="importUrl" className="block text-sm font-medium">
           Import from website
         </label>
 
-        <p className="mt-1 text-sm text-secondary-700">
+        <p className="mt-1 text-sm text-secondary-500">
           Enter a website URL and AI will extract the relevant information into
           the fields below.
         </p>
 
-        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <input
             id="importUrl"
             type="url"
             value={importUrl}
             onChange={(event) => setImportUrl(event.target.value)}
             placeholder="https://example.com/..."
-            className="w-full rounded-lg border border-foreground bg-background px-4 py-2"
+            className="w-full rounded-lg border border-secondary-100 bg-background px-4 py-2.5 text-sm outline-none transition placeholder:text-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
           />
 
           <button
             type="button"
             onClick={handleImport}
             disabled={isImporting}
-            className="rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-full border border-secondary-100 px-5 py-2.5 text-sm font-medium transition hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isImporting ? "Importing..." : "Import with AI"}
           </button>
         </div>
 
         {showImportConfirmation && (
-          <div className="mt-4 rounded-lg border border-accent-500 bg-background p-4">
+          <div className="mt-4 rounded-lg border border-accent-500/40 bg-background p-4">
             <p className="text-sm font-medium text-accent-500">
               This will replace the existing entry fields with the imported
               information. Do you want to continue?
@@ -259,7 +259,7 @@ export default function EntryForm({
                 type="button"
                 onClick={handleImport}
                 disabled={isImporting}
-                className="rounded-full border border-foreground bg-primary-500 px-5 py-2 font-medium text-background hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-primary-500 px-5 py-2 text-sm font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isImporting ? "Importing..." : "Continue"}
               </button>
@@ -268,7 +268,7 @@ export default function EntryForm({
                 type="button"
                 onClick={() => setShowImportConfirmation(false)}
                 disabled={isImporting}
-                className="rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-lg bg-primary-500 px-5 py-2 text-sm font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -289,7 +289,7 @@ export default function EntryForm({
           value={formData.title}
           onChange={handleChange}
           required
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          className="mt-2 w-full rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
@@ -304,7 +304,7 @@ export default function EntryForm({
           value={formData.description}
           onChange={handleChange}
           rows={4}
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
@@ -318,7 +318,7 @@ export default function EntryForm({
           name="category"
           value={selectedCategoryId || formData.category}
           onChange={handleChange}
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         >
           {categories.map((category) => (
             <option key={category._id} value={category._id}>
@@ -334,7 +334,7 @@ export default function EntryForm({
           Items *
         </label>
 
-        <p className="mt-1 text-sm text-secondary-700">
+        <p className="mt-1 text-sm text-secondary-500">
           Enter one item per line.
         </p>
 
@@ -345,7 +345,7 @@ export default function EntryForm({
           onChange={handleChange}
           required
           rows={5}
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
@@ -365,7 +365,7 @@ export default function EntryForm({
           onChange={handleChange}
           required
           rows={6}
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
@@ -380,7 +380,7 @@ export default function EntryForm({
           value={formData.notes}
           onChange={handleChange}
           rows={4}
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
@@ -395,7 +395,7 @@ export default function EntryForm({
           type="text"
           value={formData.source}
           onChange={handleChange}
-          className="mt-2 w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
@@ -408,11 +408,11 @@ export default function EntryForm({
           <div className="mt-4">
             <p className="text-sm font-medium">Existing images</p>
 
-            <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {existingImages.map((imageUrl, index) => (
                 <div
                   key={imageUrl}
-                  className="relative overflow-hidden rounded-lg border border-foreground"
+                  className="relative overflow-hidden rounded-xl border border-secondary-100 bg-background"
                 >
                   <Image
                     src={imageUrl}
@@ -429,7 +429,7 @@ export default function EntryForm({
                         currentImages.filter((image) => image !== imageUrl),
                       );
                     }}
-                    className="absolute right-2 top-2 rounded-full bg-accent-500 px-3 py-1 text-sm font-medium text-background"
+                    className="absolute right-2 top-2 rounded-lg bg-background/90 px-3 py-1 text-xs font-medium text-accent-500 backdrop-blur-sm transition hover:bg-background"
                   >
                     Delete
                   </button>
@@ -439,7 +439,7 @@ export default function EntryForm({
           </div>
         )}
 
-        <p className="mt-4 text-sm text-secondary-700">
+        <p className="mt-3 text-sm text-secondary-500">
           {isEditing
             ? "Keep the existing images or delete them. You can also add new images."
             : "You can select up to 5 images."}
@@ -489,14 +489,13 @@ export default function EntryForm({
 
         <label
           htmlFor="images"
-          className="mt-2 inline-block cursor-pointer rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100"
+          className="mt-3 inline-block cursor-pointer rounded-lg border border-secondary-100 px-5 py-2.5 text-sm font-medium transition hover:bg-secondary-100"
         >
           Choose images
         </label>
 
-        {/* Newly selected images */}
         {selectedFiles.length > 0 && (
-          <div className="mt-3 space-y-2">
+          <div className="mt-4 space-y-2">
             <p className="text-sm font-medium">
               {selectedFiles.length}{" "}
               {selectedFiles.length === 1 ? "image" : "images"} selected
@@ -505,7 +504,7 @@ export default function EntryForm({
             {selectedFiles.map((file, index) => (
               <div
                 key={`${file.name}-${file.lastModified}-${index}`}
-                className="flex items-center justify-between rounded-lg bg-secondary-100 px-3 py-2 text-sm"
+                className="flex items-center justify-between rounded-lg border-secondary-100 bg-background px-3 py-2 text-sm"
               >
                 <span className="truncate">{file.name}</span>
 
@@ -518,7 +517,7 @@ export default function EntryForm({
                       ),
                     );
                   }}
-                  className="ml-3 shrink-0 font-medium text-accent-500 hover:underline"
+                  className="ml-3 shrink-0 font-medium text-accent-500 transition hover:underline"
                 >
                   Remove
                 </button>
@@ -528,11 +527,11 @@ export default function EntryForm({
         )}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end border-t border-secondary-100 pt-6">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-full border border-foreground bg-primary-500 px-6 py-2 font-medium text-background hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg bg-primary-500 px-6 py-2.5 text-sm font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting
             ? "Saving..."
