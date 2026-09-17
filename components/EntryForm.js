@@ -35,6 +35,9 @@ export default function EntryForm({
   const [existingImages, setExistingImages] = useState(
     initialData?.images || [],
   );
+  const [importUrl, setImportUrl] = useState("");
+  const [isImporting, setIsImporting] = useState(false);
+  const [showImportConfirmation, setShowImportConfirmation] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -51,6 +54,64 @@ export default function EntryForm({
 
     if (name === "category" && onCategoryChange) {
       onCategoryChange(value);
+    }
+  }
+
+  async function handleImport() {
+    if (!importUrl.trim()) {
+      setError("Please enter a website URL.");
+      return;
+    }
+
+    const hasExistingData =
+      formData.title.trim() ||
+      formData.description.trim() ||
+      formData.items.trim() ||
+      formData.steps.trim() ||
+      formData.notes.trim() ||
+      formData.source.trim();
+
+    if (hasExistingData && !showImportConfirmation) {
+      setShowImportConfirmation(true);
+      return;
+    }
+
+    setShowImportConfirmation(false);
+
+    setError("");
+    setIsImporting(true);
+
+    try {
+      const response = await fetch("/api/entries/import", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: importUrl.trim(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Website import failed.");
+      }
+
+      setFormData((currentData) => ({
+        ...currentData,
+        title: result.data.title || "",
+        description: result.data.description || "",
+        category: result.data.category || currentData.category,
+        items: (result.data.items || []).join("\n"),
+        steps: (result.data.steps || []).join("\n"),
+        notes: result.data.notes || "",
+        source: importUrl.trim(),
+      }));
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsImporting(false);
     }
   }
 
@@ -150,11 +211,71 @@ export default function EntryForm({
       {error && (
         <div
           role="alert"
-          className="rounded-lg border border-accent-500 bg-foreground p-4 text-accent-500"
+          className="rounded-lg border border-accent-500 bg-background p-4 text-accent-500"
         >
           {error}
         </div>
       )}
+
+      <div className="rounded-lg border border-foreground p-4">
+        <label htmlFor="importUrl" className="block text-sm font-medium">
+          Import from website
+        </label>
+
+        <p className="mt-1 text-sm text-secondary-700">
+          Enter a website URL and AI will extract the relevant information into
+          the fields below.
+        </p>
+
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <input
+            id="importUrl"
+            type="url"
+            value={importUrl}
+            onChange={(event) => setImportUrl(event.target.value)}
+            placeholder="https://example.com/..."
+            className="w-full rounded-lg border border-foreground bg-background px-4 py-2"
+          />
+
+          <button
+            type="button"
+            onClick={handleImport}
+            disabled={isImporting}
+            className="rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isImporting ? "Importing..." : "Import with AI"}
+          </button>
+        </div>
+
+        {showImportConfirmation && (
+          <div className="mt-4 rounded-lg border border-accent-500 bg-background p-4">
+            <p className="text-sm font-medium text-accent-500">
+              This will replace the existing entry fields with the imported
+              information. Do you want to continue?
+            </p>
+
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={handleImport}
+                disabled={isImporting}
+                className="rounded-full border border-foreground bg-primary-500 px-5 py-2 font-medium text-background hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {isImporting ? "Importing..." : "Continue"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowImportConfirmation(false)}
+                disabled={isImporting}
+                className="rounded-full border border-foreground px-5 py-2 font-medium hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div>
         <label htmlFor="title" className="block text-sm font-medium">

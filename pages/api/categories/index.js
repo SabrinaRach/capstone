@@ -102,6 +102,7 @@ export default async function handler(req, res) {
         ],
       },
       {
+        name: trimmedName,
         $or: [{ owner: userId }, { isSystem: true }],
       },
     ],

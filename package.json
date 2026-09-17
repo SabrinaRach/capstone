@@ -11,7 +11,9 @@
     "seed:categories": "node scripts/seedCategories.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.125.0",
     "@vercel/blob": "^2.8.0",
+    "cheerio": "^1.2.0",
     "dotenv": "^17.4.2",
     "formidable": "^3.5.4",
     "lucide-react": "^1.43.0",
