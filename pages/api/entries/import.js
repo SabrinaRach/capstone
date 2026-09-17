@@ -2,6 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import * as cheerio from "cheerio";
 import Category from "../../../db/models/Category.js";
 import dbConnect from "../../../db/connect.js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -105,6 +107,14 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       message: "Method not allowed",
+    });
+  }
+
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session?.user?.id) {
+    return res.status(401).json({
+      message: "Not authorized",
     });
   }
 
