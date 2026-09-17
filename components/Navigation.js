@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import NewEntryButton from "./NewEntryButton";
 
 const navigationItems = [
   {
@@ -46,7 +47,7 @@ const navigationItems = [
   },
 ];
 
-export default function BottomNavigation() {
+export default function BottomNavigation({ onNewEntry }) {
   const router = useRouter();
 
   return (
@@ -54,28 +55,61 @@ export default function BottomNavigation() {
       aria-label="Main navigation"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-secondary-100/80 bg-background/90 backdrop-blur-md"
     >
-      <div className="mx-auto flex h-20 max-w-2xl items-center justify-around px-4">
-        {navigationItems.map((item) => {
-          const isActive =
-            router.pathname === item.href ||
-            router.pathname.startsWith(`${item.href}/`);
+      <div className="mx-auto grid h-20 max-w-2xl grid-cols-3 items-center px-4">
+        {/* Entries */}
+        <div className="flex w-full justify-center">
+          {(() => {
+            const item = navigationItems[0];
+            const isActive =
+              router.pathname === item.href ||
+              router.pathname.startsWith(`${item.href}/`);
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={isActive ? "page" : undefined}
-              className={`flex min-w-24 flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
-                isActive
-                  ? "text-primary-500"
-                  : "text-secondary-500 hover:text-secondary-700"
-              }`}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                  isActive
+                    ? "text-primary-500"
+                    : "text-secondary-500 hover:text-secondary-700"
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            );
+          })()}
+        </div>
+
+        {/* New Entry */}
+        <div className="flex w-full justify-center">
+          <NewEntryButton onClick={onNewEntry} />
+        </div>
+
+        {/* Categories */}
+        <div className="flex w-full justify-center">
+          {(() => {
+            const item = navigationItems[1];
+            const isActive =
+              router.pathname === item.href ||
+              router.pathname.startsWith(`${item.href}/`);
+
+            return (
+              <Link
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                  isActive
+                    ? "text-primary-500"
+                    : "text-secondary-500 hover:text-secondary-700"
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            );
+          })()}
+        </div>
       </div>
     </nav>
   );

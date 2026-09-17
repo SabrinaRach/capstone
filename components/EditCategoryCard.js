@@ -207,7 +207,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             setError("");
             setIsEditing(true);
           }}
-          className="rounded-lg border border-secondary-100 bg-background p-2 text-primary-700 hover:bg-secondary-100"
+          className="rounded-lg bg-background p-2 text-primary-700 hover:bg-secondary-100"
           aria-label={`Edit ${category.name} category`}
         >
           <svg
@@ -215,8 +215,8 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             width="24"
             height="24"
             viewBox="0 0 24 24"
-            fill="currentColor"
-            stroke="var(--border)"
+            fill="none"
+            stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -230,7 +230,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
         <button
           type="button"
           onClick={handleStartDelete}
-          className="rounded-lg border border-secondary-100 bg-background p-2 text-accent-500 hover:bg-accent-100"
+          className="rounded-lg bg-background p-2 text-accent-500 hover:bg-accent-100"
           aria-label={`Delete ${category.name} category`}
         >
           <svg
@@ -238,8 +238,8 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             width="24"
             height="24"
             viewBox="0 0 24 24"
-            fill="currentColor"
-            stroke="var(--border)"
+            fill="none"
+            stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"

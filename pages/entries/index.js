@@ -2,10 +2,38 @@ import Link from "next/link";
 import { useState } from "react";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
-import NewEntryButton from "../../components/NewEntryButton.js";
 import SearchBar from "../../components/SearchBar.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
+
+function getCategoryStyles(category) {
+  switch (category?.slug) {
+    case "recipes":
+      return {
+        background: "bg-[var(--category-recipes-bg)]",
+        text: "text-[var(--category-recipes)]",
+      };
+
+    case "howto":
+      return {
+        background: "bg-[var(--category-howto-bg)]",
+        text: "text-[var(--category-howto)]",
+      };
+
+    case "guides":
+      return {
+        background: "bg-[var(--category-guides-bg)]",
+        text: "text-[var(--category-guides)]",
+      };
+
+    case "other":
+    default:
+      return {
+        background: "bg-[var(--category-other-bg)]",
+        text: "text-[var(--category-other)]",
+      };
+  }
+}
 
 export default function EntriesPage({ entries }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,13 +62,11 @@ export default function EntriesPage({ entries }) {
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div>
-        <h1 className="text-3xl font-bold">All Entries</h1>
+        <h1 className="text-3xl font-bold">Your Entries</h1>
 
-        <p className="mt-2 text-secondary-700">
-          Find and access all your entries in one place.
+        <p className="mt-2 text-secondary-500">
+          Browse and search your saved entries.
         </p>
-
-        <NewEntryButton />
 
         <div className="mt-6">
           <SearchBar onSearch={setSearchTerm} />
@@ -48,32 +74,61 @@ export default function EntriesPage({ entries }) {
       </div>
 
       {filteredEntries.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-dashed border-border p-10 text-center">
+        <div className="mt-8 rounded-xl border border-dashed border-secondary-100 p-10 text-center">
           <h2 className="text-lg font-semibold">
             {searchTerm ? "No entries found" : "No entries yet"}
           </h2>
 
-          <p className="mt-2 text-sm text-secondary-700">
+          <p className="mt-2 text-sm text-secondary-500">
             {searchTerm
               ? "No entries match your search."
               : "There are currently no entries to display."}
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredEntries.map((entry) => (
-            <Link
-              key={entry._id}
-              href={`/entries/${entry._id}`}
-              className="rounded-xl border border-border bg-background p-6 transition hover:-translate-y-1"
-            >
-              <h2 className="text-xl font-semibold">{entry.title}</h2>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredEntries.map((entry) => {
+            const categoryStyles = getCategoryStyles(entry.category);
 
-              <p className="mt-2 text-sm text-secondary-700">
-                {entry.category?.name || "Not assigned"}
-              </p>
-            </Link>
-          ))}
+            return (
+              <Link
+                key={entry._id}
+                href={`/entries/${entry._id}`}
+                className="group rounded-xl border border-secondary-100 bg-background p-5 transition hover:-translate-y-0.5 hover:border-secondary-500/40"
+              >
+                <h2 className="text-lg font-semibold transition group-hover:text-primary-500">
+                  {entry.title}
+                </h2>
+
+                {entry.category?.name && (
+                  <span
+                    className={`mt-2 inline-block rounded-full px-2.5 py-1 text-xs font-medium ${categoryStyles.background} ${categoryStyles.text}`}
+                  >
+                    {" "}
+                    {entry.category.name}{" "}
+                  </span>
+                )}
+
+                <div className="mt-4 flex gap-4 text-xs text-secondary-500">
+                  {" "}
+                  {entry.items?.length > 0 && (
+                    <span>
+                      {" "}
+                      {entry.items.length}{" "}
+                      {entry.items.length === 1 ? "item" : "items"}{" "}
+                    </span>
+                  )}{" "}
+                  {entry.steps?.length > 0 && (
+                    <span>
+                      {" "}
+                      {entry.steps.length}{" "}
+                      {entry.steps.length === 1 ? "step" : "steps"}{" "}
+                    </span>
+                  )}{" "}
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </main>

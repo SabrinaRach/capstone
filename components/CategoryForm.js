@@ -58,7 +58,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
       <h2 className="text-xl font-semibold">Create category</h2>
 
       <div className="mt-6">
-        <label htmlFor="category-name" className="block text-sm font-medium">
+        <label htmlFor="category-name" className="block text-sm font-semibold">
           Name
         </label>
 
@@ -73,7 +73,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
       </div>
 
       <div className="mt-6">
-        <label htmlFor="category-color" className="block text-sm font-medium">
+        <label htmlFor="category-color" className="block text-sm font-semibold">
           Color
         </label>
 
@@ -83,7 +83,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
             type="color"
             value={color}
             onChange={(event) => setColor(event.target.value)}
-            className="h-10 w-16 cursor-pointer rounded"
+            className="h-10 w-16 cursor-pointer rounded-xl"
           />
 
           <span className="text-sm text-secondary-700">{color}</span>
