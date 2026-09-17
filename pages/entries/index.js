@@ -2,7 +2,6 @@ import Link from "next/link";
 import { useState } from "react";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
-import NewEntryButton from "../../components/NewEntryButton.js";
 import SearchBar from "../../components/SearchBar.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
@@ -40,7 +39,7 @@ export default function EntriesPage({ entries }) {
           Find and access all your entries in one place.
         </p>
 
-        <NewEntryButton />
+        
 
         <div className="mt-6">
           <SearchBar onSearch={setSearchTerm} />

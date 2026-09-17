@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import NewEntryButton from "./NewEntryButton";
 
 const navigationItems = [
   {
@@ -46,7 +47,7 @@ const navigationItems = [
   },
 ];
 
-export default function BottomNavigation() {
+export default function BottomNavigation({onNewEntry}) {
   const router = useRouter();
 
   return (
@@ -55,12 +56,13 @@ export default function BottomNavigation() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-secondary-100/80 bg-background/90 backdrop-blur-md"
     >
       <div className="mx-auto flex h-20 max-w-2xl items-center justify-around px-4">
-        {navigationItems.map((item) => {
+        {navigationItems.map((item, index) => {
           const isActive =
             router.pathname === item.href ||
             router.pathname.startsWith(`${item.href}/`);
 
           return (
+            <div key={item.href} className="flex items-center">
             <Link
               key={item.href}
               href={item.href}
@@ -74,9 +76,5 @@ export default function BottomNavigation() {
               {item.icon}
               <span>{item.label}</span>
             </Link>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
+
+            {index === 0 && ( <div className="mx-3"> <NewEntryButton onClick={onNewEntry}/> </div> )} </div> ); })} </div> </nav> ); }

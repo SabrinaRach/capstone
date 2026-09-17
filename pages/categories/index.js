@@ -4,7 +4,6 @@ import CategoryCard from "../../components/CategoryCard";
 import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
 import CategoryForm from "../../components/CategoryForm.js";
-import NewEntryButton from "../../components/NewEntryButton.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 
@@ -52,9 +51,6 @@ export default function CategoriesPage({ categories }) {
         </p>
       </div>
 
-      <div className="mt-6">
-        <NewEntryButton />
-      </div>
 
       {categoryList.length === 0 ? (
         <div className="mt-8 rounded-xl border border-dashed border-border-300 p-10 text-center">

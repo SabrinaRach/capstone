@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 import LogoutButton from "@/components/LogoutButton";
 import { SessionProvider } from "next-auth/react";
+import EntryModal from "../components/EntryModal";
 
 export default function App({
   Component,
@@ -14,6 +15,8 @@ export default function App({
   const isHome = router.pathname === "/";
 
   const [showLogoutToast, setShowLogoutToast] = useState(false);
+
+  const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -45,7 +48,10 @@ export default function App({
       <div className="pb-20">
         {!isHome && <LogoutButton />}
         <Component {...pageProps} />
-        {!isHome && <Navigation />}
+        {!isHome && <Navigation onNewEntry={() => setIsEntryModalOpen(true)} />}
+        {isEntryModalOpen && (
+          <EntryModal onClose={() => setIsEntryModalOpen(false)} />
+        )}
       </div>
     </SessionProvider>
   );
