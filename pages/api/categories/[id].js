@@ -1,6 +1,8 @@
 import dbConnect from "../../../db/connect.js";
 import Category from "../../../db/models/Category.js";
 import Entry from "../../../db/models/Entry.js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 function createSlug(name) {
   return name
@@ -15,6 +17,16 @@ function createSlug(name) {
 }
 
 export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return res.status(401).json({
+      message: "Not authorized",
+    });
+  }
+
+  const userId = session.user.id;
+
   await dbConnect();
 
   const { id } = req.query;
@@ -25,7 +37,10 @@ export default async function handler(req, res) {
     });
   }
 
-  const category = await Category.findById(id);
+  const category = await Category.findOne({
+    _id: id,
+    $or: [{ owner: userId }, { isSystem: true }],
+  });
 
   if (!category) {
     return res.status(404).json({
@@ -114,7 +129,7 @@ export default async function handler(req, res) {
     }
 
     await Entry.updateMany(
-      { category: category._id },
+      { category: category._id, owner: userId },
       { $set: { category: otherCategory._id } },
     );
 

@@ -2,8 +2,20 @@ import { del } from "@vercel/blob";
 import dbConnect from "../../../db/connect.js";
 import Entry from "../../../db/models/Entry.js";
 import Category from "../../../db/models/Category.js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return res.status(401).json({
+      message: "Not authorized",
+    });
+  }
+
+  const userId = session.user.id;
+
   await dbConnect();
 
   const { id } = req.query;
@@ -14,7 +26,10 @@ export default async function handler(req, res) {
     });
   }
 
-  const entry = await Entry.findById(id);
+  const entry = await Entry.findOne({
+    _id: id,
+    owner: userId,
+  });
 
   if (!entry) {
     return res.status(404).json({
@@ -66,7 +81,10 @@ export default async function handler(req, res) {
       });
     }
 
-    const existingCategory = await Category.findById(category);
+    const existingCategory = await Category.findOne({
+      _id: category,
+      $or: [{ owner: userId }, { isSystem: true }],
+    });
 
     if (!existingCategory) {
       return res.status(400).json({

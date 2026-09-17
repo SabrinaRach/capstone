@@ -1,5 +1,8 @@
 import dbConnect from "../../../db/connect.js";
 import Category from "../../../db/models/Category.js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]";
+import { getToken } from "next-auth/jwt";
 
 function createSlug(name) {
   return name
@@ -33,10 +36,23 @@ function createBackgroundColor(hexColor) {
 }
 
 export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return res.status(401).json({
+      message: "Not authorized",
+    });
+  }
+
+  const token = await getToken({ req });
+  const userId = token?.sub;
+
   await dbConnect();
 
   if (req.method === "GET") {
-    const categories = await Category.find()
+    const categories = await Category.find({
+      $or: [{ owner: userId }, { isSystem: true }],
+    })
       .sort({ isSystem: -1, name: 1 })
       .lean();
 
@@ -73,13 +89,20 @@ export default async function handler(req, res) {
   }
 
   const existingCategory = await Category.findOne({
-    $or: [
-      { slug },
+    $and: [
       {
-        name: {
-          $regex: `^${trimmedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-          $options: "i",
-        },
+        $or: [
+          { slug },
+          {
+            name: {
+              $regex: `^${trimmedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+              $options: "i",
+            },
+          },
+        ],
+      },
+      {
+        $or: [{ owner: userId }, { isSystem: true }],
       },
     ],
   });
@@ -98,6 +121,7 @@ export default async function handler(req, res) {
     color: color.toUpperCase(),
     backgroundColor,
     isSystem: false,
+    owner: userId,
   });
 
   return res.status(201).json({

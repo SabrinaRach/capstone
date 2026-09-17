@@ -10,7 +10,7 @@ export default function EntrySteps({ steps }) {
       <ol className="mt-3 space-y-4">
         {steps.map((step, index) => (
           <li key={index} className="flex gap-4">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-500 text-sm font-semibold text-white">
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-500 text-sm font-semibold text-background">
               {index + 1}
             </span>
 

@@ -3,6 +3,8 @@ import BackLink from "../../components/BackLink.js";
 import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
 import Entry from "../../db/models/Entry.js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 export default function CategoryPage({ category, entries }) {
   if (!category) {
@@ -44,11 +46,25 @@ export default function CategoryPage({ category, entries }) {
   );
 }
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, req, res }) {
+  const session = await getServerSession(req, res, authOptions);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  const userId = session.user.id;
+
   await dbConnect();
 
   const category = await Category.findOne({
     slug: params.category,
+    $or: [{ owner: userId }, { isSystem: true }],
   }).lean();
 
   if (!category) {
@@ -62,6 +78,7 @@ export async function getServerSideProps({ params }) {
 
   const entries = await Entry.find({
     category: category._id,
+    owner: userId,
   })
     .sort({ createdAt: -1 })
     .lean();
