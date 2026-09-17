@@ -89,6 +89,12 @@ function cleanHtml(html) {
 
   $("style, noscript, iframe, svg").remove();
 
+  $("script").each((_, element) => {
+    if ($(element).html()?.length > 100_000) {
+      $(element).remove();
+    }
+  });
+
   const mainContent =
     $("main").first().text() || $("article").first().text() || $("body").text();
 
