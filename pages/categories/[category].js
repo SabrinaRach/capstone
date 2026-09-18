@@ -30,14 +30,34 @@ export default function CategoryPage({ category, entries }) {
           <p className="text-secondary-700">No entries in this category yet.</p>
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {entries.map((entry) => (
             <Link
               key={entry._id}
               href={`/entries/${entry._id}`}
-              className="rounded-xl border border-border bg-background p-6 transition hover:-translate-y-1"
+              className="group rounded-xl border border-secondary-100 bg-background p-5 transition hover:-translate-y-0.5 hover:border-secondary-500/40"
             >
-              <h2 className="text-xl font-semibold">{entry.title}</h2>
+              <h2 className="text-lg font-semibold transition group-hover:text-primary-500">
+                {entry.title}
+              </h2>
+
+              <div className="mt-4 flex gap-4 text-xs text-secondary-500">
+                {" "}
+                {entry.items?.length > 0 && (
+                  <span>
+                    {" "}
+                    {entry.items.length}{" "}
+                    {entry.items.length === 1 ? "item" : "items"}{" "}
+                  </span>
+                )}{" "}
+                {entry.steps?.length > 0 && (
+                  <span>
+                    {" "}
+                    {entry.steps.length}{" "}
+                    {entry.steps.length === 1 ? "step" : "steps"}{" "}
+                  </span>
+                )}{" "}
+              </div>
             </Link>
           ))}
         </div>

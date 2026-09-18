@@ -161,7 +161,6 @@ export default function EntryPage({ entry }) {
         {entry.images?.length > 0 && (
           <div className="mt-6">
             <div className="relative">
-              {/* Image slider */}
               <div
                 ref={imageSliderRef}
                 onScroll={(event) => {
@@ -203,7 +202,6 @@ export default function EntryPage({ entry }) {
                 ))}
               </div>
 
-              {/* Previous button */}
               {entry.images.length > 1 && (
                 <button
                   type="button"
@@ -230,7 +228,6 @@ export default function EntryPage({ entry }) {
                 </button>
               )}
 
-              {/* Next button */}
               {entry.images.length > 1 && (
                 <button
                   type="button"
@@ -258,7 +255,6 @@ export default function EntryPage({ entry }) {
               )}
             </div>
 
-            {/* Pagination dots */}
             {entry.images.length > 1 && (
               <div className="mt-4 flex justify-center gap-2">
                 {entry.images.map((imageUrl, index) => (
