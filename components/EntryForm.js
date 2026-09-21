@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
+import StarRating from "./StarRating.js";
 
 export default function EntryForm({
   categories,
@@ -24,6 +25,7 @@ export default function EntryForm({
     steps: initialData?.steps?.join("\n") || "",
     notes: initialData?.notes || "",
     source: initialData?.source || "",
+    rating: initialData?.rating || 0,
   });
 
   const [error, setError] = useState("");
@@ -181,6 +183,7 @@ export default function EntryForm({
               .map((step) => step.trim())
               .filter(Boolean),
             images: imageUrls,
+            rating: formData.rating || null,
           }),
         },
       );
@@ -374,6 +377,22 @@ export default function EntryForm({
           rows={4}
           className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Rating</label>
+
+        <div className="mt-2">
+          <StarRating
+            rating={formData.rating}
+            onChange={(value) =>
+              setFormData((currentData) => ({
+                ...currentData,
+                rating: value,
+              }))
+            }
+          />
+        </div>
       </div>
 
       <div>
