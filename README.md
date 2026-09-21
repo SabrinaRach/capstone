@@ -12,7 +12,7 @@ Users can create entries manually or import content from external websites. Entr
 
 ## Features
 
-- 🔐 GitHub authentication
+- 🔐 GitHub authentication or passwordless login via email magic link
 - 📝 Create and manage entries
 - 🌐 Import content from external websites via AI
 - 🏷️ Organize entries by categories
@@ -41,6 +41,7 @@ Before running the project, make sure you have:
 - npm
 - A MongoDB database
 - A GitHub OAuth application
+- An SMTP server/account for sending magic link emails
 - An Anthropic API key
 
 ### Installation
@@ -56,6 +57,11 @@ MONGODB_URI=your_mongodb_connection_string
 NEXTAUTH_SECRET=your_nextauth_secret
 GITHUB_ID=your_github_client_id
 GITHUB_SECRET=your_github_client_secret
+EMAIL_SERVER_HOST=your_smtp_host
+EMAIL_SERVER_PORT=your_smtp_port
+EMAIL_SERVER_USER=your_smtp_username
+EMAIL_SERVER_PASSWORD=your_smtp_password
+EMAIL_FROM=your_sender_email_address
 ANTHROPIC_API_KEY=your_anthropic_api_key
 
 
