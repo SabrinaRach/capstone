@@ -1,11 +1,27 @@
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function Login() {
-  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [isSendingLink, setIsSendingLink] = useState(false);
 
-  async function handleLogin() {
-    const result = await signIn("github", {
+  async function handleGithubLogin() {
+    await signIn("github", {
+      callbackUrl: "/entries",
+    });
+  }
+
+  async function handleEmailLogin(event) {
+    event.preventDefault();
+
+    if (!email.trim()) {
+      return;
+    }
+
+    setIsSendingLink(true);
+
+    await signIn("email", {
+      email: email.trim(),
       callbackUrl: "/entries",
     });
   }
@@ -25,9 +41,37 @@ export default function Login() {
           Log in to manage your content.{" "}
         </p>{" "}
       </div>
+      <form onSubmit={handleEmailLogin} className="space-y-3 text-left">
+        <label htmlFor="login-email" className="sr-only">
+          Email address
+        </label>
+
+        <input
+          id="login-email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="you@example.com"
+          required
+          className="w-full rounded-xl border border-secondary-100 bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+        />
+
+        <button
+          type="submit"
+          disabled={isSendingLink}
+          className="w-full rounded-xl bg-primary-500 px-4 py-3 text-sm font-semibold text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSendingLink ? "Sending link..." : "Continue with email"}
+        </button>
+      </form>
+      <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-secondary-500">
+        <span className="h-px flex-1 bg-secondary-100" aria-hidden="true" />
+        or
+        <span className="h-px flex-1 bg-secondary-100" aria-hidden="true" />
+      </div>
       <button
         type="button"
-        onClick={handleLogin}
+        onClick={handleGithubLogin}
         className="w-full rounded-xl border border-primary-500/70 bg-primary-500/15 px-4 py-3 text-sm font-semibold text-primary-700 transition hover:bg-primary-500/25 hover:shadow-md active:scale-[0.98]"
       >
         Sign in with GitHub
