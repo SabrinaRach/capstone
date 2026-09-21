@@ -29,8 +29,17 @@ export default async function handler(req, res) {
     });
   }
 
-  const { title, description, category, steps, items, notes, source, images } =
-    req.body;
+  const {
+    title,
+    description,
+    category,
+    steps,
+    items,
+    notes,
+    source,
+    images,
+    rating,
+  } = req.body;
 
   if (!title?.trim()) {
     return res.status(400).json({
@@ -82,6 +91,7 @@ export default async function handler(req, res) {
     notes: notes?.trim() || "",
     source: source?.trim() || "",
     images: images || [],
+    rating: rating >= 1 && rating <= 5 ? rating : undefined,
     owner: userId,
   });
 

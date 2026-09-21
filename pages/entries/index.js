@@ -3,6 +3,7 @@ import { useState } from "react";
 import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
 import SearchBar from "../../components/SearchBar.js";
+import StarRating from "../../components/StarRating.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 
@@ -107,6 +108,12 @@ export default function EntriesPage({ entries }) {
                     {" "}
                     {entry.category.name}{" "}
                   </span>
+                )}
+
+                {entry.rating > 0 && (
+                  <div className="mt-2">
+                    <StarRating rating={entry.rating} readOnly size={16} />
+                  </div>
                 )}
 
                 <div className="mt-4 flex gap-4 text-xs text-secondary-500">

@@ -14,6 +14,8 @@
 
   --accent-500: #ea580c;
 
+  --rating-500: #eab308;
+
   --border: #2f2f30;
 
   --category-recipes: #6b8f71;
@@ -42,6 +44,8 @@
   --color-secondary-700: var(--secondary-700);
 
   --color-accent-500: var(--accent-500);
+
+  --color-rating-500: var(--rating-500);
 }
 
 body {

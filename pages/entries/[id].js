@@ -9,6 +9,7 @@ import EntryList from "../../components/EntryList.js";
 import EntrySteps from "../../components/EntrySteps.js";
 import EntryModal from "../../components/EntryModal.js";
 import CopyEntryButton from "../../components/CopyEntryButton.js";
+import StarRating from "../../components/StarRating.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 
@@ -53,58 +54,64 @@ export default function EntryPage({ entry }) {
         <CopyEntryButton entry={entry} />
       </div>
 
-      <div className="mt-6 flex gap-3">
-        <button
-          type="button"
-          onClick={() => setShowEditModal(true)}
-          className="rounded-lg bg-background p-2 text-primary-700 hover:bg-secondary-100"
-          aria-label={`Edit ${entry.title}`}
-        >
-          {" "}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-pencil"
-          >
-            {" "}
-            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />{" "}
-            <path d="m15 5 4 4" />{" "}
-          </svg>
-        </button>
+      <div className="mt-6 flex items-center justify-between gap-3">
+        <div>
+          {entry.rating > 0 && <StarRating rating={entry.rating} readOnly />}
+        </div>
 
-        <button
-          type="button"
-          onClick={() => setShowDeleteConfirmation(true)}
-          className="rounded-lg bg-background p-2 text-accent-500 hover:bg-accent-100"
-          aria-label={`Delete ${entry.title}`}
-        >
-          {" "}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-trash-2"
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setShowEditModal(true)}
+            className="rounded-lg bg-background p-2 text-primary-700 hover:bg-secondary-100"
+            aria-label={`Edit ${entry.title}`}
           >
             {" "}
-            <path d="M10 11v6" /> <path d="M14 11v6" />{" "}
-            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />{" "}
-            <path d="M3 6h18" />{" "}
-            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />{" "}
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-pencil"
+            >
+              {" "}
+              <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />{" "}
+              <path d="m15 5 4 4" />{" "}
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirmation(true)}
+            className="rounded-lg bg-background p-2 text-accent-500 hover:bg-accent-100"
+            aria-label={`Delete ${entry.title}`}
+          >
+            {" "}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-trash-2"
+            >
+              {" "}
+              <path d="M10 11v6" /> <path d="M14 11v6" />{" "}
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />{" "}
+              <path d="M3 6h18" />{" "}
+              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />{" "}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {showDeleteConfirmation && (

@@ -55,6 +55,7 @@ export default async function handler(req, res) {
       notes,
       source,
       images,
+      rating,
     } = req.body;
 
     if (!title?.trim()) {
@@ -99,6 +100,7 @@ export default async function handler(req, res) {
     entry.steps = steps;
     entry.notes = notes?.trim() || "";
     entry.source = source?.trim() || "";
+    entry.rating = rating >= 1 && rating <= 5 ? rating : undefined;
 
     if (Array.isArray(images)) {
       if (images.length > 5) {
