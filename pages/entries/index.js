@@ -7,35 +7,6 @@ import StarRating from "../../components/StarRating.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 
-function getCategoryStyles(category) {
-  switch (category?.slug) {
-    case "recipes":
-      return {
-        background: "bg-[var(--category-recipes-bg)]",
-        text: "text-[var(--category-recipes)]",
-      };
-
-    case "howto":
-      return {
-        background: "bg-[var(--category-howto-bg)]",
-        text: "text-[var(--category-howto)]",
-      };
-
-    case "guides":
-      return {
-        background: "bg-[var(--category-guides-bg)]",
-        text: "text-[var(--category-guides)]",
-      };
-
-    case "other":
-    default:
-      return {
-        background: "bg-[var(--category-other-bg)]",
-        text: "text-[var(--category-other)]",
-      };
-  }
-}
-
 export default function EntriesPage({ entries }) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -89,8 +60,6 @@ export default function EntriesPage({ entries }) {
       ) : (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredEntries.map((entry) => {
-            const categoryStyles = getCategoryStyles(entry.category);
-
             return (
               <Link
                 key={entry._id}
@@ -106,7 +75,11 @@ export default function EntriesPage({ entries }) {
 
                 {entry.category?.name && (
                   <span
-                    className={`mt-2 inline-block rounded-full px-2.5 py-1 text-xs font-medium ${categoryStyles.background} ${categoryStyles.text}`}
+                    className="mt-2 inline-block rounded-full px-2.5 py-1 text-xs font-medium"
+                    style={{
+                      backgroundColor: entry.category.backgroundColor,
+                      color: entry.category.color,
+                    }}
                   >
                     {" "}
                     {entry.category.name}{" "}

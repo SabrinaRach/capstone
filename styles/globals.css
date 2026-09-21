@@ -17,16 +17,6 @@
   --rating-500: #eab308;
 
   --border: #2f2f30;
-
-  --category-recipes: #6b8f71;
-  --category-howto: #7c6f8f;
-  --category-guides: #b08a4a;
-  --category-other: #7d8587;
-
-  --category-recipes-bg: #e8f0e9;
-  --category-howto-bg: #eeebf2;
-  --category-guides-bg: #f3eddf;
-  --category-other-bg: #dbeaee;
 }
 
 @theme inline {
