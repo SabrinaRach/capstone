@@ -8,6 +8,7 @@ import EntrySection from "../../components/EntrySection.js";
 import EntryList from "../../components/EntryList.js";
 import EntrySteps from "../../components/EntrySteps.js";
 import EntryModal from "../../components/EntryModal.js";
+import CopyEntryButton from "../../components/CopyEntryButton.js";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 
@@ -40,11 +41,17 @@ export default function EntryPage({ entry }) {
     <main className="mx-auto max-w-6xl px-6 py-10">
       <BackLink href="/entries" text="All Entries" />
 
-      <h1 className="text-3xl font-bold">{entry.title}</h1>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">{entry.title}</h1>
 
-      <p className="mt-2 text-secondary-700">
-        Category: {entry.category?.name || "Not assigned"}
-      </p>
+          <p className="mt-2 text-secondary-700">
+            Category: {entry.category?.name || "Not assigned"}
+          </p>
+        </div>
+
+        <CopyEntryButton entry={entry} />
+      </div>
 
       <div className="mt-6 flex gap-3">
         <button
