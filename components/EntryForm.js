@@ -79,6 +79,7 @@ export default function EntryForm({
 
     setError("");
     setIsImporting(true);
+    document.body.style.cursor = "wait";
 
     try {
       const response = await fetch("/api/entries/import", {
@@ -111,6 +112,7 @@ export default function EntryForm({
       setError(error.message);
     } finally {
       setIsImporting(false);
+      document.body.style.cursor = "";
     }
   }
 
@@ -194,7 +196,11 @@ export default function EntryForm({
         throw new Error(data.message || "Failed to save entry.");
       }
 
-      if (onSaved) { onSaved(data.entry || data); return; } setIsSubmitting(false);
+      if (onSaved) {
+        onSaved(data.entry || data);
+        return;
+      }
+      setIsSubmitting(false);
     } catch (error) {
       setError(error.message);
       setIsSubmitting(false);
