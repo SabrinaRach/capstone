@@ -95,7 +95,10 @@ export default function EntriesPage({ entries }) {
               <Link
                 key={entry._id}
                 href={`/entries/${entry._id}`}
-                className="group rounded-xl border border-secondary-100 bg-background p-5 transition hover:-translate-y-0.5 hover:border-secondary-500/40"
+                className="group rounded-xl border border-l-4 border-secondary-100 bg-background p-5 transition hover:-translate-y-0.5 hover:border-secondary-500/40"
+                style={{
+                  borderLeftColor: entry.category?.color || "transparent",
+                }}
               >
                 <h2 className="text-lg font-semibold transition group-hover:text-primary-500">
                   {entry.title}
