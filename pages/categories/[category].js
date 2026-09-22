@@ -14,7 +14,7 @@ export default function CategoryPage({ category, entries }) {
 
   if (!category) {
     return (
-      <main className="mx-auto max-w-6xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
         <BackLink href="/categories" text={t("categoryDetail.backLink")} />
 
         <h1 className="text-2xl font-bold">
@@ -27,7 +27,7 @@ export default function CategoryPage({ category, entries }) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
       <BackLink href="/categories" text={t("categoryDetail.backLink")} />
 
       <div className="flex items-center gap-3">
@@ -62,7 +62,7 @@ export default function CategoryPage({ category, entries }) {
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {entries.map((entry) => (
             <Link
               key={entry._id}

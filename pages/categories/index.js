@@ -47,7 +47,7 @@ export default function CategoriesPage({ categories }) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
       <div>
         <h1 className="text-3xl font-bold">{t("categoriesPage.title")}</h1>
 
@@ -67,7 +67,7 @@ export default function CategoriesPage({ categories }) {
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {categoryList.map((category) => (
             <CategoryCard
               key={category._id}
