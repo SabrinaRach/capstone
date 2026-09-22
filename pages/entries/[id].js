@@ -10,17 +10,42 @@ import EntrySteps from "../../components/EntrySteps.js";
 import EntryModal from "../../components/EntryModal.js";
 import CopyEntryButton from "../../components/CopyEntryButton.js";
 import StarRating from "../../components/StarRating.js";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { getSessionSafe } from "../../lib/apiError.js";
 
 export default function EntryPage({ entry }) {
   const router = useRouter();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const imageSliderRef = useRef(null);
+
+  async function handleDelete() {
+    setDeleteError("");
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/entries/${entry._id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+
+        setDeleteError(data.message || "Could not delete this entry.");
+        setIsDeleting(false);
+        return;
+      }
+
+      router.push("/entries");
+    } catch (error) {
+      setDeleteError("Something went wrong. Please try again.");
+      setIsDeleting(false);
+    }
+  }
 
   if (router.isFallback) {
     return <p>Loading...</p>;
@@ -120,10 +145,19 @@ export default function EntryPage({ entry }) {
             Are you sure you want to delete this entry?
           </p>
 
+          {deleteError && (
+            <p className="mt-3 text-sm text-accent-500" role="alert">
+              {deleteError}
+            </p>
+          )}
+
           <div className="mt-4 flex gap-3">
             <button
               type="button"
-              onClick={() => setShowDeleteConfirmation(false)}
+              onClick={() => {
+                setShowDeleteConfirmation(false);
+                setDeleteError("");
+              }}
               disabled={isDeleting}
               className="rounded-full border border-secondary-500 bg-secondary-100 px-5 py-2 font-medium text-secondary-700 hover:bg-secondary-500 hover:text-background"
             >
@@ -133,20 +167,7 @@ export default function EntryPage({ entry }) {
             <button
               type="button"
               disabled={isDeleting}
-              onClick={async () => {
-                setIsDeleting(true);
-
-                const response = await fetch(`/api/entries/${entry._id}`, {
-                  method: "DELETE",
-                });
-
-                if (response.ok) {
-                  router.push("/entries");
-                  return;
-                }
-
-                setIsDeleting(false);
-              }}
+              onClick={handleDelete}
               className="rounded-full bg-accent-500 px-5 py-2 font-medium text-background hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isDeleting ? "Deleting..." : "Delete permanently"}
@@ -331,7 +352,7 @@ export default function EntryPage({ entry }) {
 }
 
 export async function getServerSideProps({ params, req, res }) {
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getSessionSafe(req, res, authOptions);
 
   if (!session) {
     return {

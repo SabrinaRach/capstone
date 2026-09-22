@@ -4,8 +4,8 @@ import dbConnect from "../../db/connect.js";
 import Entry from "../../db/models/Entry.js";
 import SearchBar from "../../components/SearchBar.js";
 import StarRating from "../../components/StarRating.js";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { getSessionSafe } from "../../lib/apiError.js";
 
 export default function EntriesPage({ entries }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -119,7 +119,7 @@ export default function EntriesPage({ entries }) {
 }
 
 export async function getServerSideProps(context) {
-  const session = await getServerSession(context.req, context.res, authOptions);
+  const session = await getSessionSafe(context.req, context.res, authOptions);
 
   if (!session) {
     return {

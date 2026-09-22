@@ -1,8 +1,8 @@
 import { put } from "@vercel/blob";
 import formidable from "formidable";
 import fs from "fs/promises";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
+import { getSessionSafe } from "../../lib/apiError.js";
 
 export const config = {
   api: {
@@ -11,7 +11,7 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getSessionSafe(req, res, authOptions);
 
   if (!session) {
     return res.status(401).json({

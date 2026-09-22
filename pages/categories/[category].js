@@ -4,8 +4,8 @@ import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
 import Entry from "../../db/models/Entry.js";
 import StarRating from "../../components/StarRating.js";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { getSessionSafe } from "../../lib/apiError.js";
 
 export default function CategoryPage({ category, entries }) {
   if (!category) {
@@ -96,7 +96,7 @@ export default function CategoryPage({ category, entries }) {
 }
 
 export async function getServerSideProps({ params, req, res }) {
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getSessionSafe(req, res, authOptions);
 
   if (!session) {
     return {

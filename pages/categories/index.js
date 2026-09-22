@@ -4,8 +4,8 @@ import CategoryCard from "../../components/CategoryCard";
 import dbConnect from "../../db/connect.js";
 import Category from "../../db/models/Category.js";
 import CategoryForm from "../../components/CategoryForm.js";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { getSessionSafe } from "../../lib/apiError.js";
 
 export default function CategoriesPage({ categories }) {
   const { status } = useSession();
@@ -51,7 +51,6 @@ export default function CategoriesPage({ categories }) {
         </p>
       </div>
 
-
       {categoryList.length === 0 ? (
         <div className="mt-8 rounded-xl border border-dashed border-border-300 p-10 text-center">
           <h2 className="text-lg font-semibold">No categories available</h2>
@@ -80,7 +79,7 @@ export default function CategoriesPage({ categories }) {
 }
 
 export async function getServerSideProps(context) {
-  const session = await getServerSession(context.req, context.res, authOptions);
+  const session = await getSessionSafe(context.req, context.res, authOptions);
 
   if (!session) {
     return {

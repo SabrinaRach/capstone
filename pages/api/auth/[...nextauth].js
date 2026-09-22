@@ -11,6 +11,9 @@ export const authOptions = {
   session: {
     strategy: "jwt",
   },
+  pages: {
+    error: "/auth/error",
+  },
   providers: [
     process.env.VERCEL_ENV === "preview"
       ? CredentialsProvider({

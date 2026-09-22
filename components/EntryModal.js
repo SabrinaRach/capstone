@@ -12,6 +12,7 @@ export default function EntryModal({
 }) {
   const router = useRouter();
   const [categories, setCategories] = useState([]);
+  const [categoriesError, setCategoriesError] = useState("");
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(
     initialData?.category?._id || initialData?.category || "",
@@ -20,11 +21,19 @@ export default function EntryModal({
 
   useEffect(() => {
     async function loadCategories() {
-      const response = await fetch("/api/categories");
-      const data = await response.json();
+      setCategoriesError("");
 
-      if (response.ok) {
+      try {
+        const response = await fetch("/api/categories");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Could not load categories.");
+        }
+
         setCategories(data);
+      } catch (error) {
+        setCategoriesError("Could not load categories. Please try again.");
       }
     }
 
@@ -55,6 +64,15 @@ export default function EntryModal({
         </div>
 
         <div className="mt-6">
+          {categoriesError && categories.length === 0 && (
+            <div
+              role="alert"
+              className="rounded-xl border border-accent-500/40 bg-background px-4 py-3 text-sm text-accent-500"
+            >
+              {categoriesError}
+            </div>
+          )}
+
           {categories.length > 0 && (
             <EntryForm
               categories={categories}
