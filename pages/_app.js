@@ -50,7 +50,7 @@ function AppShell({ Component, pageProps }) {
         {!isHome && <LogoutButton />}
       </div>
 
-      <div className="pb-20">
+      <div className="pb-24">
         <Component {...pageProps} />
         {!isHome && <Navigation onNewEntry={() => setIsEntryModalOpen(true)} />}
         {isEntryModalOpen && (

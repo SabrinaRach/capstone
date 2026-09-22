@@ -58,7 +58,7 @@ export default function EntryPage({ entry }) {
 
   if (!entry) {
     return (
-      <main className="mx-auto max-w-6xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
         <BackLink href="/entries" text={t("entryDetail.allEntriesLink")} />
 
         <h1 className="text-2xl font-bold">{t("entryDetail.notFoundTitle")}</h1>
@@ -69,7 +69,7 @@ export default function EntryPage({ entry }) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
       <BackLink href="/entries" text={t("entryDetail.allEntriesLink")} />
 
       <div className="flex items-start justify-between gap-4">

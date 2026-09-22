@@ -35,7 +35,7 @@ export default function EntriesPage({ entries }) {
     return searchableText.includes(search);
   });
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
       <div>
         <h1 className="text-3xl font-bold">{t("entriesPage.title")}</h1>
 
@@ -63,7 +63,7 @@ export default function EntriesPage({ entries }) {
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {filteredEntries.map((entry) => {
             return (
               <Link

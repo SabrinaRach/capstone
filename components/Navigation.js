@@ -55,7 +55,7 @@ export default function BottomNavigation({ onNewEntry }) {
   return (
     <nav
       aria-label={t("nav.mainNavigation")}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-secondary-100/80 bg-background/90 backdrop-blur-md"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-secondary-100/80 bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md"
     >
       <div className="mx-auto grid h-20 max-w-2xl grid-cols-3 items-center px-4">
         {/* Entries */}
