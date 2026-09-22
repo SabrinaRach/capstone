@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import NewEntryButton from "./NewEntryButton";
+import { useI18n } from "@/lib/i18n/I18nContext";
 
 const navigationItems = [
   {
     href: "/entries",
-    label: "Entries",
+    labelKey: "nav.entries",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -26,7 +27,7 @@ const navigationItems = [
   },
   {
     href: "/categories",
-    label: "Categories",
+    labelKey: "nav.categories",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -49,10 +50,11 @@ const navigationItems = [
 
 export default function BottomNavigation({ onNewEntry }) {
   const router = useRouter();
+  const { t } = useI18n();
 
   return (
     <nav
-      aria-label="Main navigation"
+      aria-label={t("nav.mainNavigation")}
       className="fixed inset-x-0 bottom-0 z-40 border-t border-secondary-100/80 bg-background/90 backdrop-blur-md"
     >
       <div className="mx-auto grid h-20 max-w-2xl grid-cols-3 items-center px-4">
@@ -75,7 +77,7 @@ export default function BottomNavigation({ onNewEntry }) {
                 }`}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </Link>
             );
           })()}
@@ -105,7 +107,7 @@ export default function BottomNavigation({ onNewEntry }) {
                 }`}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <span>{t(item.labelKey)}</span>
               </Link>
             );
           })()}

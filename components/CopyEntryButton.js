@@ -1,40 +1,46 @@
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/I18nContext";
 
-function buildEntryText(entry) {
+function buildEntryText(entry, t) {
   const lines = [entry.title];
 
   if (entry.description) {
-    lines.push("", "Description:", entry.description);
+    lines.push("", t("copyEntryButton.descriptionLabel"), entry.description);
   }
 
   if (entry.items?.length > 0) {
-    lines.push("", "Items:", ...entry.items.map((item) => `- ${item}`));
+    lines.push(
+      "",
+      t("copyEntryButton.itemsLabel"),
+      ...entry.items.map((item) => `- ${item}`),
+    );
   }
 
   if (entry.steps?.length > 0) {
     lines.push(
       "",
-      "Steps:",
+      t("copyEntryButton.stepsLabel"),
       ...entry.steps.map((step, index) => `${index + 1}. ${step}`),
     );
   }
 
   if (entry.notes) {
-    lines.push("", "Notes:", entry.notes);
+    lines.push("", t("copyEntryButton.notesLabel"), entry.notes);
   }
 
   if (entry.source) {
-    lines.push("", "Source:", entry.source);
+    lines.push("", t("copyEntryButton.sourceLabel"), entry.source);
   }
 
   return lines.join("\n");
 }
 
 export default function CopyEntryButton({ entry }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
-    const text = buildEntryText(entry);
+    const text = buildEntryText(entry, t);
 
     try {
       await navigator.clipboard.writeText(text);
@@ -50,7 +56,11 @@ export default function CopyEntryButton({ entry }) {
       type="button"
       onClick={handleCopy}
       className="rounded-lg bg-background p-2 text-primary-700 hover:bg-secondary-100"
-      aria-label={copied ? "Entry copied to clipboard" : `Copy ${entry.title}`}
+      aria-label={
+        copied
+          ? t("copyEntryButton.copiedAria")
+          : t("copyEntryButton.copyAria", { title: entry.title })
+      }
     >
       {copied ? (
         <svg

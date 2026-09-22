@@ -9,6 +9,7 @@ export default async function handler(req, res) {
 
   if (!session) {
     return res.status(401).json({
+      code: "NOT_AUTHORIZED",
       message: "Not authorized",
     });
   }
@@ -26,6 +27,7 @@ export default async function handler(req, res) {
 
     if (req.method !== "POST") {
       return res.status(405).json({
+        code: "METHOD_NOT_ALLOWED",
         message: "Method not allowed",
       });
     }
@@ -44,32 +46,37 @@ export default async function handler(req, res) {
 
     if (!title?.trim()) {
       return res.status(400).json({
+        code: "TITLE_REQUIRED",
         message: "Title is required.",
       });
     }
 
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
+        code: "ITEMS_REQUIRED",
         message: "At least one item is required.",
       });
     }
 
     if (!Array.isArray(steps) || steps.length === 0) {
       return res.status(400).json({
+        code: "STEPS_REQUIRED",
         message: "At least one step is required.",
       });
     }
 
     if (!category) {
       return res.status(400).json({
+        code: "CATEGORY_REQUIRED",
         message: "Category is required.",
       });
     }
 
     if (images?.length > 5) {
-      return res
-        .status(400)
-        .json({ message: "You can upload a maximum of 5 images." });
+      return res.status(400).json({
+        code: "MAX_IMAGES_ENTRY",
+        message: "You can upload a maximum of 5 images.",
+      });
     }
 
     const existingCategory = await Category.findOne({
@@ -79,6 +86,7 @@ export default async function handler(req, res) {
 
     if (!existingCategory) {
       return res.status(400).json({
+        code: "INVALID_CATEGORY",
         message: "Invalid category.",
       });
     }

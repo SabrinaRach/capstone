@@ -3,6 +3,7 @@ import Category from "../../../db/models/Category.js";
 import { authOptions } from "../auth/[...nextauth]";
 import { getToken } from "next-auth/jwt";
 import { getSessionSafe, sendApiError } from "../../../lib/apiError.js";
+import { sortOtherLast } from "../../../lib/categoryOrder.js";
 
 function createSlug(name) {
   return name
@@ -40,6 +41,7 @@ export default async function handler(req, res) {
 
   if (!session) {
     return res.status(401).json({
+      code: "NOT_AUTHORIZED",
       message: "Not authorized",
     });
   }
@@ -57,11 +59,14 @@ export default async function handler(req, res) {
         .sort({ isSystem: -1, name: 1 })
         .lean();
 
-      return res.status(200).json(JSON.parse(JSON.stringify(categories)));
+      return res
+        .status(200)
+        .json(JSON.parse(JSON.stringify(sortOtherLast(categories))));
     }
 
     if (req.method !== "POST") {
       return res.status(405).json({
+        code: "METHOD_NOT_ALLOWED",
         message: "Method not allowed",
       });
     }
@@ -70,12 +75,14 @@ export default async function handler(req, res) {
 
     if (!name || !name.trim()) {
       return res.status(400).json({
+        code: "CATEGORY_NAME_REQUIRED",
         message: "Category name is required.",
       });
     }
 
     if (!color || !/^#[0-9A-Fa-f]{6}$/.test(color)) {
       return res.status(400).json({
+        code: "INVALID_COLOR",
         message: "A valid color is required.",
       });
     }
@@ -85,6 +92,7 @@ export default async function handler(req, res) {
 
     if (!slug) {
       return res.status(400).json({
+        code: "INVALID_CATEGORY_NAME",
         message: "Please enter a valid category name.",
       });
     }
@@ -111,6 +119,7 @@ export default async function handler(req, res) {
 
     if (existingCategory) {
       return res.status(409).json({
+        code: "CATEGORY_EXISTS",
         message: "A category with this name already exists.",
       });
     }

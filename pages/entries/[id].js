@@ -12,9 +12,12 @@ import CopyEntryButton from "../../components/CopyEntryButton.js";
 import StarRating from "../../components/StarRating.js";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
+import { useI18n } from "@/lib/i18n/I18nContext";
+import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
 
 export default function EntryPage({ entry }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -35,44 +38,50 @@ export default function EntryPage({ entry }) {
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
 
-        setDeleteError(data.message || "Could not delete this entry.");
+        setDeleteError(
+          data.code ? t(`apiErrors.${data.code}`) : t("entryDetail.deleteFailed"),
+        );
         setIsDeleting(false);
         return;
       }
 
       router.push("/entries");
     } catch (error) {
-      setDeleteError("Something went wrong. Please try again.");
+      setDeleteError(t("common.genericError"));
       setIsDeleting(false);
     }
   }
 
   if (router.isFallback) {
-    return <p>Loading...</p>;
+    return <p>{t("entryDetail.loading")}</p>;
   }
 
   if (!entry) {
     return (
       <main className="mx-auto max-w-6xl px-6 py-10">
-        <BackLink href="/entries" text="All Entries" />
+        <BackLink href="/entries" text={t("entryDetail.allEntriesLink")} />
 
-        <h1 className="text-2xl font-bold">Entry not found</h1>
+        <h1 className="text-2xl font-bold">{t("entryDetail.notFoundTitle")}</h1>
 
-        <p className="mt-2">The requested entry does not exist.</p>
+        <p className="mt-2">{t("entryDetail.notFoundDescription")}</p>
       </main>
     );
   }
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
-      <BackLink href="/entries" text="All Entries" />
+      <BackLink href="/entries" text={t("entryDetail.allEntriesLink")} />
 
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">{entry.title}</h1>
 
           <p className="mt-2 text-secondary-700">
-            Category: {entry.category?.name || "Not assigned"}
+            {t("entryDetail.categoryLabel", {
+              category: entry.category
+                ? getCategoryDisplayName(entry.category, t)
+                : t("entryDetail.categoryUnassigned"),
+            })}
           </p>
         </div>
 
@@ -89,7 +98,7 @@ export default function EntryPage({ entry }) {
             type="button"
             onClick={() => setShowEditModal(true)}
             className="rounded-lg bg-background p-2 text-primary-700 hover:bg-secondary-100"
-            aria-label={`Edit ${entry.title}`}
+            aria-label={t("entryDetail.editAria", { title: entry.title })}
           >
             {" "}
             <svg
@@ -114,7 +123,7 @@ export default function EntryPage({ entry }) {
             type="button"
             onClick={() => setShowDeleteConfirmation(true)}
             className="rounded-lg bg-background p-2 text-accent-500 hover:bg-accent-100"
-            aria-label={`Delete ${entry.title}`}
+            aria-label={t("entryDetail.deleteAria", { title: entry.title })}
           >
             {" "}
             <svg
@@ -142,7 +151,7 @@ export default function EntryPage({ entry }) {
       {showDeleteConfirmation && (
         <div className="mt-4 rounded-xl border border-accent-500 bg-accent-500/10 p-5">
           <p className="mt-2 text-sm text-secondary-700">
-            Are you sure you want to delete this entry?
+            {t("entryDetail.deleteConfirmTitle")}
           </p>
 
           {deleteError && (
@@ -161,7 +170,7 @@ export default function EntryPage({ entry }) {
               disabled={isDeleting}
               className="rounded-full border border-secondary-500 bg-secondary-100 px-5 py-2 font-medium text-secondary-700 hover:bg-secondary-500 hover:text-background"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
 
             <button
@@ -170,7 +179,9 @@ export default function EntryPage({ entry }) {
               onClick={handleDelete}
               className="rounded-full bg-accent-500 px-5 py-2 font-medium text-background hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isDeleting ? "Deleting..." : "Delete permanently"}
+              {isDeleting
+                ? t("entryDetail.deleting")
+                : t("entryDetail.deletePermanently")}
             </button>
           </div>
         </div>
@@ -178,17 +189,17 @@ export default function EntryPage({ entry }) {
 
       <div className="mt-8 space-y-8">
         {entry.description && (
-          <EntrySection title="Description">
+          <EntrySection title={t("entryDetail.descriptionSection")}>
             <p className="whitespace-pre-line">{entry.description}</p>
           </EntrySection>
         )}
 
-        <EntryList title="Items" items={entry.items} />
+        <EntryList title={t("entryDetail.itemsSection")} items={entry.items} />
 
         <EntrySteps steps={entry.steps} />
 
         {entry.notes && (
-          <EntrySection title="Notes">
+          <EntrySection title={t("entryDetail.notesSection")}>
             <p className="whitespace-pre-line">{entry.notes}</p>
           </EntrySection>
         )}
@@ -230,7 +241,10 @@ export default function EntryPage({ entry }) {
                       height={600}
                       loading="eager"
                       src={imageUrl}
-                      alt={`${entry.title} - Image ${index + 1}`}
+                      alt={t("entryForm.imageAlt", {
+                        title: entry.title,
+                        index: index + 1,
+                      })}
                       className="aspect-square w-full rounded-xl object-cover"
                     />
                   </div>
@@ -240,7 +254,7 @@ export default function EntryPage({ entry }) {
               {entry.images.length > 1 && (
                 <button
                   type="button"
-                  aria-label="Previous image"
+                  aria-label={t("entryDetail.prevImage")}
                   onClick={() => {
                     const previousIndex =
                       currentImageIndex === 0
@@ -266,7 +280,7 @@ export default function EntryPage({ entry }) {
               {entry.images.length > 1 && (
                 <button
                   type="button"
-                  aria-label="Next image"
+                  aria-label={t("entryDetail.nextImage")}
                   onClick={() => {
                     const nextIndex =
                       currentImageIndex === entry.images.length - 1
@@ -296,7 +310,7 @@ export default function EntryPage({ entry }) {
                   <button
                     key={imageUrl}
                     type="button"
-                    aria-label={`Go to image ${index + 1}`}
+                    aria-label={t("entryDetail.goToImage", { index: index + 1 })}
                     onClick={() => {
                       const slider = imageSliderRef.current;
                       const slide = slider?.children[index];
@@ -323,7 +337,7 @@ export default function EntryPage({ entry }) {
         )}
 
         {entry.source && (
-          <EntrySection title="Source">
+          <EntrySection title={t("entryDetail.sourceSection")}>
             <a
               href={entry.source}
               target="_blank"

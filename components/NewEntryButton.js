@@ -1,10 +1,14 @@
+import { useI18n } from "@/lib/i18n/I18nContext";
+
 export default function NewEntryButton({onClick}) {
+  const { t } = useI18n();
 
   return (
     <>
       <button
         type="button"
         onClick={onClick}
+        aria-label={t("nav.newEntry")}
         className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary-100 text-secondary-700 shadow-sm transition hover:bg-secondary-500 hover:text-background"
       >
         <svg

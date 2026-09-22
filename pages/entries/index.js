@@ -6,8 +6,11 @@ import SearchBar from "../../components/SearchBar.js";
 import StarRating from "../../components/StarRating.js";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
+import { useI18n } from "@/lib/i18n/I18nContext";
+import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
 
 export default function EntriesPage({ entries }) {
+  const { t, tCount } = useI18n();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredEntries = entries.filter((entry) => {
@@ -34,10 +37,10 @@ export default function EntriesPage({ entries }) {
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div>
-        <h1 className="text-3xl font-bold">Your Entries</h1>
+        <h1 className="text-3xl font-bold">{t("entriesPage.title")}</h1>
 
         <p className="mt-2 text-secondary-500">
-          Browse and search your saved entries.
+          {t("entriesPage.subtitle")}
         </p>
 
         <div className="mt-6">
@@ -48,13 +51,15 @@ export default function EntriesPage({ entries }) {
       {filteredEntries.length === 0 ? (
         <div className="mt-8 rounded-xl border border-dashed border-secondary-100 p-10 text-center">
           <h2 className="text-lg font-semibold">
-            {searchTerm ? "No entries found" : "No entries yet"}
+            {searchTerm
+              ? t("entriesPage.emptyTitleNoMatch")
+              : t("entriesPage.emptyTitleNone")}
           </h2>
 
           <p className="mt-2 text-sm text-secondary-500">
             {searchTerm
-              ? "No entries match your search."
-              : "There are currently no entries to display."}
+              ? t("entriesPage.emptyDescriptionSearch")
+              : t("entriesPage.emptyDescriptionNone")}
           </p>
         </div>
       ) : (
@@ -82,7 +87,7 @@ export default function EntriesPage({ entries }) {
                     }}
                   >
                     {" "}
-                    {entry.category.name}{" "}
+                    {getCategoryDisplayName(entry.category, t)}{" "}
                   </span>
                 )}
 
@@ -95,18 +100,10 @@ export default function EntriesPage({ entries }) {
                 <div className="mt-4 flex gap-4 text-xs text-secondary-500">
                   {" "}
                   {entry.items?.length > 0 && (
-                    <span>
-                      {" "}
-                      {entry.items.length}{" "}
-                      {entry.items.length === 1 ? "item" : "items"}{" "}
-                    </span>
+                    <span> {tCount(entry.items.length, "counts.item")} </span>
                   )}{" "}
                   {entry.steps?.length > 0 && (
-                    <span>
-                      {" "}
-                      {entry.steps.length}{" "}
-                      {entry.steps.length === 1 ? "step" : "steps"}{" "}
-                    </span>
+                    <span> {tCount(entry.steps.length, "counts.step")} </span>
                   )}{" "}
                 </div>
               </Link>

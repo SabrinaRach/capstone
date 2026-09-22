@@ -106,6 +106,7 @@ function cleanHtml(html) {
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
+      code: "METHOD_NOT_ALLOWED",
       message: "Method not allowed",
     });
   }
@@ -114,6 +115,7 @@ export default async function handler(req, res) {
 
   if (!session?.user?.id) {
     return res.status(401).json({
+      code: "NOT_AUTHORIZED",
       message: "Not authorized",
     });
   }
@@ -122,12 +124,14 @@ export default async function handler(req, res) {
 
   if (!url || typeof url !== "string") {
     return res.status(400).json({
+      code: "IMPORT_URL_REQUIRED",
       message: "A website URL is required.",
     });
   }
 
   if (!isValidHttpUrl(url)) {
     return res.status(400).json({
+      code: "IMPORT_INVALID_URL",
       message: "Please provide a valid website URL.",
     });
   }
@@ -142,6 +146,7 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       return res.status(400).json({
+        code: "IMPORT_LOAD_FAILED",
         message: "The website could not be loaded.",
       });
     }
@@ -149,6 +154,7 @@ export default async function handler(req, res) {
     const contentLength = response.headers.get("content-length");
     if (contentLength && Number(contentLength) > MAX_HTML_LENGTH) {
       return res.status(400).json({
+        code: "IMPORT_TOO_LARGE",
         message: "The website is too large.",
       });
     }
@@ -157,6 +163,7 @@ export default async function handler(req, res) {
 
     if (!html) {
       return res.status(400).json({
+        code: "IMPORT_NO_CONTENT",
         message: "The website did not return any content.",
       });
     }
@@ -165,6 +172,7 @@ export default async function handler(req, res) {
 
     if (!content) {
       return res.status(400).json({
+        code: "IMPORT_NO_READABLE_CONTENT",
         message:
           "No readable content was found on the website. Please fill out manually.",
       });
@@ -178,6 +186,7 @@ export default async function handler(req, res) {
 
     if (categories.length === 0) {
       return res.status(500).json({
+        code: "IMPORT_NO_DEFAULT_CATEGORY",
         message: "No default categories are available.",
       });
     }
@@ -254,6 +263,7 @@ ${content}
     console.error("Entry import error:", error);
 
     return res.status(500).json({
+      code: "IMPORT_PROCESS_FAILED",
       message: "The website could not be processed. Please try again.",
     });
   }

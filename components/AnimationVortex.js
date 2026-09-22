@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { CATEGORIES } from "./categoryConfig";
+import { useI18n } from "@/lib/i18n/I18nContext";
 
 const CANVAS_SIZE = 600;
 const PARTICLE_COUNT = 120;
@@ -23,6 +24,7 @@ const easeInOutCubic = (t) => {
 const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 
 export default function AnimationVortex({ onAnimationComplete }) {
+  const { t } = useI18n();
   const canvasRef = useRef(null);
   const iconRefs = useRef([]);
 
@@ -383,7 +385,7 @@ export default function AnimationVortex({ onAnimationComplete }) {
     <motion.div
       role="button"
       tabIndex={0}
-      aria-label="Vortex öffnen"
+      aria-label={t("animation.openVortex")}
       onClick={handleActivate}
       onKeyDown={handleKeyDown}
       whileHover={{

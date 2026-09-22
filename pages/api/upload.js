@@ -15,12 +15,14 @@ export default async function handler(req, res) {
 
   if (!session) {
     return res.status(401).json({
+      code: "NOT_AUTHORIZED",
       error: "Not authorized",
     });
   }
 
   if (req.method !== "POST") {
     return res.status(405).json({
+      code: "METHOD_NOT_ALLOWED",
       error: "Method not allowed",
     });
   }
@@ -48,12 +50,15 @@ export default async function handler(req, res) {
 
     if (uploadedFiles.length === 0) {
       return res.status(400).json({
+        code: "UPLOAD_NO_FILES",
         error: "No files provided",
       });
     }
 
     if (uploadedFiles.length > maxImages) {
       return res.status(400).json({
+        code: "UPLOAD_MAX_IMAGES",
+        params: { max: maxImages },
         error: `You can upload a maximum of ${maxImages} images`,
       });
     }
@@ -63,12 +68,16 @@ export default async function handler(req, res) {
     for (const imageFile of uploadedFiles) {
       if (imageFile.size > maxFileSize) {
         return res.status(400).json({
+          code: "UPLOAD_FILE_TOO_LARGE",
+          params: { filename: imageFile.originalFilename },
           error: `${imageFile.originalFilename} must not exceed 5 MB`,
         });
       }
 
       if (!allowedMimeTypes.includes(imageFile.mimetype)) {
         return res.status(400).json({
+          code: "UPLOAD_INVALID_TYPE",
+          params: { filename: imageFile.originalFilename },
           error: `${imageFile.originalFilename} is not a supported image type. Only JPEG and PNG images are allowed.`,
         });
       }
@@ -97,6 +106,7 @@ export default async function handler(req, res) {
     console.error("Upload error:", error);
 
     return res.status(500).json({
+      code: "UPLOAD_FAILED",
       error: "Upload failed",
     });
   }

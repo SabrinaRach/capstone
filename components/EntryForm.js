@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import StarRating from "./StarRating.js";
+import { useI18n } from "@/lib/i18n/I18nContext";
+import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
 
 export default function EntryForm({
   categories,
@@ -12,6 +14,7 @@ export default function EntryForm({
   entryId,
   onSaved,
 }) {
+  const { t, tCount } = useI18n();
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     description: initialData?.description || "",
@@ -58,7 +61,7 @@ export default function EntryForm({
 
   async function handleImport() {
     if (!importUrl.trim()) {
-      setError("Please enter a website URL.");
+      setError(t("entryForm.importUrlRequired"));
       return;
     }
 
@@ -95,7 +98,9 @@ export default function EntryForm({
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.message || "Website import failed.");
+        setError(
+          result.code ? t(`apiErrors.${result.code}`) : t("entryForm.importFailed"),
+        );
         return;
       }
 
@@ -110,7 +115,7 @@ export default function EntryForm({
         source: importUrl.trim(),
       }));
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      setError(t("common.genericError"));
     } finally {
       setIsImporting(false);
       document.body.style.cursor = "";
@@ -123,17 +128,17 @@ export default function EntryForm({
     setError("");
 
     if (!formData.title.trim()) {
-      setError("Title is required.");
+      setError(t("entryForm.titleRequired"));
       return;
     }
 
     if (!formData.items.trim()) {
-      setError("Items are required.");
+      setError(t("entryForm.itemsRequired"));
       return;
     }
 
     if (!formData.steps.trim()) {
-      setError("Steps are required.");
+      setError(t("entryForm.stepsRequired"));
       return;
     }
 
@@ -157,7 +162,11 @@ export default function EntryForm({
         const uploadData = await uploadResponse.json();
 
         if (!uploadResponse.ok) {
-          setError(uploadData.error || "Image upload failed.");
+          setError(
+            uploadData.code
+              ? t(`apiErrors.${uploadData.code}`, uploadData.params)
+              : t("entryForm.imageUploadFailed"),
+          );
           setIsSubmitting(false);
           return;
         }
@@ -196,7 +205,9 @@ export default function EntryForm({
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Failed to save entry.");
+        setError(
+          data.code ? t(`apiErrors.${data.code}`) : t("entryForm.saveFailed"),
+        );
         setIsSubmitting(false);
         return;
       }
@@ -207,7 +218,7 @@ export default function EntryForm({
       }
       setIsSubmitting(false);
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      setError(t("common.genericError"));
       setIsSubmitting(false);
     }
   }
@@ -225,12 +236,11 @@ export default function EntryForm({
 
       <div className="rounded-xl border border-secondary-100 bg-background p-5">
         <label htmlFor="importUrl" className="block text-sm font-medium">
-          Import from website
+          {t("entryForm.importTitle")}
         </label>
 
         <p className="mt-1 text-sm text-secondary-500">
-          Enter a website URL and AI will extract the relevant information into
-          the fields below.
+          {t("entryForm.importDescription")}
         </p>
 
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
@@ -239,7 +249,7 @@ export default function EntryForm({
             type="url"
             value={importUrl}
             onChange={(event) => setImportUrl(event.target.value)}
-            placeholder="https://example.com/..."
+            placeholder={t("entryForm.importPlaceholder")}
             className="w-full rounded-lg border border-secondary-100 bg-background px-4 py-2.5 text-sm outline-none transition placeholder:text-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
           />
 
@@ -249,15 +259,14 @@ export default function EntryForm({
             disabled={isImporting}
             className="rounded-full border border-secondary-100 px-5 py-2.5 text-sm font-medium transition hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isImporting ? "Importing..." : "Import with AI"}
+            {isImporting ? t("entryForm.importing") : t("entryForm.importWithAi")}
           </button>
         </div>
 
         {showImportConfirmation && (
           <div className="mt-4 rounded-lg border border-accent-500/40 bg-background p-4">
             <p className="text-sm font-medium text-accent-500">
-              This will replace the existing entry fields with the imported
-              information. Do you want to continue?
+              {t("entryForm.importOverwriteConfirm")}
             </p>
 
             <div className="mt-3 flex gap-2">
@@ -267,7 +276,7 @@ export default function EntryForm({
                 disabled={isImporting}
                 className="rounded-lg bg-primary-500 px-5 py-2 text-sm font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isImporting ? "Importing..." : "Continue"}
+                {isImporting ? t("entryForm.importing") : t("common.continue")}
               </button>
 
               <button
@@ -276,7 +285,7 @@ export default function EntryForm({
                 disabled={isImporting}
                 className="rounded-lg bg-primary-500 px-5 py-2 text-sm font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
             </div>
           </div>
@@ -285,7 +294,7 @@ export default function EntryForm({
 
       <div>
         <label htmlFor="title" className="block text-sm font-medium">
-          Title *
+          {t("entryForm.titleLabel")}
         </label>
 
         <input
@@ -301,7 +310,7 @@ export default function EntryForm({
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium">
-          Description
+          {t("entryForm.descriptionLabel")}
         </label>
 
         <textarea
@@ -316,7 +325,7 @@ export default function EntryForm({
 
       <div>
         <label htmlFor="category" className="block text-sm font-medium">
-          Category
+          {t("entryForm.categoryLabel")}
         </label>
 
         <select
@@ -328,20 +337,20 @@ export default function EntryForm({
         >
           {categories.map((category) => (
             <option key={category._id} value={category._id}>
-              {category.name}
+              {getCategoryDisplayName(category, t)}
             </option>
           ))}
-          <option value="create-new">Create new category</option>
+          <option value="create-new">{t("entryForm.createCategory")}</option>
         </select>
       </div>
 
       <div>
         <label htmlFor="items" className="block text-sm font-medium">
-          Items *
+          {t("entryForm.itemsLabel")}
         </label>
 
         <p className="mt-1 text-sm text-secondary-500">
-          Enter one item per line.
+          {t("entryForm.itemsHelp")}
         </p>
 
         <textarea
@@ -357,11 +366,11 @@ export default function EntryForm({
 
       <div>
         <label htmlFor="steps" className="block text-sm font-medium">
-          Steps *
+          {t("entryForm.stepsLabel")}
         </label>
 
         <p className="mt-1 text-sm text-secondary-700">
-          Enter one step per line.
+          {t("entryForm.stepsHelp")}
         </p>
 
         <textarea
@@ -377,7 +386,7 @@ export default function EntryForm({
 
       <div>
         <label htmlFor="notes" className="block text-sm font-medium">
-          Notes
+          {t("entryForm.notesLabel")}
         </label>
 
         <textarea
@@ -391,7 +400,9 @@ export default function EntryForm({
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Rating</label>
+        <label className="block text-sm font-medium">
+          {t("entryForm.ratingLabel")}
+        </label>
 
         <div className="mt-2">
           <StarRating
@@ -408,7 +419,7 @@ export default function EntryForm({
 
       <div>
         <label htmlFor="source" className="block text-sm font-medium">
-          Source
+          {t("entryForm.sourceLabel")}
         </label>
 
         <input
@@ -423,12 +434,14 @@ export default function EntryForm({
 
       <div>
         <label htmlFor="images" className="block text-sm font-medium">
-          Images
+          {t("entryForm.imagesLabel")}
         </label>
 
         {isEditing && existingImages.length > 0 && (
           <div className="mt-4">
-            <p className="text-sm font-medium">Existing images</p>
+            <p className="text-sm font-medium">
+              {t("entryForm.existingImages")}
+            </p>
 
             <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {existingImages.map((imageUrl, index) => (
@@ -438,7 +451,10 @@ export default function EntryForm({
                 >
                   <Image
                     src={imageUrl}
-                    alt={`${formData.title || "Entry"} - Image ${index + 1}`}
+                    alt={t("entryForm.imageAlt", {
+                      title: formData.title || t("entryForm.imageAltFallbackTitle"),
+                      index: index + 1,
+                    })}
                     className="h-32 w-full object-cover"
                     width={200}
                     height={200}
@@ -453,7 +469,7 @@ export default function EntryForm({
                     }}
                     className="absolute right-2 top-2 rounded-lg bg-background/90 px-3 py-1 text-xs font-medium text-accent-500 backdrop-blur-sm transition hover:bg-background"
                   >
-                    Delete
+                    {t("entryForm.deleteImage")}
                   </button>
                 </div>
               ))}
@@ -463,8 +479,8 @@ export default function EntryForm({
 
         <p className="mt-3 text-sm text-secondary-500">
           {isEditing
-            ? "Keep the existing images or delete them. You can also add new images."
-            : "You can select up to 5 images."}
+            ? t("entryForm.imagesHelpEdit")
+            : t("entryForm.imagesHelpNew")}
         </p>
 
         <input
@@ -485,7 +501,9 @@ export default function EntryForm({
             );
 
             if (oversizedFile) {
-              setError(`${oversizedFile.name} must not exceed 5 MB.`);
+              setError(
+                t("entryForm.imageTooLarge", { filename: oversizedFile.name }),
+              );
               event.target.value = "";
               return;
             }
@@ -496,7 +514,7 @@ export default function EntryForm({
               const totalImages = existingImages.length + combinedFiles.length;
 
               if (totalImages > 5) {
-                setError("You can have a maximum of 5 images.");
+                setError(t("entryForm.maxImages"));
                 return currentFiles;
               }
 
@@ -513,14 +531,13 @@ export default function EntryForm({
           htmlFor="images"
           className="mt-3 inline-block cursor-pointer rounded-lg border border-secondary-100 px-5 py-2.5 text-sm font-medium transition hover:bg-secondary-100"
         >
-          Choose images
+          {t("entryForm.chooseImages")}
         </label>
 
         {selectedFiles.length > 0 && (
           <div className="mt-4 space-y-2">
             <p className="text-sm font-medium">
-              {selectedFiles.length}{" "}
-              {selectedFiles.length === 1 ? "image" : "images"} selected
+              {tCount(selectedFiles.length, "counts.image")}
             </p>
 
             {selectedFiles.map((file, index) => (
@@ -541,7 +558,7 @@ export default function EntryForm({
                   }}
                   className="ml-3 shrink-0 font-medium text-accent-500 transition hover:underline"
                 >
-                  Remove
+                  {t("entryForm.removeImage")}
                 </button>
               </div>
             ))}
@@ -556,10 +573,10 @@ export default function EntryForm({
           className="rounded-lg bg-primary-500 px-6 py-2.5 text-sm font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting
-            ? "Saving..."
+            ? t("entryForm.saving")
             : isEditing
-              ? "Save Changes"
-              : "Save Entry"}
+              ? t("entryForm.saveChanges")
+              : t("entryForm.saveEntry")}
         </button>
       </div>
     </form>
