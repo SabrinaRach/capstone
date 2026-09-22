@@ -1,0 +1,243 @@
+{
+  "common": {
+    "cancel": "Abbrechen",
+    "continue": "Weiter",
+    "or": "oder",
+    "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+  },
+  "nav": {
+    "entries": "Einträge",
+    "categories": "Kategorien",
+    "mainNavigation": "Hauptnavigation",
+    "newEntry": "Neuen Eintrag erstellen"
+  },
+  "animation": {
+    "openVortex": "Vortex öffnen"
+  },
+  "logout": {
+    "label": "Abmelden"
+  },
+  "languageSwitcher": {
+    "label": "Sprache wechseln"
+  },
+  "toast": {
+    "loggedOut": "✓ Erfolgreich abgemeldet"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "backLink": "Zurück zu deinen Einträgen"
+  },
+  "errorPage": {
+    "title": "Etwas ist schiefgelaufen",
+    "descriptionWithCode": "Ein unerwarteter Fehler ist aufgetreten ({statusCode}). Bitte versuche es erneut.",
+    "description": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuche es erneut.",
+    "backLink": "Zurück zu deinen Einträgen"
+  },
+  "authError": {
+    "title": "Anmeldeproblem",
+    "verification": "Dieser Anmeldelink ist abgelaufen oder wurde bereits verwendet. Bitte fordere einen neuen an.",
+    "accessDenied": "Der Zugriff wurde verweigert. Bitte versuche erneut, dich anzumelden.",
+    "configuration": "Die Anmeldung ist derzeit nicht verfügbar. Bitte versuche es später erneut.",
+    "default": "Bei der Anmeldung ist etwas schiefgelaufen. Bitte versuche es erneut.",
+    "backToLogin": "Zurück zur Anmeldung"
+  },
+  "login": {
+    "welcome": "Willkommen",
+    "subtitle": "Melde dich an, um deine Inhalte zu verwalten.",
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "du@beispiel.de",
+    "continueWithEmail": "Mit E-Mail fortfahren",
+    "sendingLink": "Link wird gesendet…",
+    "signInWithGithub": "Mit GitHub anmelden",
+    "signInError": "Anmeldung nicht möglich, bitte versuche es erneut.",
+    "sendLinkError": "Der Anmeldelink konnte nicht gesendet werden, bitte versuche es erneut."
+  },
+  "counts": {
+    "entry": { "one": "{count} Eintrag", "other": "{count} Einträge" },
+    "item": { "one": "{count} Element", "other": "{count} Elemente" },
+    "step": { "one": "{count} Schritt", "other": "{count} Schritte" },
+    "image": { "one": "{count} Bild ausgewählt", "other": "{count} Bilder ausgewählt" }
+  },
+  "categories": {
+    "recipes": "Rezepte",
+    "how-to-instructions": "Anleitungen",
+    "guides": "Guides",
+    "other": "Sonstiges"
+  },
+  "categoriesPage": {
+    "accessDenied": "Zugriff verweigert! Bitte melde dich zuerst an.",
+    "title": "Kategorien",
+    "subtitle": "Finde und öffne deine Inhalte nach Kategorie.",
+    "emptyTitle": "Keine Kategorien verfügbar",
+    "emptyDescription": "Aktuell gibt es keine Kategorien zum Anzeigen."
+  },
+  "categoryDetail": {
+    "backLink": "Kategorien",
+    "notFoundTitle": "Kategorie nicht gefunden",
+    "notFoundDescription": "Die angeforderte Kategorie existiert nicht.",
+    "emptyEntries": "Noch keine Einträge in dieser Kategorie."
+  },
+  "entriesPage": {
+    "title": "Deine Einträge",
+    "subtitle": "Durchsuche und finde deine gespeicherten Einträge.",
+    "emptyTitleNoMatch": "Keine Einträge gefunden",
+    "emptyTitleNone": "Noch keine Einträge",
+    "emptyDescriptionSearch": "Keine Einträge entsprechen deiner Suche.",
+    "emptyDescriptionNone": "Aktuell gibt es keine Einträge zum Anzeigen."
+  },
+  "entryDetail": {
+    "allEntriesLink": "Alle Einträge",
+    "notFoundTitle": "Eintrag nicht gefunden",
+    "notFoundDescription": "Der angeforderte Eintrag existiert nicht.",
+    "categoryLabel": "Kategorie: {category}",
+    "categoryUnassigned": "Nicht zugewiesen",
+    "editAria": "{title} bearbeiten",
+    "deleteAria": "{title} löschen",
+    "deleteConfirmTitle": "Möchtest du diesen Eintrag wirklich löschen?",
+    "deletePermanently": "Endgültig löschen",
+    "deleting": "Wird gelöscht…",
+    "deleteFailed": "Der Eintrag konnte nicht gelöscht werden.",
+    "descriptionSection": "Beschreibung",
+    "itemsSection": "Elemente",
+    "stepsSection": "Schritte",
+    "notesSection": "Notizen",
+    "sourceSection": "Quelle",
+    "prevImage": "Vorheriges Bild",
+    "nextImage": "Nächstes Bild",
+    "goToImage": "Zu Bild {index} wechseln",
+    "loading": "Wird geladen…"
+  },
+  "entryModal": {
+    "editTitle": "Eintrag bearbeiten",
+    "createTitle": "Eintrag erstellen",
+    "closeAria": "Schließen",
+    "loadCategoriesError": "Kategorien konnten nicht geladen werden.",
+    "loadCategoriesErrorRetry": "Kategorien konnten nicht geladen werden. Bitte versuche es erneut."
+  },
+  "entryForm": {
+    "importTitle": "Von Website importieren",
+    "importDescription": "Gib eine Website-URL ein und die KI extrahiert die relevanten Informationen in die untenstehenden Felder.",
+    "importPlaceholder": "https://beispiel.de/…",
+    "importing": "Wird importiert…",
+    "importWithAi": "Mit KI importieren",
+    "importUrlRequired": "Bitte gib eine Website-URL ein.",
+    "importOverwriteConfirm": "Dies ersetzt die vorhandenen Eintragsfelder mit den importierten Informationen. Möchtest du fortfahren?",
+    "importFailed": "Website-Import fehlgeschlagen.",
+    "titleLabel": "Titel *",
+    "descriptionLabel": "Beschreibung",
+    "categoryLabel": "Kategorie",
+    "createCategory": "Neue Kategorie erstellen",
+    "itemsLabel": "Elemente *",
+    "itemsHelp": "Ein Element pro Zeile.",
+    "stepsLabel": "Schritte *",
+    "stepsHelp": "Einen Schritt pro Zeile.",
+    "notesLabel": "Notizen",
+    "ratingLabel": "Bewertung",
+    "sourceLabel": "Quelle",
+    "imagesLabel": "Bilder",
+    "existingImages": "Vorhandene Bilder",
+    "imageAltFallbackTitle": "Eintrag",
+    "imageAlt": "{title} - Bild {index}",
+    "deleteImage": "Löschen",
+    "imagesHelpEdit": "Behalte die vorhandenen Bilder oder lösche sie. Du kannst auch neue Bilder hinzufügen.",
+    "imagesHelpNew": "Du kannst bis zu 5 Bilder auswählen.",
+    "chooseImages": "Bilder auswählen",
+    "removeImage": "Entfernen",
+    "titleRequired": "Titel ist erforderlich.",
+    "itemsRequired": "Elemente sind erforderlich.",
+    "stepsRequired": "Schritte sind erforderlich.",
+    "saveFailed": "Eintrag konnte nicht gespeichert werden.",
+    "imageTooLarge": "{filename} darf 5 MB nicht überschreiten.",
+    "maxImages": "Du kannst maximal 5 Bilder haben.",
+    "imageUploadFailed": "Bild-Upload fehlgeschlagen.",
+    "saving": "Wird gespeichert…",
+    "saveChanges": "Änderungen speichern",
+    "saveEntry": "Eintrag speichern"
+  },
+  "categoryForm": {
+    "nameRequired": "Bitte gib einen Kategorienamen ein.",
+    "title": "Kategorie erstellen",
+    "nameLabel": "Name",
+    "namePlaceholder": "Kategoriename",
+    "colorLabel": "Farbe",
+    "createError": "Kategorie konnte nicht erstellt werden.",
+    "creating": "Wird erstellt…",
+    "create": "Kategorie erstellen"
+  },
+  "editCategoryCard": {
+    "nameLabel": "Name",
+    "nameRequired": "Bitte gib einen Kategorienamen ein.",
+    "updateError": "Kategorie konnte nicht aktualisiert werden.",
+    "saving": "Wird gespeichert…",
+    "save": "Speichern",
+    "deleteConfirmTitle": "„{name}“ löschen?",
+    "deleteConfirmDescription": "Einträge in dieser Kategorie werden nach „Sonstiges“ verschoben.",
+    "deleteError": "Kategorie konnte nicht gelöscht werden.",
+    "deleting": "Wird gelöscht…",
+    "delete": "Löschen",
+    "editAria": "Kategorie {name} bearbeiten",
+    "deleteAria": "Kategorie {name} löschen"
+  },
+  "copyEntryButton": {
+    "descriptionLabel": "Beschreibung:",
+    "itemsLabel": "Elemente:",
+    "stepsLabel": "Schritte:",
+    "notesLabel": "Notizen:",
+    "sourceLabel": "Quelle:",
+    "copiedAria": "Eintrag in die Zwischenablage kopiert",
+    "copyAria": "{title} kopieren"
+  },
+  "searchBar": {
+    "srLabel": "Einträge durchsuchen",
+    "placeholder": "Einträge durchsuchen…",
+    "clear": "Löschen"
+  },
+  "starRating": {
+    "ratingValueAria": "Bewertung: {rating} von 5 Sternen",
+    "ratingAria": "Bewertung",
+    "rateValueAria": "{value} von 5 Sternen bewerten"
+  },
+  "apiErrors": {
+    "NOT_AUTHORIZED": "Nicht autorisiert.",
+    "METHOD_NOT_ALLOWED": "Methode nicht erlaubt.",
+    "CATEGORY_NAME_REQUIRED": "Der Kategoriename ist erforderlich.",
+    "INVALID_COLOR": "Eine gültige Farbe ist erforderlich.",
+    "INVALID_CATEGORY_NAME": "Bitte gib einen gültigen Kategorienamen ein.",
+    "CATEGORY_EXISTS": "Eine Kategorie mit diesem Namen existiert bereits.",
+    "CATEGORY_ID_REQUIRED": "Die Kategorie-ID ist erforderlich.",
+    "CATEGORY_NOT_FOUND": "Kategorie nicht gefunden.",
+    "SYSTEM_CATEGORY_NO_EDIT": "Systemkategorien können nicht geändert werden.",
+    "SYSTEM_CATEGORY_NO_DELETE": "Systemkategorien können nicht gelöscht werden.",
+    "DEFAULT_CATEGORY_MISSING": "Die Standardkategorie „Sonstiges / Nicht zugewiesen“ wurde nicht gefunden.",
+    "CATEGORY_DELETED": "Kategorie erfolgreich gelöscht.",
+    "TITLE_REQUIRED": "Titel ist erforderlich.",
+    "ITEMS_REQUIRED": "Mindestens ein Element ist erforderlich.",
+    "STEPS_REQUIRED": "Mindestens ein Schritt ist erforderlich.",
+    "CATEGORY_REQUIRED": "Kategorie ist erforderlich.",
+    "INVALID_CATEGORY": "Ungültige Kategorie.",
+    "MAX_IMAGES_ENTRY": "Du kannst maximal 5 Bilder hochladen.",
+    "MAX_IMAGES_ENTRY_EDIT": "Du kannst maximal 5 Bilder haben.",
+    "ENTRY_ID_REQUIRED": "Die Eintrags-ID ist erforderlich.",
+    "ENTRY_NOT_FOUND": "Eintrag nicht gefunden.",
+    "ENTRY_DELETED": "Eintrag erfolgreich gelöscht.",
+    "IMPORT_URL_REQUIRED": "Eine Website-URL ist erforderlich.",
+    "IMPORT_INVALID_URL": "Bitte gib eine gültige Website-URL ein.",
+    "IMPORT_LOAD_FAILED": "Die Website konnte nicht geladen werden.",
+    "IMPORT_TOO_LARGE": "Die Website ist zu groß.",
+    "IMPORT_NO_CONTENT": "Die Website hat keinen Inhalt zurückgegeben.",
+    "IMPORT_NO_READABLE_CONTENT": "Auf der Website wurde kein lesbarer Inhalt gefunden. Bitte fülle das Formular manuell aus.",
+    "IMPORT_NO_DEFAULT_CATEGORY": "Keine Standardkategorien verfügbar.",
+    "IMPORT_PROCESS_FAILED": "Die Website konnte nicht verarbeitet werden. Bitte versuche es erneut.",
+    "UPLOAD_NO_FILES": "Keine Dateien angegeben.",
+    "UPLOAD_MAX_IMAGES": "Du kannst maximal {max} Bilder hochladen.",
+    "UPLOAD_FILE_TOO_LARGE": "{filename} darf 5 MB nicht überschreiten.",
+    "UPLOAD_INVALID_TYPE": "{filename} ist kein unterstützter Bildtyp. Nur JPEG- und PNG-Bilder sind erlaubt.",
+    "UPLOAD_FAILED": "Upload fehlgeschlagen.",
+    "VALIDATION_INVALID": "Ungültige Eingabe.",
+    "DUPLICATE": "Diese Kategorie existiert bereits.",
+    "INVALID_ID": "Ungültige ID.",
+    "INVALID_LOCALE": "Ungültige Sprache.",
+    "GENERIC_ERROR": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+  }
+}

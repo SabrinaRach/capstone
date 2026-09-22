@@ -1,3 +1,5 @@
+import { useI18n } from "@/lib/i18n/I18nContext";
+
 const STAR_VALUES = [1, 2, 3, 4, 5];
 
 function Star({ filled, size }) {
@@ -27,9 +29,14 @@ export default function StarRating({
   readOnly = false,
   size = 22,
 }) {
+  const { t } = useI18n();
+
   if (readOnly) {
     return (
-      <div className="flex items-center gap-0.5" aria-label={`Rating: ${rating} out of 5 stars`}>
+      <div
+        className="flex items-center gap-0.5"
+        aria-label={t("starRating.ratingValueAria", { rating })}
+      >
         {STAR_VALUES.map((value) => (
           <Star key={value} filled={value <= rating} size={size} />
         ))}
@@ -40,7 +47,7 @@ export default function StarRating({
   return (
     <div
       role="radiogroup"
-      aria-label="Rating"
+      aria-label={t("starRating.ratingAria")}
       className="flex items-center gap-0.5"
     >
       {STAR_VALUES.map((value) => (
@@ -49,7 +56,7 @@ export default function StarRating({
           type="button"
           role="radio"
           aria-checked={value === rating}
-          aria-label={`Rate ${value} out of 5 stars`}
+          aria-label={t("starRating.rateValueAria", { value })}
           onClick={() => onChange(value === rating ? 0 : value)}
           className="rounded p-0.5 hover:scale-110 transition"
         >

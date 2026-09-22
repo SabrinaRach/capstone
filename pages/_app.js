@@ -3,14 +3,14 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 import LogoutButton from "@/components/LogoutButton";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { SessionProvider } from "next-auth/react";
 import EntryModal from "../components/EntryModal";
+import { I18nProvider, useI18n } from "@/lib/i18n/I18nContext";
 
-export default function App({
-  Component,
-  pageProps: { session, ...pageProps },
-}) {
+function AppShell({ Component, pageProps }) {
   const router = useRouter();
+  const { t } = useI18n();
 
   const isHome = router.pathname === "/";
 
@@ -38,21 +38,38 @@ export default function App({
   }, [router.events]);
 
   return (
-    <SessionProvider session={session}>
+    <>
       {showLogoutToast && (
         <div className="fixed right-6 top-6 z-50 rounded-xl border border-primary-500/40 bg-background/95 px-5 py-3 text-sm font-medium text-primary-700 shadow-lg backdrop-blur-md">
-          ✓ Successfully logged out
+          {t("toast.loggedOut")}
         </div>
       )}
 
-      <div className="pb-20">
+      <div className="fixed right-5 top-5 z-50 flex items-center gap-2">
+        <LanguageSwitcher />
         {!isHome && <LogoutButton />}
+      </div>
+
+      <div className="pb-20">
         <Component {...pageProps} />
         {!isHome && <Navigation onNewEntry={() => setIsEntryModalOpen(true)} />}
         {isEntryModalOpen && (
           <EntryModal onClose={() => setIsEntryModalOpen(false)} />
         )}
       </div>
+    </>
+  );
+}
+
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}) {
+  return (
+    <SessionProvider session={session}>
+      <I18nProvider>
+        <AppShell Component={Component} pageProps={pageProps} />
+      </I18nProvider>
     </SessionProvider>
   );
 }

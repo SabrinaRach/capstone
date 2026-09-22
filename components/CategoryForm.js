@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/I18nContext";
 
 export default function CategoryForm({ onCreated, onCancel }) {
+  const { t } = useI18n();
   const [name, setName] = useState("");
   const [color, setColor] = useState("#6B8F71");
   const [error, setError] = useState("");
@@ -12,7 +14,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
     setError("");
 
     if (!name.trim()) {
-      setError("Please enter a category name.");
+      setError(t("categoryForm.nameRequired"));
       return;
     }
 
@@ -33,7 +35,9 @@ export default function CategoryForm({ onCreated, onCancel }) {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Could not create category.");
+        setError(
+          data.code ? t(`apiErrors.${data.code}`) : t("categoryForm.createError"),
+        );
         return;
       }
 
@@ -44,7 +48,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
         onCreated(data.category);
       }
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      setError(t("common.genericError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -55,11 +59,11 @@ export default function CategoryForm({ onCreated, onCancel }) {
       onSubmit={handleSubmit}
       className="rounded-xl border border-border bg-background p-6"
     >
-      <h2 className="text-xl font-semibold">Create category</h2>
+      <h2 className="text-xl font-semibold">{t("categoryForm.title")}</h2>
 
       <div className="mt-6">
         <label htmlFor="category-name" className="block text-sm font-semibold">
-          Name
+          {t("categoryForm.nameLabel")}
         </label>
 
         <input
@@ -67,14 +71,14 @@ export default function CategoryForm({ onCreated, onCancel }) {
           type="text"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          placeholder="Category name"
+          placeholder={t("categoryForm.namePlaceholder")}
           className="mt-2 w-full rounded-lg border border-secondary-100 px-4 py-2 outline-none focus:border-primary-500"
         />
       </div>
 
       <div className="mt-6">
         <label htmlFor="category-color" className="block text-sm font-semibold">
-          Color
+          {t("categoryForm.colorLabel")}
         </label>
 
         <div className="mt-2 flex items-center gap-4">
@@ -102,7 +106,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
           onClick={onCancel}
           className="mr-3 rounded-lg border border-foreground px-5 py-2 font-medium"
         >
-          Cancel
+          {t("common.cancel")}
         </button>
       )}
 
@@ -111,7 +115,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
         disabled={isSubmitting}
         className="mt-6 rounded-lg bg-primary-500 px-5 py-2 font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isSubmitting ? "Creating..." : "Create category"}
+        {isSubmitting ? t("categoryForm.creating") : t("categoryForm.create")}
       </button>
     </form>
   );

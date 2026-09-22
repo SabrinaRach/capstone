@@ -6,23 +6,29 @@ import Entry from "../../db/models/Entry.js";
 import StarRating from "../../components/StarRating.js";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
+import { useI18n } from "@/lib/i18n/I18nContext";
+import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
 
 export default function CategoryPage({ category, entries }) {
+  const { t, tCount } = useI18n();
+
   if (!category) {
     return (
       <main className="mx-auto max-w-6xl px-6 py-10">
-        <BackLink href="/categories" text="Categories" />
+        <BackLink href="/categories" text={t("categoryDetail.backLink")} />
 
-        <h1 className="text-2xl font-bold">Category not found</h1>
+        <h1 className="text-2xl font-bold">
+          {t("categoryDetail.notFoundTitle")}
+        </h1>
 
-        <p className="mt-2">The requested category does not exist.</p>
+        <p className="mt-2">{t("categoryDetail.notFoundDescription")}</p>
       </main>
     );
   }
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
-      <BackLink href="/categories" text="Categories" />
+      <BackLink href="/categories" text={t("categoryDetail.backLink")} />
 
       <div className="flex items-center gap-3">
         <span
@@ -31,7 +37,9 @@ export default function CategoryPage({ category, entries }) {
           aria-hidden="true"
         />
 
-        <h1 className="text-3xl font-bold">{category.name}</h1>
+        <h1 className="text-3xl font-bold">
+          {getCategoryDisplayName(category, t)}
+        </h1>
       </div>
 
       <span
@@ -41,7 +49,7 @@ export default function CategoryPage({ category, entries }) {
           borderColor: category.color,
         }}
       >
-        {entries.length} {entries.length === 1 ? "entry" : "entries"}
+        {tCount(entries.length, "counts.entry")}
       </span>
 
       {entries.length === 0 ? (
@@ -49,7 +57,9 @@ export default function CategoryPage({ category, entries }) {
           className="mt-8 rounded-xl border border-dashed p-10 text-center"
           style={{ borderColor: category.color }}
         >
-          <p className="text-secondary-700">No entries in this category yet.</p>
+          <p className="text-secondary-700">
+            {t("categoryDetail.emptyEntries")}
+          </p>
         </div>
       ) : (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -73,18 +83,10 @@ export default function CategoryPage({ category, entries }) {
               <div className="mt-4 flex gap-4 text-xs text-secondary-500">
                 {" "}
                 {entry.items?.length > 0 && (
-                  <span>
-                    {" "}
-                    {entry.items.length}{" "}
-                    {entry.items.length === 1 ? "item" : "items"}{" "}
-                  </span>
+                  <span> {tCount(entry.items.length, "counts.item")} </span>
                 )}{" "}
                 {entry.steps?.length > 0 && (
-                  <span>
-                    {" "}
-                    {entry.steps.length}{" "}
-                    {entry.steps.length === 1 ? "step" : "steps"}{" "}
-                  </span>
+                  <span> {tCount(entry.steps.length, "counts.step")} </span>
                 )}{" "}
               </div>
             </Link>

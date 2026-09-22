@@ -1,9 +1,11 @@
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { useI18n } from "@/lib/i18n/I18nContext";
 
 export default function LogoutButton() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { t } = useI18n();
 
   if (!session) {
     return null;
@@ -20,9 +22,9 @@ export default function LogoutButton() {
       <button
         type="button"
         onClick={handleLogout}
-        aria-label="Log out"
-        title="Log out"
-        className="fixed right-5 top-5 z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-primary-500/40 bg-background/80 text-primary-500 shadow-lg backdrop-blur-md transition hover:bg-primary-500/10 hover:shadow-[0_0_20px_rgba(2,132,199,0.2)] active:scale-95"
+        aria-label={t("logout.label")}
+        title={t("logout.label")}
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary-500/40 bg-background/80 text-primary-500 shadow-lg backdrop-blur-md transition hover:bg-primary-500/10 hover:shadow-[0_0_20px_rgba(2,132,199,0.2)] active:scale-95"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

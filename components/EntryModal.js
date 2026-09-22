@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import EntryForm from "./EntryForm.js";
 import CategoryForm from "./CategoryForm.js";
+import { useI18n } from "@/lib/i18n/I18nContext";
+import { sortOtherLast } from "@/lib/categoryOrder.js";
 
 export default function EntryModal({
   onClose,
@@ -11,6 +13,7 @@ export default function EntryModal({
   onSaved,
 }) {
   const router = useRouter();
+  const { t } = useI18n();
   const [categories, setCategories] = useState([]);
   const [categoriesError, setCategoriesError] = useState("");
   const [showCategoryForm, setShowCategoryForm] = useState(false);
@@ -28,16 +31,17 @@ export default function EntryModal({
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || "Could not load categories.");
+          throw new Error(data.code ? t(`apiErrors.${data.code}`) : t("entryModal.loadCategoriesError"));
         }
 
         setCategories(data);
       } catch (error) {
-        setCategoriesError("Could not load categories. Please try again.");
+        setCategoriesError(t("entryModal.loadCategoriesErrorRetry"));
       }
     }
 
     loadCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -50,14 +54,14 @@ export default function EntryModal({
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-background p-6 shadow-xl">
         <div className="flex items-center justify-between">
           <h2 id="entry-modal-title" className="text-2xl font-bold">
-            {isEditing ? "Edit Entry" : "Create Entry"}
+            {isEditing ? t("entryModal.editTitle") : t("entryModal.createTitle")}
           </h2>
 
           <button
             type="button"
             onClick={onClose}
             className="text-2xl text-secondary-500 hover:text-secondary-700"
-            aria-label="Close"
+            aria-label={t("entryModal.closeAria")}
           >
             ×
           </button>
@@ -104,10 +108,9 @@ export default function EntryModal({
             <div ref={categoryFormRef} className="mt-6">
               <CategoryForm
                 onCreated={(newCategory) => {
-                  setCategories((currentCategories) => [
-                    ...currentCategories,
-                    newCategory,
-                  ]);
+                  setCategories((currentCategories) =>
+                    sortOtherLast([...currentCategories, newCategory]),
+                  );
                   setSelectedCategoryId(newCategory._id);
                   setShowCategoryForm(false);
                 }}

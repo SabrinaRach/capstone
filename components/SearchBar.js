@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/I18nContext";
 
 export default function SearchBar({ onSearch }) {
+  const { t } = useI18n();
   const [value, setValue] = useState("");
 
   function handleChange(event) {
@@ -18,7 +20,7 @@ export default function SearchBar({ onSearch }) {
   return (
     <div className="relative">
       <label htmlFor="entry-search" className="sr-only">
-        Search entries
+        {t("searchBar.srLabel")}
       </label>
 
       <input
@@ -26,7 +28,7 @@ export default function SearchBar({ onSearch }) {
         type="search"
         value={value}
         onChange={handleChange}
-        placeholder="Search entries..."
+        placeholder={t("searchBar.placeholder")}
         className="w-full rounded-lg border border-secondary-100 bg-background px-4 py-3 pr-24 outline-none focus:border-primary-500"
       />
 
@@ -36,7 +38,7 @@ export default function SearchBar({ onSearch }) {
           onClick={handleClear}
           className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full px-3 py-1 text-sm font-medium text-secondary-700 hover:bg-secondary-100"
         >
-          Clear
+          {t("searchBar.clear")}
         </button>
       )}
     </div>

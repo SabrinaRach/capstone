@@ -1,7 +1,9 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/I18nContext";
 
 export default function Login() {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [isSendingLink, setIsSendingLink] = useState(false);
   const [loginError, setLoginError] = useState("");
@@ -14,7 +16,7 @@ export default function Login() {
         callbackUrl: "/entries",
       });
     } catch (error) {
-      setLoginError("Could not sign in, please try again.");
+      setLoginError(t("login.signInError"));
     }
   }
 
@@ -34,7 +36,7 @@ export default function Login() {
         callbackUrl: "/entries",
       });
     } catch (error) {
-      setLoginError("Could not send the sign-in link, please try again.");
+      setLoginError(t("login.sendLinkError"));
     } finally {
       setIsSendingLink(false);
     }
@@ -49,10 +51,13 @@ export default function Login() {
           {" "}
           ◉{" "}
         </div>{" "}
-        <h2 className="text-xl font-semibold text-foreground"> Welcome </h2>
+        <h2 className="text-xl font-semibold text-foreground">
+          {" "}
+          {t("login.welcome")}{" "}
+        </h2>
         <p className="mt-2 text-sm leading-relaxed text-secondary-500">
           {" "}
-          Log in to manage your content.{" "}
+          {t("login.subtitle")}{" "}
         </p>{" "}
       </div>
       {loginError && (
@@ -62,7 +67,7 @@ export default function Login() {
       )}
       <form onSubmit={handleEmailLogin} className="space-y-3 text-left">
         <label htmlFor="login-email" className="sr-only">
-          Email address
+          {t("login.emailLabel")}
         </label>
 
         <input
@@ -70,7 +75,7 @@ export default function Login() {
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@example.com"
+          placeholder={t("login.emailPlaceholder")}
           required
           className="w-full rounded-xl border border-secondary-100 bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
@@ -80,12 +85,12 @@ export default function Login() {
           disabled={isSendingLink}
           className="w-full rounded-xl bg-primary-500 px-4 py-3 text-sm font-semibold text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSendingLink ? "Sending link..." : "Continue with email"}
+          {isSendingLink ? t("login.sendingLink") : t("login.continueWithEmail")}
         </button>
       </form>
       <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-secondary-500">
         <span className="h-px flex-1 bg-secondary-100" aria-hidden="true" />
-        or
+        {t("common.or")}
         <span className="h-px flex-1 bg-secondary-100" aria-hidden="true" />
       </div>
       <button
@@ -93,7 +98,7 @@ export default function Login() {
         onClick={handleGithubLogin}
         className="w-full rounded-xl border border-primary-500/70 bg-primary-500/15 px-4 py-3 text-sm font-semibold text-primary-700 transition hover:bg-primary-500/25 hover:shadow-md active:scale-[0.98]"
       >
-        Sign in with GitHub
+        {t("login.signInWithGithub")}
       </button>
     </div>
   );

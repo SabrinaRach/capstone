@@ -21,6 +21,7 @@ export default async function handler(req, res) {
 
   if (!session) {
     return res.status(401).json({
+      code: "NOT_AUTHORIZED",
       message: "Not authorized",
     });
   }
@@ -34,6 +35,7 @@ export default async function handler(req, res) {
 
     if (!id) {
       return res.status(400).json({
+        code: "CATEGORY_ID_REQUIRED",
         message: "Category ID is required.",
       });
     }
@@ -45,6 +47,7 @@ export default async function handler(req, res) {
 
     if (!category) {
       return res.status(404).json({
+        code: "CATEGORY_NOT_FOUND",
         message: "Category not found.",
       });
     }
@@ -58,6 +61,7 @@ export default async function handler(req, res) {
     if (req.method === "PATCH") {
       if (category.isSystem) {
         return res.status(403).json({
+          code: "SYSTEM_CATEGORY_NO_EDIT",
           message: "System categories cannot be modified.",
         });
       }
@@ -66,6 +70,7 @@ export default async function handler(req, res) {
 
       if (!name || !name.trim()) {
         return res.status(400).json({
+          code: "CATEGORY_NAME_REQUIRED",
           message: "Category name is required.",
         });
       }
@@ -75,6 +80,7 @@ export default async function handler(req, res) {
 
       if (!slug) {
         return res.status(400).json({
+          code: "INVALID_CATEGORY_NAME",
           message: "Please enter a valid category name.",
         });
       }
@@ -98,6 +104,7 @@ export default async function handler(req, res) {
 
       if (existingCategory) {
         return res.status(409).json({
+          code: "CATEGORY_EXISTS",
           message: "A category with this name already exists.",
         });
       }
@@ -114,6 +121,7 @@ export default async function handler(req, res) {
     if (req.method === "DELETE") {
       if (category.isSystem) {
         return res.status(403).json({
+          code: "SYSTEM_CATEGORY_NO_DELETE",
           message: "System categories cannot be deleted.",
         });
       }
@@ -125,6 +133,7 @@ export default async function handler(req, res) {
 
       if (!otherCategory) {
         return res.status(500).json({
+          code: "DEFAULT_CATEGORY_MISSING",
           message: "The default 'Other / Not assigned' category was not found.",
         });
       }
@@ -137,11 +146,13 @@ export default async function handler(req, res) {
       await category.deleteOne();
 
       return res.status(200).json({
+        code: "CATEGORY_DELETED",
         message: "Category deleted successfully.",
       });
     }
 
     return res.status(405).json({
+      code: "METHOD_NOT_ALLOWED",
       message: "Method not allowed.",
     });
   } catch (error) {

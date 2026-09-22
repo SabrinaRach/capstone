@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n/I18nContext";
 
 export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
+  const { t } = useI18n();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(category.name);
   const [error, setError] = useState("");
@@ -14,7 +16,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
     setError("");
 
     if (!name.trim()) {
-      setError("Please enter a category name.");
+      setError(t("editCategoryCard.nameRequired"));
       return;
     }
 
@@ -33,7 +35,9 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Could not update category.");
+        setError(
+          data.code ? t(`apiErrors.${data.code}`) : t("editCategoryCard.updateError"),
+        );
         return;
       }
       setIsEditing(false);
@@ -42,7 +46,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
         onUpdated(data.category);
       }
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      setError(t("common.genericError"));
     } finally {
       setIsSaving(false);
     }
@@ -87,7 +91,9 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Could not delete category.");
+        setError(
+          data.code ? t(`apiErrors.${data.code}`) : t("editCategoryCard.deleteError"),
+        );
         return;
       }
 
@@ -95,7 +101,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
         onDeleted(category._id);
       }
     } catch (error) {
-      setError("Something went wrong. Please try again.");
+      setError(t("common.genericError"));
     } finally {
       setIsDeleting(false);
     }
@@ -108,7 +114,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
           htmlFor={`category-name-${category._id}`}
           className="block text-sm font-medium"
         >
-          Name
+          {t("editCategoryCard.nameLabel")}
         </label>
 
         <input
@@ -132,7 +138,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             disabled={isSaving}
             className="rounded-lg bg-primary-500 px-3 py-2 text-sm font-medium text-background hover:bg-primary-700 disabled:opacity-50"
           >
-            {isSaving ? "Saving..." : "Save"}
+            {isSaving ? t("editCategoryCard.saving") : t("editCategoryCard.save")}
           </button>
 
           <button
@@ -141,7 +147,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             disabled={isSaving}
             className="rounded-lg border border-secondary-100 bg-background px-3 py-2 text-sm font-medium hover:bg-secondary-100"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
         </div>
       </form>
@@ -152,12 +158,11 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
     return (
       <div>
         <p className="text-sm font-medium">
-          Delete &quot;{category.name}&quot;?
+          {t("editCategoryCard.deleteConfirmTitle", { name: category.name })}
         </p>
 
         <p className="mt-2 text-sm text-secondary-700">
-          Entries in this category will be moved to &quot;Other / Not
-          assigned&quot;.
+          {t("editCategoryCard.deleteConfirmDescription")}
         </p>
 
         {error && (
@@ -173,7 +178,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             disabled={isDeleting}
             className="rounded-lg border border-secondary-100 bg-primary-500 px-3 py-2 text-sm font-medium text-background hover:bg-primary-700 disabled:opacity-50"
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? t("editCategoryCard.deleting") : t("editCategoryCard.delete")}
           </button>
 
           <button
@@ -182,7 +187,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             disabled={isDeleting}
             className="rounded-lg border border-secondary-100 bg-accent-500 px-3 py-2 text-sm font-medium text-background hover:bg-accent-700 disabled:opacity-50"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
         </div>
       </div>
@@ -208,7 +213,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             setIsEditing(true);
           }}
           className="rounded-lg bg-background p-2 text-primary-700 hover:bg-secondary-100"
-          aria-label={`Edit ${category.name} category`}
+          aria-label={t("editCategoryCard.editAria", { name: category.name })}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -231,7 +236,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
           type="button"
           onClick={handleStartDelete}
           className="rounded-lg bg-background p-2 text-accent-500 hover:bg-accent-100"
-          aria-label={`Delete ${category.name} category`}
+          aria-label={t("editCategoryCard.deleteAria", { name: category.name })}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
