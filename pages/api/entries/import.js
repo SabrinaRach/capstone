@@ -2,8 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import * as cheerio from "cheerio";
 import Category from "../../../db/models/Category.js";
 import dbConnect from "../../../db/connect.js";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
+import { getSessionSafe } from "../../../lib/apiError.js";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -110,7 +110,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getSessionSafe(req, res, authOptions);
 
   if (!session?.user?.id) {
     return res.status(401).json({

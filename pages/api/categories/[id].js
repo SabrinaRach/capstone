@@ -1,8 +1,8 @@
 import dbConnect from "../../../db/connect.js";
 import Category from "../../../db/models/Category.js";
 import Entry from "../../../db/models/Entry.js";
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
+import { getSessionSafe, sendApiError } from "../../../lib/apiError.js";
 
 function createSlug(name) {
   return name
@@ -17,7 +17,7 @@ function createSlug(name) {
 }
 
 export default async function handler(req, res) {
-  const session = await getServerSession(req, res, authOptions);
+  const session = await getSessionSafe(req, res, authOptions);
 
   if (!session) {
     return res.status(401).json({
@@ -25,122 +25,126 @@ export default async function handler(req, res) {
     });
   }
 
-  const userId = session.user.id;
+  try {
+    const userId = session.user.id;
 
-  await dbConnect();
+    await dbConnect();
 
-  const { id } = req.query;
+    const { id } = req.query;
 
-  if (!id) {
-    return res.status(400).json({
-      message: "Category ID is required.",
-    });
-  }
-
-  const category = await Category.findOne({
-    _id: id,
-    $or: [{ owner: userId }, { isSystem: true }],
-  });
-
-  if (!category) {
-    return res.status(404).json({
-      message: "Category not found.",
-    });
-  }
-
-  if (req.method === "GET") {
-    return res.status(200).json({
-      category,
-    });
-  }
-
-  if (req.method === "PATCH") {
-    if (category.isSystem) {
-      return res.status(403).json({
-        message: "System categories cannot be modified.",
-      });
-    }
-
-    const { name } = req.body;
-
-    if (!name || !name.trim()) {
+    if (!id) {
       return res.status(400).json({
-        message: "Category name is required.",
+        message: "Category ID is required.",
       });
     }
 
-    const trimmedName = name.trim();
-    const slug = createSlug(trimmedName);
+    const category = await Category.findOne({
+      _id: id,
+      $or: [{ owner: userId }, { isSystem: true }],
+    });
 
-    if (!slug) {
-      return res.status(400).json({
-        message: "Please enter a valid category name.",
+    if (!category) {
+      return res.status(404).json({
+        message: "Category not found.",
       });
     }
 
-    const escapedName = trimmedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (req.method === "GET") {
+      return res.status(200).json({
+        category,
+      });
+    }
 
-    const existingCategory = await Category.findOne({
-      $or: [
-        {
-          slug,
-        },
-        {
-          name: {
-            $regex: `^${escapedName}$`,
-            $options: "i",
+    if (req.method === "PATCH") {
+      if (category.isSystem) {
+        return res.status(403).json({
+          message: "System categories cannot be modified.",
+        });
+      }
+
+      const { name } = req.body;
+
+      if (!name || !name.trim()) {
+        return res.status(400).json({
+          message: "Category name is required.",
+        });
+      }
+
+      const trimmedName = name.trim();
+      const slug = createSlug(trimmedName);
+
+      if (!slug) {
+        return res.status(400).json({
+          message: "Please enter a valid category name.",
+        });
+      }
+
+      const escapedName = trimmedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      const existingCategory = await Category.findOne({
+        $or: [
+          {
+            slug,
           },
-        },
-      ],
-      _id: { $ne: category._id },
-    });
+          {
+            name: {
+              $regex: `^${escapedName}$`,
+              $options: "i",
+            },
+          },
+        ],
+        _id: { $ne: category._id },
+      });
 
-    if (existingCategory) {
-      return res.status(409).json({
-        message: "A category with this name already exists.",
+      if (existingCategory) {
+        return res.status(409).json({
+          message: "A category with this name already exists.",
+        });
+      }
+
+      category.name = trimmedName;
+
+      await category.save();
+
+      return res.status(200).json({
+        category,
       });
     }
 
-    category.name = trimmedName;
+    if (req.method === "DELETE") {
+      if (category.isSystem) {
+        return res.status(403).json({
+          message: "System categories cannot be deleted.",
+        });
+      }
 
-    await category.save();
+      const otherCategory = await Category.findOne({
+        slug: "other",
+        isSystem: true,
+      });
 
-    return res.status(200).json({
-      category,
+      if (!otherCategory) {
+        return res.status(500).json({
+          message: "The default 'Other / Not assigned' category was not found.",
+        });
+      }
+
+      await Entry.updateMany(
+        { category: category._id, owner: userId },
+        { $set: { category: otherCategory._id } },
+      );
+
+      await category.deleteOne();
+
+      return res.status(200).json({
+        message: "Category deleted successfully.",
+      });
+    }
+
+    return res.status(405).json({
+      message: "Method not allowed.",
     });
+  } catch (error) {
+    return sendApiError(res, error, "Category API error");
   }
-
-  if (req.method === "DELETE") {
-    if (category.isSystem) {
-      return res.status(403).json({
-        message: "System categories cannot be deleted.",
-      });
-    }
-
-    const otherCategory = await Category.findOne({
-      slug: "other",
-      isSystem: true,
-    });
-
-    if (!otherCategory) {
-      return res.status(500).json({
-        message: "The default 'Other / Not assigned' category was not found.",
-      });
-    }
-
-    await Entry.updateMany(
-      { category: category._id, owner: userId },
-      { $set: { category: otherCategory._id } },
-    );
-
-    await category.deleteOne();
-
-    return res.status(200).json({
-      message: "Category deleted successfully.",
-    });
-  }
-
-  return res.status(405).json({
-    message: "Method not allowed.",
-  });
 }

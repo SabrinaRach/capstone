@@ -95,7 +95,8 @@ export default function EntryForm({
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Website import failed.");
+        setError(result.message || "Website import failed.");
+        return;
       }
 
       setFormData((currentData) => ({
@@ -109,7 +110,7 @@ export default function EntryForm({
         source: importUrl.trim(),
       }));
     } catch (error) {
-      setError(error.message);
+      setError("Something went wrong. Please try again.");
     } finally {
       setIsImporting(false);
       document.body.style.cursor = "";
@@ -156,7 +157,9 @@ export default function EntryForm({
         const uploadData = await uploadResponse.json();
 
         if (!uploadResponse.ok) {
-          throw new Error(uploadData.error || "Image upload failed.");
+          setError(uploadData.error || "Image upload failed.");
+          setIsSubmitting(false);
+          return;
         }
 
         newImageUrls = uploadData.images.map((image) => image.url);
@@ -193,7 +196,9 @@ export default function EntryForm({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to save entry.");
+        setError(data.message || "Failed to save entry.");
+        setIsSubmitting(false);
+        return;
       }
 
       if (onSaved) {
@@ -202,7 +207,7 @@ export default function EntryForm({
       }
       setIsSubmitting(false);
     } catch (error) {
-      setError(error.message);
+      setError("Something went wrong. Please try again.");
       setIsSubmitting(false);
     }
   }

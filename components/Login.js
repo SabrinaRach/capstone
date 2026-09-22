@@ -4,11 +4,18 @@ import { useState } from "react";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [isSendingLink, setIsSendingLink] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   async function handleGithubLogin() {
-    await signIn("github", {
-      callbackUrl: "/entries",
-    });
+    setLoginError("");
+
+    try {
+      await signIn("github", {
+        callbackUrl: "/entries",
+      });
+    } catch (error) {
+      setLoginError("Could not sign in, please try again.");
+    }
   }
 
   async function handleEmailLogin(event) {
@@ -18,12 +25,19 @@ export default function Login() {
       return;
     }
 
+    setLoginError("");
     setIsSendingLink(true);
 
-    await signIn("email", {
-      email: email.trim(),
-      callbackUrl: "/entries",
-    });
+    try {
+      await signIn("email", {
+        email: email.trim(),
+        callbackUrl: "/entries",
+      });
+    } catch (error) {
+      setLoginError("Could not send the sign-in link, please try again.");
+    } finally {
+      setIsSendingLink(false);
+    }
   }
 
   return (
@@ -41,6 +55,11 @@ export default function Login() {
           Log in to manage your content.{" "}
         </p>{" "}
       </div>
+      {loginError && (
+        <p className="mb-4 text-sm text-accent-500" role="alert">
+          {loginError}
+        </p>
+      )}
       <form onSubmit={handleEmailLogin} className="space-y-3 text-left">
         <label htmlFor="login-email" className="sr-only">
           Email address
