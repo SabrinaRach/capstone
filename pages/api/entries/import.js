@@ -154,6 +154,7 @@ Rules:
 - For social media posts, ignore hashtags, @mentions, emojis used as decoration, like/view counts, and calls to action such as "follow for more" or "link in bio".
 - If a social media post has no explicit title, use a short, descriptive title based only on what the post is about.
 - If a social media post contains a list of items or steps in running text, split it into the items and steps fields.
+- Video subtitles are automatically transcribed and may contain errors. Prefer the written text when they conflict, and only use the subtitles to add information the written text does not contain.
 - For the steps field, return each step without its original numbering.
 - If a field cannot be identified, return an empty string or empty array.
 - Choose the single default category that best matches the source content.
