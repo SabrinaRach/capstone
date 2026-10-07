@@ -99,7 +99,9 @@ export default function EntryForm({
 
       if (!response.ok) {
         setError(
-          result.code ? t(`apiErrors.${result.code}`) : t("entryForm.importFailed"),
+          result.code
+            ? t(`apiErrors.${result.code}`, result.params)
+            : t("entryForm.importFailed"),
         );
         return;
       }
