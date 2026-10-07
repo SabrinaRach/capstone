@@ -1,22 +1,19 @@
 import Anthropic from "@anthropic-ai/sdk";
-import * as cheerio from "cheerio";
 import Category from "../../../db/models/Category.js";
 import dbConnect from "../../../db/connect.js";
 import { authOptions } from "../auth/[...nextauth]";
 import { getSessionSafe } from "../../../lib/apiError.js";
+import { fetchSourceContent, ImportError } from "../../../lib/importSources.js";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const MAX_HTML_LENGTH = 50_000;
-const FETCH_TIMEOUT = 10_000;
-
 function createExtractionTool(categories) {
   return {
     name: "extract_entry",
     description:
-      "Extract only information from the website that belongs to the predefined entry fields.",
+      "Extract only information from the source content that belongs to the predefined entry fields.",
     input_schema: {
       type: "object",
       properties: {
@@ -34,7 +31,7 @@ function createExtractionTool(categories) {
           type: "string",
           enum: categories.map((category) => category._id.toString()),
           description:
-            "The ID of the default category that best matches the website content.",
+            "The ID of the default category that best matches the source content.",
         },
         items: {
           type: "array",
@@ -60,7 +57,7 @@ function createExtractionTool(categories) {
         source: {
           type: "string",
           description:
-            "The original website URL. Always return the provided URL.",
+            "The original source URL. Always return the provided URL.",
         },
       },
       required: [
@@ -86,23 +83,6 @@ function isValidHttpUrl(value) {
   }
 }
 
-function cleanHtml(html) {
-  const $ = cheerio.load(html);
-
-  $("style, noscript, iframe, svg").remove();
-
-  $("script").each((_, element) => {
-    if ($(element).html()?.length > 100_000) {
-      $(element).remove();
-    }
-  });
-
-  const mainContent =
-    $("main").first().text() || $("article").first().text() || $("body").text();
-
-  return mainContent.replace(/\s+/g, " ").trim().slice(0, MAX_HTML_LENGTH);
-}
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -125,58 +105,19 @@ export default async function handler(req, res) {
   if (!url || typeof url !== "string") {
     return res.status(400).json({
       code: "IMPORT_URL_REQUIRED",
-      message: "A website URL is required.",
+      message: "A URL is required.",
     });
   }
 
   if (!isValidHttpUrl(url)) {
     return res.status(400).json({
       code: "IMPORT_INVALID_URL",
-      message: "Please provide a valid website URL.",
+      message: "Please provide a valid URL.",
     });
   }
 
   try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(FETCH_TIMEOUT),
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; EntryImporter/1.0)",
-      },
-    });
-
-    if (!response.ok) {
-      return res.status(400).json({
-        code: "IMPORT_LOAD_FAILED",
-        message: "The website could not be loaded.",
-      });
-    }
-
-    const contentLength = response.headers.get("content-length");
-    if (contentLength && Number(contentLength) > MAX_HTML_LENGTH) {
-      return res.status(400).json({
-        code: "IMPORT_TOO_LARGE",
-        message: "The website is too large.",
-      });
-    }
-
-    const html = await response.text();
-
-    if (!html) {
-      return res.status(400).json({
-        code: "IMPORT_NO_CONTENT",
-        message: "The website did not return any content.",
-      });
-    }
-
-    const content = cleanHtml(html);
-
-    if (!content) {
-      return res.status(400).json({
-        code: "IMPORT_NO_READABLE_CONTENT",
-        message:
-          "No readable content was found on the website. Please fill out manually.",
-      });
-    }
+    const { sourceType, content } = await fetchSourceContent(url);
 
     await dbConnect();
 
@@ -203,16 +144,20 @@ export default async function handler(req, res) {
       max_tokens: 2000,
 
       system: `
-You extract structured entry data from website content.
+You extract structured entry data from the content of a website or a social media post.
 
 Rules:
-- Only extract information that is explicitly supported by the provided website content.
+- Only extract information that is explicitly supported by the provided source content.
 - Never invent or guess information.
 - Only use the predefined fields.
 - Ignore navigation, advertisements, cookie notices, comments, unrelated links, and other irrelevant content.
+- For social media posts, ignore hashtags, @mentions, emojis used as decoration, like/view counts, and calls to action such as "follow for more" or "link in bio".
+- If a social media post has no explicit title, use a short, descriptive title based only on what the post is about.
+- If a social media post contains a list of items or steps in running text, split it into the items and steps fields.
+- Video subtitles are automatically transcribed and may contain errors. Prefer the written text when they conflict, and only use the subtitles to add information the written text does not contain.
 - For the steps field, return each step without its original numbering.
 - If a field cannot be identified, return an empty string or empty array.
-- Choose the single default category that best matches the website content.
+- Choose the single default category that best matches the source content.
 - Only choose from the provided category IDs.
 - Never invent a category.
 - Return the category ID, not the category name.
@@ -231,7 +176,11 @@ Rules:
         {
           role: "user",
           content: `
-Extract the relevant entry information from this website.
+Extract the relevant entry information from this source.
+
+<source_type>
+${sourceType}
+</source_type>
 
 <source_url>
 ${url}
@@ -241,9 +190,9 @@ ${url}
 ${categoryOptions}
 </available_categories>
 
-<website_content>
+<source_content>
 ${content}
-</website_content>
+</source_content>
           `,
         },
       ],
@@ -260,11 +209,19 @@ ${content}
       data: toolUse.input,
     });
   } catch (error) {
+    if (error instanceof ImportError) {
+      return res.status(error.status).json({
+        code: error.code,
+        message: error.message,
+        params: error.params,
+      });
+    }
+
     console.error("Entry import error:", error);
 
     return res.status(500).json({
       code: "IMPORT_PROCESS_FAILED",
-      message: "The website could not be processed. Please try again.",
+      message: "The content could not be processed. Please try again.",
     });
   }
 }
