@@ -2,6 +2,7 @@ import dbConnect from "../../../db/connect.js";
 import UserPreference from "../../../db/models/UserPreference.js";
 import { authOptions } from "../auth/[...nextauth]";
 import { getSessionSafe } from "../../../lib/apiError.js";
+import { logError } from "../../../lib/logger.js";
 
 const SUPPORTED_LOCALES = ["de", "en"];
 
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ locale });
   } catch (error) {
-    console.error("Locale update error:", error);
+    logError("Locale update error", error);
 
     return res.status(500).json({
       code: "GENERIC_ERROR",

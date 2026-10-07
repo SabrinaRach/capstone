@@ -4,6 +4,7 @@ import Entry from "../../../db/models/Entry.js";
 import Category from "../../../db/models/Category.js";
 import { authOptions } from "../auth/[...nextauth]";
 import { getSessionSafe, sendApiError } from "../../../lib/apiError.js";
+import { logError } from "../../../lib/logger.js";
 
 export default async function handler(req, res) {
   const session = await getSessionSafe(req, res, authOptions);
@@ -128,7 +129,7 @@ export default async function handler(req, res) {
           try {
             await del(imageUrl);
           } catch (error) {
-            console.error("Failed to delete blob:", imageUrl, error);
+            logError("Failed to delete blob", imageUrl, error);
           }
         }
         entry.images = images;
@@ -148,7 +149,7 @@ export default async function handler(req, res) {
         try {
           await del(imageUrl);
         } catch (error) {
-          console.error("Failed to delete blob:", imageUrl, error);
+          logError("Failed to delete blob", imageUrl, error);
         }
       }
       await entry.deleteOne();
