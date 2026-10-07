@@ -99,6 +99,44 @@ describe("withProtectedPersonalData", () => {
       expect(containsPlainEmail(base.db, "jane@example.com")).toBe(false);
     });
 
+    it("returns a sign-in token that passes NextAuth's validity check", async () => {
+      const expires = new Date(Date.now() + 60_000);
+      await adapter.createVerificationToken({
+        identifier: "jane@example.com",
+        token: "hashed-token",
+        expires,
+      });
+
+      // Same check as next-auth/core/routes/callback.js for email sign-in
+      const paramIdentifier = "jane@example.com";
+      const invite = await adapter.useVerificationToken({
+        identifier: paramIdentifier,
+        token: "hashed-token",
+      });
+      const invalidInvite =
+        !invite ||
+        invite.expires.valueOf() < Date.now() ||
+        invite.identifier !== paramIdentifier;
+
+      expect(invalidInvite).toBe(false);
+      expect(base.db.verificationTokens).toHaveLength(0);
+    });
+
+    it("rejects a sign-in token for a different email address", async () => {
+      await adapter.createVerificationToken({
+        identifier: "jane@example.com",
+        token: "hashed-token",
+        expires: new Date(Date.now() + 60_000),
+      });
+
+      expect(
+        await adapter.useVerificationToken({
+          identifier: "john@example.com",
+          token: "hashed-token",
+        }),
+      ).toBeNull();
+    });
+
     it("finds a returning user by the email address they enter", async () => {
       const created = await adapter.createUser({ email: "jane@example.com" });
 
