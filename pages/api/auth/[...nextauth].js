@@ -6,10 +6,23 @@ import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "../../../lib/mongodb.js";
 import dbConnect from "../../../db/connect.js";
 import UserPreference from "../../../db/models/UserPreference.js";
+import { withProtectedPersonalData } from "../../../lib/authAdapter.js";
+import { logError } from "../../../lib/logger.js";
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: withProtectedPersonalData(MongoDBAdapter(clientPromise)),
+  // NextAuth's default logger prints error details that can contain the
+  // email address of the user signing in.
+  logger: {
+    error(code, metadata) {
+      logError(`NextAuth error ${code}`, metadata);
+    },
+    warn(code) {
+      console.warn(`NextAuth warning ${code}`);
+    },
+    debug() {},
+  },
   session: {
     strategy: "jwt",
   },
@@ -64,6 +77,12 @@ export const authOptions = {
   ],
   callbacks: {
     async jwt({ token, account, trigger, session }) {
+      // NextAuth copies name, email and picture into the token by default;
+      // the app only needs the user id (sub) and the locale.
+      delete token.name;
+      delete token.email;
+      delete token.picture;
+
       // Entries/categories are owned by the raw GitHub account id (not the
       // adapter-generated user id). Keep that id stable so existing content
       // stays associated with its owner after adding the database adapter.
@@ -89,16 +108,20 @@ export const authOptions = {
           }).lean();
           token.locale = preference?.locale || "de";
         } catch (error) {
-          console.error("Failed to load locale preference:", error);
+          logError("Failed to load locale preference", error);
           token.locale = token.locale || "de";
         }
       }
 
       return token;
     },
+    // The client only needs the user id and locale; name, email and picture
+    // are deliberately not exposed via /api/auth/session.
     async session({ session, token }) {
-      session.user.id = token.sub;
-      session.user.locale = token.locale || "de";
+      session.user = {
+        id: token.sub,
+        locale: token.locale || "de",
+      };
       return session;
     },
   },

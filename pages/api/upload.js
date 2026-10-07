@@ -4,6 +4,7 @@ import fs from "fs/promises";
 import sharp from "sharp";
 import { authOptions } from "./auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
+import { logError } from "../../lib/logger.js";
 
 export const config = {
   api: {
@@ -132,7 +133,7 @@ export default async function handler(req, res) {
       images: uploadedImages,
     });
   } catch (error) {
-    console.error("Upload error:", error);
+    logError("Upload error", error);
 
     return res.status(500).json({
       code: "UPLOAD_FAILED",

@@ -3,6 +3,7 @@ import Category from "../../../db/models/Category.js";
 import dbConnect from "../../../db/connect.js";
 import { authOptions } from "../auth/[...nextauth]";
 import { getSessionSafe } from "../../../lib/apiError.js";
+import { logError } from "../../../lib/logger.js";
 import { fetchSourceContent, ImportError } from "../../../lib/importSources.js";
 
 const anthropic = new Anthropic({
@@ -217,7 +218,7 @@ ${content}
       });
     }
 
-    console.error("Entry import error:", error);
+    logError("Entry import error", error);
 
     return res.status(500).json({
       code: "IMPORT_PROCESS_FAILED",

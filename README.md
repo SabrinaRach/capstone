@@ -55,6 +55,7 @@ npm install
 
 MONGODB_URI=your_mongodb_connection_string
 NEXTAUTH_SECRET=your_nextauth_secret
+EMAIL_HASH_SECRET=random_value_of_at_least_32_characters
 GITHUB_ID=your_github_client_id
 GITHUB_SECRET=your_github_client_secret
 EMAIL_SERVER_HOST=your_smtp_host
@@ -66,3 +67,13 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 
 
 ```
+
+### Tests
+
+```bash
+npm test
+```
+
+## Data Protection
+
+Email addresses are only stored as a keyed hash, and personal data is kept out of logs and the session. See [docs/data-protection.md](docs/data-protection.md) for details, including how to set up `EMAIL_HASH_SECRET` and migrate existing data.
