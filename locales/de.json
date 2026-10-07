@@ -58,6 +58,7 @@
     "accessDenied": "Der Zugriff wurde verweigert. Bitte versuche erneut, dich anzumelden.",
     "configuration": "Die Anmeldung ist derzeit nicht verfügbar. Bitte versuche es später erneut.",
     "default": "Bei der Anmeldung ist etwas schiefgelaufen. Bitte versuche es erneut.",
+    "accountNotLinked": "Für diese E-Mail-Adresse gibt es bereits ein Konto. Bitte melde dich mit derselben Methode an wie beim ersten Mal (E-Mail oder GitHub).",
     "backToLogin": "Zurück zur Anmeldung"
   },
   "login": {

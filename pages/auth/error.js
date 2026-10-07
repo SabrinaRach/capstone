@@ -1,21 +1,14 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useI18n } from "@/lib/i18n/I18nContext";
-
-const ERROR_KEYS = {
-  Verification: "verification",
-  AccessDenied: "accessDenied",
-  Configuration: "configuration",
-  Default: "default",
-};
+import { getAuthErrorMessageKey } from "@/lib/authErrors";
 
 export default function AuthError() {
   const router = useRouter();
   const { error } = router.query;
   const { t } = useI18n();
 
-  const messageKey =
-    (typeof error === "string" && ERROR_KEYS[error]) || ERROR_KEYS.Default;
+  const messageKey = getAuthErrorMessageKey(error);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6">
@@ -23,7 +16,7 @@ export default function AuthError() {
         <h1 className="text-2xl font-bold">{t("authError.title")}</h1>
 
         <p className="mt-2 text-sm text-secondary-500">
-          {t(`authError.${messageKey}`)}
+          {t(messageKey)}
         </p>
 
         <Link
