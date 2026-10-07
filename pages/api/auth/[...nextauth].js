@@ -3,7 +3,7 @@ import GithubProvider from "next-auth/providers/github";
 import EmailProvider from "next-auth/providers/email";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import clientPromise from "../../../lib/mongodb.js";
+import mongoClient from "../../../lib/mongodb.js";
 import dbConnect from "../../../db/connect.js";
 import UserPreference from "../../../db/models/UserPreference.js";
 import { withProtectedPersonalData } from "../../../lib/authAdapter.js";
@@ -11,7 +11,7 @@ import { logError } from "../../../lib/logger.js";
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
-  adapter: withProtectedPersonalData(MongoDBAdapter(clientPromise)),
+  adapter: withProtectedPersonalData(MongoDBAdapter(mongoClient)),
   // NextAuth's default logger prints error details that can contain the
   // email address of the user signing in.
   logger: {
