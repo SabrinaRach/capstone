@@ -17,11 +17,29 @@
   "logout": {
     "label": "Log out"
   },
+  "account": {
+    "label": "My account"
+  },
   "languageSwitcher": {
     "label": "Switch language"
   },
   "toast": {
-    "loggedOut": "✓ Successfully logged out"
+    "loggedOut": "✓ Successfully logged out",
+    "accountDeleted": "✓ Your account has been deleted"
+  },
+  "accountPage": {
+    "title": "My account",
+    "subtitle": "Manage your stored data.",
+    "exportTitle": "Export my data",
+    "exportDescription": "Download all data stored for your account as a JSON file: account details, settings, your own categories and all entries including image links.",
+    "exportButton": "Download data",
+    "deleteTitle": "Delete account",
+    "deleteDescription": "Deletes your account with all entries, uploaded images, your own categories and settings. This cannot be undone.",
+    "deleteButton": "Delete account",
+    "deleteConfirm": "Are you sure? All your data will be deleted permanently. Download it first if you want to keep it.",
+    "deleteConfirmButton": "Delete permanently",
+    "deleting": "Deleting…",
+    "deleteFailed": "The account could not be deleted. Please try again."
   },
   "notFound": {
     "title": "Page not found",

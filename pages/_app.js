@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 import LogoutButton from "@/components/LogoutButton";
+import AccountButton from "@/components/AccountButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { SessionProvider } from "next-auth/react";
 import EntryModal from "../components/EntryModal";
@@ -14,18 +15,26 @@ function AppShell({ Component, pageProps }) {
 
   const isHome = router.pathname === "/";
 
-  const [showLogoutToast, setShowLogoutToast] = useState(false);
+  const [toastMessageKey, setToastMessageKey] = useState(null);
 
   const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
 
   useEffect(() => {
     const handleRouteChange = () => {
-      if (sessionStorage.getItem("loggedOut") === "true") {
+      const messageKey =
+        sessionStorage.getItem("accountDeleted") === "true"
+          ? "toast.accountDeleted"
+          : sessionStorage.getItem("loggedOut") === "true"
+            ? "toast.loggedOut"
+            : null;
+
+      if (messageKey) {
+        sessionStorage.removeItem("accountDeleted");
         sessionStorage.removeItem("loggedOut");
-        setShowLogoutToast(true);
+        setToastMessageKey(messageKey);
 
         setTimeout(() => {
-          setShowLogoutToast(false);
+          setToastMessageKey(null);
         }, 3000);
       }
     };
@@ -39,14 +48,15 @@ function AppShell({ Component, pageProps }) {
 
   return (
     <>
-      {showLogoutToast && (
+      {toastMessageKey && (
         <div className="fixed right-6 top-6 z-50 rounded-xl border border-primary-500/40 bg-background/95 px-5 py-3 text-sm font-medium text-primary-700 shadow-lg backdrop-blur-md">
-          {t("toast.loggedOut")}
+          {t(toastMessageKey)}
         </div>
       )}
 
       <div className="fixed right-5 top-5 z-50 flex items-center gap-2">
         <LanguageSwitcher />
+        {!isHome && <AccountButton />}
         {!isHome && <LogoutButton />}
       </div>
 

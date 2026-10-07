@@ -17,11 +17,29 @@
   "logout": {
     "label": "Abmelden"
   },
+  "account": {
+    "label": "Mein Konto"
+  },
   "languageSwitcher": {
     "label": "Sprache wechseln"
   },
   "toast": {
-    "loggedOut": "✓ Erfolgreich abgemeldet"
+    "loggedOut": "✓ Erfolgreich abgemeldet",
+    "accountDeleted": "✓ Dein Konto wurde gelöscht"
+  },
+  "accountPage": {
+    "title": "Mein Konto",
+    "subtitle": "Verwalte deine gespeicherten Daten.",
+    "exportTitle": "Meine Daten exportieren",
+    "exportDescription": "Lade alle Daten, die zu deinem Konto gespeichert sind, als JSON-Datei herunter: Kontoangaben, Einstellungen, eigene Kategorien und alle Einträge inklusive Bild-Links.",
+    "exportButton": "Daten herunterladen",
+    "deleteTitle": "Konto löschen",
+    "deleteDescription": "Löscht dein Konto mit allen Einträgen, hochgeladenen Bildern, eigenen Kategorien und Einstellungen. Das kann nicht rückgängig gemacht werden.",
+    "deleteButton": "Konto löschen",
+    "deleteConfirm": "Bist du sicher? Alle deine Daten werden endgültig gelöscht. Lade sie vorher herunter, wenn du sie behalten möchtest.",
+    "deleteConfirmButton": "Endgültig löschen",
+    "deleting": "Wird gelöscht…",
+    "deleteFailed": "Das Konto konnte nicht gelöscht werden. Bitte versuche es erneut."
   },
   "notFound": {
     "title": "Seite nicht gefunden",
