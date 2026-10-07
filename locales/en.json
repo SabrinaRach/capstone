@@ -237,6 +237,7 @@
     "UPLOAD_FILE_TOO_LARGE": "{filename} must not exceed 5 MB.",
     "UPLOAD_INVALID_TYPE": "{filename} is not a supported image type. Only JPEG and PNG images are allowed.",
     "UPLOAD_FAILED": "Upload failed.",
+    "UPLOAD_INVALID_IMAGE": "{filename} could not be processed as an image.",
     "VALIDATION_INVALID": "Invalid input.",
     "DUPLICATE": "This category already exists.",
     "INVALID_ID": "Invalid id.",

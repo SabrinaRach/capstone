@@ -237,6 +237,7 @@
     "UPLOAD_FILE_TOO_LARGE": "{filename} darf 5 MB nicht überschreiten.",
     "UPLOAD_INVALID_TYPE": "{filename} ist kein unterstützter Bildtyp. Nur JPEG- und PNG-Bilder sind erlaubt.",
     "UPLOAD_FAILED": "Upload fehlgeschlagen.",
+    "UPLOAD_INVALID_IMAGE": "{filename} konnte nicht als Bild verarbeitet werden.",
     "VALIDATION_INVALID": "Ungültige Eingabe.",
     "DUPLICATE": "Diese Kategorie existiert bereits.",
     "INVALID_ID": "Ungültige ID.",

@@ -1,6 +1,7 @@
 import { put } from "@vercel/blob";
 import formidable from "formidable";
 import fs from "fs/promises";
+import sharp from "sharp";
 import { authOptions } from "./auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
 
@@ -9,6 +10,19 @@ export const config = {
     bodyParser: false,
   },
 };
+
+// Re-encodes the image, which drops all metadata (EXIF incl. GPS location,
+// camera details, XMP, comments). The orientation is applied to the pixels
+// first so photos keep their correct rotation without the EXIF tag.
+async function removeImageMetadata(buffer, mimetype) {
+  const image = sharp(buffer).rotate();
+
+  if (mimetype === "image/png") {
+    return image.png().toBuffer();
+  }
+
+  return image.jpeg({ quality: 90, mozjpeg: true }).toBuffer();
+}
 
 export default async function handler(req, res) {
   const session = await getSessionSafe(req, res, authOptions);
@@ -84,12 +98,27 @@ export default async function handler(req, res) {
 
       const fileBuffer = await fs.readFile(imageFile.filepath);
 
+      let cleanedImage;
+
+      try {
+        cleanedImage = await removeImageMetadata(fileBuffer, imageFile.mimetype);
+      } catch {
+        return res.status(400).json({
+          code: "UPLOAD_INVALID_IMAGE",
+          params: { filename: imageFile.originalFilename },
+          error: `${imageFile.originalFilename} could not be processed as an image.`,
+        });
+      }
+
+      // The original filename can contain personal information and would be
+      // part of the public URL.
       const blob = await put(
-        imageFile.originalFilename || "image",
-        fileBuffer,
+        `entry-image.${imageFile.mimetype === "image/png" ? "png" : "jpg"}`,
+        cleanedImage,
         {
           access: "public",
           addRandomSuffix: true,
+          contentType: imageFile.mimetype,
         },
       );
 
