@@ -69,7 +69,15 @@
     "sendingLink": "Sending link…",
     "signInWithGithub": "Sign in with GitHub",
     "signInError": "Could not sign in, please try again.",
-    "sendLinkError": "Could not send the sign-in link, please try again."
+    "sendLinkError": "Could not send the sign-in link, please try again.",
+    "privacyNotice": "We only use your email address to sign you in. See the privacy policy for details."
+  },
+  "legal": {
+    "privacyPolicy": "Privacy policy",
+    "imprint": "Imprint",
+    "navigationLabel": "Legal information",
+    "lastUpdated": "Last updated: {date}",
+    "backToHome": "Back to home"
   },
   "counts": {
     "entry": { "one": "{count} entry", "other": "{count} entries" },

@@ -5,7 +5,8 @@ import Navigation from "../components/Navigation";
 import LogoutButton from "@/components/LogoutButton";
 import AccountButton from "@/components/AccountButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { SessionProvider } from "next-auth/react";
+import LegalLinks from "@/components/LegalLinks";
+import { SessionProvider, useSession } from "next-auth/react";
 import EntryModal from "../components/EntryModal";
 import { I18nProvider, useI18n } from "@/lib/i18n/I18nContext";
 
@@ -13,7 +14,14 @@ function AppShell({ Component, pageProps }) {
   const router = useRouter();
   const { t } = useI18n();
 
+  const { status } = useSession();
+
   const isHome = router.pathname === "/";
+  // The legal pages are public; the app navigation is only useful once
+  // signed in.
+  const isLegalPage = ["/privacy", "/imprint"].includes(router.pathname);
+  const showNavigation =
+    !isHome && !(isLegalPage && status === "unauthenticated");
 
   const [toastMessageKey, setToastMessageKey] = useState(null);
 
@@ -62,7 +70,10 @@ function AppShell({ Component, pageProps }) {
 
       <div className="pb-24">
         <Component {...pageProps} />
-        {!isHome && <Navigation onNewEntry={() => setIsEntryModalOpen(true)} />}
+        {!isHome && <LegalLinks className="pb-6" />}
+        {showNavigation && (
+          <Navigation onNewEntry={() => setIsEntryModalOpen(true)} />
+        )}
         {isEntryModalOpen && (
           <EntryModal onClose={() => setIsEntryModalOpen(false)} />
         )}
