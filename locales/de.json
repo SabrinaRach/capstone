@@ -69,7 +69,15 @@
     "sendingLink": "Link wird gesendet…",
     "signInWithGithub": "Mit GitHub anmelden",
     "signInError": "Anmeldung nicht möglich, bitte versuche es erneut.",
-    "sendLinkError": "Der Anmeldelink konnte nicht gesendet werden, bitte versuche es erneut."
+    "sendLinkError": "Der Anmeldelink konnte nicht gesendet werden, bitte versuche es erneut.",
+    "privacyNotice": "Wir verwenden deine E-Mail-Adresse nur für die Anmeldung. Details findest du in der Datenschutzerklärung."
+  },
+  "legal": {
+    "privacyPolicy": "Datenschutzerklärung",
+    "imprint": "Impressum",
+    "navigationLabel": "Rechtliche Hinweise",
+    "lastUpdated": "Stand: {date}",
+    "back": "Zurück"
   },
   "counts": {
     "entry": { "one": "{count} Eintrag", "other": "{count} Einträge" },

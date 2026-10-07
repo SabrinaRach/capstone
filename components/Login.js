@@ -1,6 +1,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nContext";
+import LegalLinks from "./LegalLinks";
 
 export default function Login() {
   const { t } = useI18n();
@@ -100,6 +101,10 @@ export default function Login() {
       >
         {t("login.signInWithGithub")}
       </button>
+      <p className="mt-5 text-xs leading-relaxed text-secondary-500">
+        {t("login.privacyNotice")}
+      </p>
+      <LegalLinks className="mt-2" />
     </div>
   );
 }
