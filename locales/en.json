@@ -58,6 +58,7 @@
     "accessDenied": "Access was denied. Please try signing in again.",
     "configuration": "Sign-in is currently unavailable. Please try again later.",
     "default": "Something went wrong while signing you in. Please try again.",
+    "accountNotLinked": "An account already exists for this email address. Please sign in with the same method you used the first time (email or GitHub).",
     "backToLogin": "Back to login"
   },
   "login": {

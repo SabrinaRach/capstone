@@ -27,6 +27,9 @@ export const authOptions = {
     strategy: "jwt",
   },
   pages: {
+    // NextAuth sends sign-in errors (e.g. OAuthAccountNotLinked) to the
+    // sign-in page instead of the error page; the login form shows them.
+    signIn: "/",
     error: "/auth/error",
   },
   providers: [

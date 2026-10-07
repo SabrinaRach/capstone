@@ -1,16 +1,29 @@
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nContext";
+import { getAuthErrorMessageKey } from "@/lib/authErrors";
 import LegalLinks from "./LegalLinks";
 
 export default function Login() {
   const { t } = useI18n();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [isSendingLink, setIsSendingLink] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [showAuthError, setShowAuthError] = useState(true);
+
+  // NextAuth redirects sign-in errors (e.g. an email address already used
+  // with another sign-in method) to this page with an `error` parameter.
+  const authError =
+    showAuthError && typeof router.query.error === "string"
+      ? t(getAuthErrorMessageKey(router.query.error))
+      : "";
+  const errorMessage = loginError || authError;
 
   async function handleGithubLogin() {
     setLoginError("");
+    setShowAuthError(false);
 
     try {
       await signIn("github", {
@@ -29,6 +42,7 @@ export default function Login() {
     }
 
     setLoginError("");
+    setShowAuthError(false);
     setIsSendingLink(true);
 
     try {
@@ -61,9 +75,9 @@ export default function Login() {
           {t("login.subtitle")}{" "}
         </p>{" "}
       </div>
-      {loginError && (
+      {errorMessage && (
         <p className="mb-4 text-sm text-accent-500" role="alert">
-          {loginError}
+          {errorMessage}
         </p>
       )}
       <form onSubmit={handleEmailLogin} className="space-y-3 text-left">
