@@ -1,7 +1,9 @@
+import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import BackLink from "@/components/BackLink";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { LEGAL_CONTACT, LEGAL_LAST_UPDATED } from "@/lib/legal";
+import { canGoBackInApp } from "@/lib/navigationHistory";
 
 function ContactDetails() {
   return (
@@ -45,13 +47,25 @@ function Block({ block }) {
 export default function LegalDocument({ title, content }) {
   const { locale, t } = useI18n();
   const { status } = useSession();
+  const router = useRouter();
   const sections = content[locale] || content.de;
+
+  // Goes back to the previous page within the app. When the page was opened
+  // directly (e.g. via a link from outside), the href is used instead.
+  function handleBack(event) {
+    if (canGoBackInApp()) {
+      event.preventDefault();
+      router.back();
+    }
+  }
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-10 pt-20 sm:pt-10">
-      {status === "unauthenticated" && (
-        <BackLink href="/" text={t("legal.backToHome")} />
-      )}
+      <BackLink
+        href={status === "authenticated" ? "/entries" : "/"}
+        text={t("legal.back")}
+        onClick={handleBack}
+      />
 
       <h1 className="text-3xl font-bold">{title}</h1>
 

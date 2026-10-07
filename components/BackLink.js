@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 
-export default function BackLink({ href, text }) {
+export default function BackLink({ href, text, onClick }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className="mb-6 inline-flex items-center gap-2 text-sm hover:text-primary-700"
       aria-label={text}
     >

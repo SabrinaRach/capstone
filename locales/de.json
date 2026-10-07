@@ -77,7 +77,7 @@
     "imprint": "Impressum",
     "navigationLabel": "Rechtliche Hinweise",
     "lastUpdated": "Stand: {date}",
-    "backToHome": "Zur Startseite"
+    "back": "Zurück"
   },
   "counts": {
     "entry": { "one": "{count} Eintrag", "other": "{count} Einträge" },

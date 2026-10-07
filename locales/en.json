@@ -77,7 +77,7 @@
     "imprint": "Imprint",
     "navigationLabel": "Legal information",
     "lastUpdated": "Last updated: {date}",
-    "backToHome": "Back to home"
+    "back": "Back"
   },
   "counts": {
     "entry": { "one": "{count} entry", "other": "{count} entries" },

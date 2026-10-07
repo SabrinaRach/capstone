@@ -9,6 +9,7 @@ import LegalLinks from "@/components/LegalLinks";
 import { SessionProvider, useSession } from "next-auth/react";
 import EntryModal from "../components/EntryModal";
 import { I18nProvider, useI18n } from "@/lib/i18n/I18nContext";
+import { markInAppNavigation } from "@/lib/navigationHistory";
 
 function AppShell({ Component, pageProps }) {
   const router = useRouter();
@@ -29,6 +30,8 @@ function AppShell({ Component, pageProps }) {
 
   useEffect(() => {
     const handleRouteChange = () => {
+      markInAppNavigation();
+
       const messageKey =
         sessionStorage.getItem("accountDeleted") === "true"
           ? "toast.accountDeleted"
