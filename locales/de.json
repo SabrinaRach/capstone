@@ -75,6 +75,7 @@
   },
   "legal": {
     "privacyPolicy": "Datenschutzerklärung",
+    "tableOfContents": "Inhaltsübersicht",
     "imprint": "Impressum",
     "navigationLabel": "Rechtliche Hinweise",
     "lastUpdated": "Stand: {date}",
