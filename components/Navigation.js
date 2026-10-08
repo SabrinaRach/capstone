@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import NewEntryButton from "./NewEntryButton";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeSwitcher from "./ThemeSwitcher";
 import AccountButton from "./AccountButton";
 import LogoutButton from "./LogoutButton";
 import { useI18n } from "@/lib/i18n/I18nContext";
@@ -104,6 +105,7 @@ function TopNavigation({ onNewEntry, isActive }) {
             {t("nav.newEntryShort")}
           </button>
 
+          <ThemeSwitcher />
           <LanguageSwitcher />
           <AccountButton />
           <LogoutButton />

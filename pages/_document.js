@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from "next/document";
+import { THEME_INIT_SCRIPT, themeFromCookieHeader } from "../lib/theme.js";
 
 function localeFromCookieHeader(cookieHeader) {
   const match = cookieHeader?.match(/(?:^|; )locale=([^;]+)/);
@@ -6,10 +7,15 @@ function localeFromCookieHeader(cookieHeader) {
   return match?.[1] === "en" ? "en" : "de";
 }
 
-export default function Document({ locale }) {
+export default function Document({ locale, theme }) {
   return (
-    <Html lang={locale}>
-      <Head />
+    <Html
+      lang={locale}
+      data-theme={theme === "system" ? undefined : theme}
+    >
+      <Head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </Head>
       <body className="antialiased">
         <Main />
         <NextScript />
@@ -24,5 +30,6 @@ Document.getInitialProps = async (ctx) => {
   return {
     ...initialProps,
     locale: localeFromCookieHeader(ctx.req?.headers?.cookie),
+    theme: themeFromCookieHeader(ctx.req?.headers?.cookie),
   };
 };
