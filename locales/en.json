@@ -75,6 +75,7 @@
   },
   "legal": {
     "privacyPolicy": "Privacy policy",
+    "tableOfContents": "Table of contents",
     "imprint": "Imprint",
     "navigationLabel": "Legal information",
     "lastUpdated": "Last updated: {date}",
