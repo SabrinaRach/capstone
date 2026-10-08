@@ -60,7 +60,7 @@ export default function EntryModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-2xl text-secondary-500 hover:text-secondary-700"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl text-secondary-500 transition hover:bg-secondary-100 hover:text-secondary-700"
             aria-label={t("entryModal.closeAria")}
           >
             ×

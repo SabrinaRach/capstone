@@ -78,7 +78,7 @@ export default function CategoriesPage({ categories }) {
           ))}
         </div>
       )}
-      <div className="mt-8">
+      <div className="mt-8 lg:max-w-2xl">
         <CategoryForm onCreated={handleCreated} />
       </div>
     </main>

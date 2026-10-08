@@ -73,10 +73,10 @@ export default function EntryPage({ entry }) {
       <BackLink href="/entries" text={t("entryDetail.allEntriesLink")} />
 
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">{entry.title}</h1>
+        <div className="min-w-0">
+          <h1 className="text-3xl font-bold wrap-anywhere">{entry.title}</h1>
 
-          <p className="mt-2 text-secondary-700">
+          <p className="mt-2 text-secondary-700 wrap-anywhere">
             {t("entryDetail.categoryLabel", {
               category: entry.category
                 ? getCategoryDisplayName(entry.category, t)
@@ -190,22 +190,36 @@ export default function EntryPage({ entry }) {
       <div className="mt-8 space-y-8">
         {entry.description && (
           <EntrySection title={t("entryDetail.descriptionSection")}>
-            <p className="whitespace-pre-line">{entry.description}</p>
+            <p className="max-w-3xl whitespace-pre-line wrap-anywhere">
+              {entry.description}
+            </p>
           </EntrySection>
         )}
 
-        <EntryList title={t("entryDetail.itemsSection")} items={entry.items} />
+        {/* On large screens the items stay visible next to the steps. */}
+        <div className="space-y-8 lg:grid lg:grid-cols-3 lg:items-start lg:gap-12 lg:space-y-0">
+          <div className="lg:sticky lg:top-24">
+            <EntryList
+              title={t("entryDetail.itemsSection")}
+              items={entry.items}
+            />
+          </div>
 
-        <EntrySteps steps={entry.steps} />
+          <div className="lg:col-span-2">
+            <EntrySteps steps={entry.steps} />
+          </div>
+        </div>
 
         {entry.notes && (
           <EntrySection title={t("entryDetail.notesSection")}>
-            <p className="whitespace-pre-line">{entry.notes}</p>
+            <p className="max-w-3xl whitespace-pre-line wrap-anywhere">
+              {entry.notes}
+            </p>
           </EntrySection>
         )}
 
         {entry.images?.length > 0 && (
-          <div className="mt-6">
+          <div className="mt-6 lg:max-w-xl">
             <div className="relative">
               <div
                 ref={imageSliderRef}
@@ -324,12 +338,16 @@ export default function EntryPage({ entry }) {
                         setCurrentImageIndex(index);
                       }
                     }}
-                    className={`h-3 w-3 rounded-full border-2 border-foreground transition ${
-                      currentImageIndex === index
-                        ? "bg-foreground"
-                        : "bg-background"
-                    }`}
-                  />
+                    className="flex h-6 w-6 items-center justify-center"
+                  >
+                    <span
+                      className={`h-3 w-3 rounded-full border-2 border-foreground transition ${
+                        currentImageIndex === index
+                          ? "bg-foreground"
+                          : "bg-background"
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
             )}

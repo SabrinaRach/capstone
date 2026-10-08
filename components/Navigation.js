@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import NewEntryButton from "./NewEntryButton";
+import LanguageSwitcher from "./LanguageSwitcher";
+import AccountButton from "./AccountButton";
+import LogoutButton from "./LogoutButton";
 import { useI18n } from "@/lib/i18n/I18nContext";
 
 const navigationItems = [
@@ -48,16 +51,97 @@ const navigationItems = [
   },
 ];
 
-export default function BottomNavigation({ onNewEntry }) {
+// Desktop: the navigation is shown as a header at the top, together with
+// the language, account and logout controls.
+function TopNavigation({ onNewEntry, isActive }) {
+  const { t } = useI18n();
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-40 hidden h-16 border-b border-secondary-100/80 bg-background/90 backdrop-blur-md lg:block">
+      <div className="mx-auto flex h-full max-w-6xl items-center gap-2 px-6">
+        <nav
+          aria-label={t("nav.mainNavigation")}
+          className="flex items-center gap-1"
+        >
+          {navigationItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActive(item) ? "page" : undefined}
+              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-secondary-100 ${
+                isActive(item)
+                  ? "text-primary-500"
+                  : "text-secondary-500 hover:text-secondary-700"
+              }`}
+            >
+              {item.icon}
+              <span>{t(item.labelKey)}</span>
+            </Link>
+          ))}
+        </nav>
+
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onNewEntry}
+            className="flex h-10 items-center gap-2 rounded-full bg-primary-500 px-4 text-sm font-medium text-background shadow-sm transition hover:bg-primary-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+            {t("nav.newEntryShort")}
+          </button>
+
+          <LanguageSwitcher />
+          <AccountButton />
+          <LogoutButton />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+export default function Navigation({ onNewEntry }) {
+  const router = useRouter();
+
+  function isActive(item) {
+    return (
+      router.pathname === item.href ||
+      router.pathname.startsWith(`${item.href}/`)
+    );
+  }
+
+  return (
+    <>
+      <BottomNavigation onNewEntry={onNewEntry} />
+      <TopNavigation onNewEntry={onNewEntry} isActive={isActive} />
+    </>
+  );
+}
+
+// Mobile and tablet: the navigation is shown as a bar at the bottom.
+function BottomNavigation({ onNewEntry }) {
   const router = useRouter();
   const { t } = useI18n();
 
   return (
     <nav
       aria-label={t("nav.mainNavigation")}
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-secondary-100/80 bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-secondary-100/80 bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
     >
-      <div className="mx-auto grid h-20 max-w-2xl grid-cols-3 items-center px-4">
+      <div className="mx-auto grid h-20 max-w-2xl grid-cols-3 items-center px-2 sm:px-4">
         {/* Entries */}
         <div className="flex w-full justify-center">
           {(() => {
@@ -70,7 +154,7 @@ export default function BottomNavigation({ onNewEntry }) {
               <Link
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 sm:px-4 text-sm font-medium transition ${
                   isActive
                     ? "text-primary-500"
                     : "text-secondary-500 hover:text-secondary-700"
@@ -100,7 +184,7 @@ export default function BottomNavigation({ onNewEntry }) {
               <Link
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 sm:px-4 text-sm font-medium transition ${
                   isActive
                     ? "text-primary-500"
                     : "text-secondary-500 hover:text-secondary-700"

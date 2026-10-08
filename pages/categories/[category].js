@@ -37,7 +37,7 @@ export default function CategoryPage({ category, entries }) {
           aria-hidden="true"
         />
 
-        <h1 className="text-3xl font-bold">
+        <h1 className="min-w-0 text-3xl font-bold wrap-anywhere">
           {getCategoryDisplayName(category, t)}
         </h1>
       </div>
@@ -70,7 +70,7 @@ export default function CategoryPage({ category, entries }) {
               className="group rounded-xl border border-l-4 border-secondary-100 bg-background p-5 transition hover:-translate-y-0.5 hover:border-secondary-500/40"
               style={{ borderLeftColor: category.color }}
             >
-              <h2 className="text-lg font-semibold transition group-hover:text-primary-500">
+              <h2 className="text-lg font-semibold wrap-anywhere transition group-hover:text-primary-500">
                 {entry.title}
               </h2>
 

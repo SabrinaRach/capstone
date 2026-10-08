@@ -15,7 +15,7 @@ export default function CategoryCard({ category, onUpdated, onDeleted }) {
       }}
     >
       <Link href={`/categories/${category.slug}`} className="block">
-        <h2 className="text-xl font-semibold">
+        <h2 className="text-xl font-semibold wrap-anywhere">
           {getCategoryDisplayName(category, t)}
         </h2>
       </Link>

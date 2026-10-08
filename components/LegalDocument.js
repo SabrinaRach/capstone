@@ -150,7 +150,7 @@ export default function LegalDocument({
         onClick={handleBack}
       />
 
-      <h1 className="text-3xl font-bold">{title}</h1>
+      <h1 className="text-2xl font-bold hyphens-auto sm:text-3xl">{title}</h1>
 
       <p className="mt-2 text-sm text-secondary-500">
         {t("legal.lastUpdated", {

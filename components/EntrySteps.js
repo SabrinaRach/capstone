@@ -18,7 +18,7 @@ export default function EntrySteps({ steps }) {
               {index + 1}
             </span>
 
-            <p className="pt-1 text-secondary-700">{step}</p>
+            <p className="min-w-0 pt-1 text-secondary-700 wrap-anywhere">{step}</p>
           </li>
         ))}
       </ol>
