@@ -65,13 +65,18 @@ function AppShell({ Component, pageProps }) {
         </div>
       )}
 
-      <div className="fixed right-5 top-5 z-50 flex items-center gap-2">
+      {/* On desktop these controls are part of the top navigation. */}
+      <div
+        className={`fixed right-5 top-5 z-50 flex items-center gap-2 ${
+          showNavigation ? "lg:hidden" : ""
+        }`}
+      >
         <LanguageSwitcher />
         {!isHome && <AccountButton />}
         {!isHome && <LogoutButton />}
       </div>
 
-      <div className="pb-24">
+      <div className={showNavigation ? "pb-24 lg:pb-0 lg:pt-16" : "pb-24"}>
         <Component {...pageProps} />
         {!isHome && <LegalLinks className="pb-6" />}
         {showNavigation && (

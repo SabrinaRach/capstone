@@ -9,7 +9,9 @@ export default function EntryList({ title, items }) {
 
       <ul className="mt-3 list-disc space-y-2 pl-5 text-secondary-700">
         {items.map((item, index) => (
-          <li key={index}>{item}</li>
+          <li key={index} className="wrap-anywhere">
+            {item}
+          </li>
         ))}
       </ul>
     </section>

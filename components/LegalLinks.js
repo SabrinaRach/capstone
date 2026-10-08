@@ -9,10 +9,10 @@ export default function LegalLinks({ className = "" }) {
       aria-label={t("legal.navigationLabel")}
       className={`flex justify-center gap-4 text-xs text-secondary-500 ${className}`}
     >
-      <Link href="/privacy" className="underline hover:text-primary-700">
+      <Link href="/privacy" className="inline-block py-1.5 underline hover:text-primary-700">
         {t("legal.privacyPolicy")}
       </Link>
-      <Link href="/imprint" className="underline hover:text-primary-700">
+      <Link href="/imprint" className="inline-block py-1.5 underline hover:text-primary-700">
         {t("legal.imprint")}
       </Link>
     </nav>

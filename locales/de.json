@@ -9,7 +9,8 @@
     "entries": "Einträge",
     "categories": "Kategorien",
     "mainNavigation": "Hauptnavigation",
-    "newEntry": "Neuen Eintrag erstellen"
+    "newEntry": "Neuen Eintrag erstellen",
+    "newEntryShort": "Neuer Eintrag"
   },
   "animation": {
     "openVortex": "Vortex öffnen"

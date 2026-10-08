@@ -74,13 +74,13 @@ export default function EntriesPage({ entries }) {
                   borderLeftColor: entry.category?.color || "transparent",
                 }}
               >
-                <h2 className="text-lg font-semibold transition group-hover:text-primary-500">
+                <h2 className="text-lg font-semibold wrap-anywhere transition group-hover:text-primary-500">
                   {entry.title}
                 </h2>
 
                 {entry.category?.name && (
                   <span
-                    className="mt-2 inline-block rounded-full px-2.5 py-1 text-xs font-medium"
+                    className="mt-2 inline-block rounded-full px-2.5 py-1 text-xs font-medium wrap-anywhere"
                     style={{
                       backgroundColor: entry.category.backgroundColor,
                       color: entry.category.color,

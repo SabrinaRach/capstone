@@ -26,7 +26,29 @@ const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 export default function AnimationVortex({ onAnimationComplete }) {
   const { t } = useI18n();
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const iconRefs = useRef([]);
+
+  // The animation is drawn on a fixed CANVAS_SIZE stage that is scaled down
+  // to the available width, so it never makes the page wider than the
+  // screen on small devices.
+  const [stageScale, setStageScale] = useState(1);
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const observer = new ResizeObserver(([entry]) => {
+      setStageScale(Math.min(entry.contentRect.width / CANVAS_SIZE, 1));
+    });
+
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, []);
 
   const animationFrameRef = useRef(null);
 
@@ -383,6 +405,7 @@ export default function AnimationVortex({ onAnimationComplete }) {
 
   return (
     <motion.div
+      ref={containerRef}
       role="button"
       tabIndex={0}
       aria-label={t("animation.openVortex")}
@@ -413,65 +436,75 @@ export default function AnimationVortex({ onAnimationComplete }) {
     aspect-square
     w-full
     max-w-[600px]
+    overflow-hidden
     select-none
     outline-none
     ${isSorting ? "pointer-events-none" : "cursor-pointer"}
   `}
     >
-      <canvas
-        ref={canvasRef}
-        className="
-          absolute
-          inset-0
-          h-full
-          w-full
-        "
-      />
-
       <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-        "
+        className="absolute left-0 top-0 origin-top-left"
+        style={{
+          width: CANVAS_SIZE,
+          height: CANVAS_SIZE,
+          transform: `scale(${stageScale})`,
+        }}
       >
-        {VORTEX_CATEGORIES.map((category, index) => {
-          const Icon = category.icon;
+        <canvas
+          ref={canvasRef}
+          className="
+            absolute
+            inset-0
+            h-full
+            w-full
+          "
+        />
 
-          return (
-            <div
-              key={`${category.id}-${index}`}
-              ref={(element) => {
-                iconRefs.current[index] = element;
-              }}
-              className="
-                  absolute
-                  left-0
-                  top-0
-                  flex
-                  h-14
-                  w-14
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-secondary-100/20
-                  bg-background/10
-                  backdrop-blur-md
-                  will-change-transform
-                "
-              style={{
-                color: category.color,
-                boxShadow: `
-                    0 0 24px
-                    ${category.color}33
-                  `,
-              }}
-            >
-              <Icon size={27} strokeWidth={1.8} />
-            </div>
-          );
-        })}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+          "
+        >
+          {VORTEX_CATEGORIES.map((category, index) => {
+            const Icon = category.icon;
+
+            return (
+              <div
+                key={`${category.id}-${index}`}
+                ref={(element) => {
+                  iconRefs.current[index] = element;
+                }}
+                className="
+                    absolute
+                    left-0
+                    top-0
+                    flex
+                    h-14
+                    w-14
+                    items-center
+                    justify-center
+                    rounded-full
+                    border
+                    border-secondary-100/20
+                    bg-background/10
+                    backdrop-blur-md
+                    will-change-transform
+                  "
+                style={{
+                  color: category.color,
+                  boxShadow: `
+                      0 0 24px
+                      ${category.color}33
+                    `,
+                }}
+              >
+                <Icon size={27} strokeWidth={1.8} />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </motion.div>
   );

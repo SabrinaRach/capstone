@@ -9,7 +9,8 @@
     "entries": "Entries",
     "categories": "Categories",
     "mainNavigation": "Main navigation",
-    "newEntry": "Create new entry"
+    "newEntry": "Create new entry",
+    "newEntryShort": "New entry"
   },
   "animation": {
     "openVortex": "Open vortex"

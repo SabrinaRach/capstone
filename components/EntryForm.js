@@ -259,7 +259,7 @@ export default function EntryForm({
             type="button"
             onClick={handleImport}
             disabled={isImporting}
-            className="rounded-full border border-secondary-100 px-5 py-2.5 text-sm font-medium transition hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="shrink-0 whitespace-nowrap rounded-full border border-secondary-100 px-5 py-2.5 text-sm font-medium transition hover:bg-secondary-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isImporting ? t("entryForm.importing") : t("entryForm.importWithAi")}
           </button>
