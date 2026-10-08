@@ -8,6 +8,11 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
+import {
+  CATEGORY_SURFACE,
+  CATEGORY_TEXT,
+  categoryColorVars,
+} from "@/lib/categoryColors";
 
 export default function EntriesPage({ entries }) {
   const { t, tCount } = useI18n();
@@ -80,11 +85,8 @@ export default function EntriesPage({ entries }) {
 
                 {entry.category?.name && (
                   <span
-                    className="mt-2 inline-block rounded-full px-2.5 py-1 text-xs font-medium wrap-anywhere"
-                    style={{
-                      backgroundColor: entry.category.backgroundColor,
-                      color: entry.category.color,
-                    }}
+                    className={`mt-2 inline-block rounded-full px-2.5 py-1 text-xs font-medium wrap-anywhere ${CATEGORY_SURFACE} ${CATEGORY_TEXT}`}
+                    style={categoryColorVars(entry.category)}
                   >
                     {" "}
                     {getCategoryDisplayName(entry.category, t)}{" "}

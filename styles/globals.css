@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
+
   --background: #f4f4f5;
   --foreground: #18181b;
 
@@ -12,11 +14,47 @@
   --secondary-500: #64748b;
   --secondary-700: #334155;
 
+  --accent-100: #ffedd5;
   --accent-500: #ea580c;
+  --accent-700: #c2410c;
 
   --rating-500: #eab308;
 
   --border: #2f2f30;
+
+  --overlay: rgb(24 24 27 / 0.5);
+}
+
+/* Dark mode follows the operating system / browser setting. The palette uses
+   the same color families as the light theme (sky, slate, orange), shifted to
+   lighter shades so text and buttons stay readable on the dark background.
+   Buttons keep their text in var(--background), which is dark here, on the
+   lighter primary/accent colors. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --background: #18181b;
+    --foreground: #f4f4f5;
+
+    --primary-100: #0c4a6e;
+    --primary-500: #38bdf8;
+    --primary-700: #7dd3fc;
+
+    --secondary-100: #334155;
+    --secondary-500: #94a3b8;
+    --secondary-700: #cbd5e1;
+
+    --accent-100: #431407;
+    --accent-500: #fb923c;
+    --accent-700: #fdba74;
+
+    --rating-500: #facc15;
+
+    --border: #a1a1aa;
+
+    --overlay: rgb(0 0 0 / 0.65);
+  }
 }
 
 @theme inline {
@@ -33,9 +71,15 @@
   --color-secondary-500: var(--secondary-500);
   --color-secondary-700: var(--secondary-700);
 
+  --color-accent-100: var(--accent-100);
   --color-accent-500: var(--accent-500);
+  --color-accent-700: var(--accent-700);
 
   --color-rating-500: var(--rating-500);
+
+  --color-border: var(--border);
+
+  --color-overlay: var(--overlay);
 }
 
 body {
