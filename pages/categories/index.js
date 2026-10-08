@@ -57,7 +57,7 @@ export default function CategoriesPage({ categories }) {
       </div>
 
       {categoryList.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-dashed border-border-300 p-10 text-center">
+        <div className="mt-8 rounded-xl border border-dashed border-secondary-100 p-10 text-center">
           <h2 className="text-lg font-semibold">
             {t("categoriesPage.emptyTitle")}
           </h2>

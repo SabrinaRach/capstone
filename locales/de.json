@@ -24,6 +24,12 @@
   "languageSwitcher": {
     "label": "Sprache wechseln"
   },
+  "themeSwitcher": {
+    "label": "Farbschema wechseln",
+    "system": "System",
+    "light": "Hell",
+    "dark": "Dunkel"
+  },
   "toast": {
     "loggedOut": "✓ Erfolgreich abgemeldet",
     "accountDeleted": "✓ Dein Konto wurde gelöscht"

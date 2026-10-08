@@ -1,22 +1,47 @@
 @import "tailwindcss";
 
+/* Each color is defined once for light and once for dark mode with
+   light-dark(). Which one applies follows `color-scheme`: by default the
+   operating system / browser setting, or the theme chosen in the app
+   (data-theme on <html>, set by the theme switcher).
+
+   The dark palette uses the same color families as the light theme (sky,
+   slate, orange), shifted to lighter shades so text and buttons stay
+   readable on the dark background. Buttons keep their text in
+   var(--background), which is dark in dark mode, on the lighter
+   primary/accent colors. All text colors meet WCAG AA (4.5:1) on the
+   background in both modes. */
 :root {
-  --background: #f4f4f5;
-  --foreground: #18181b;
+  color-scheme: light dark;
 
-  --primary-100: #71d0f9;
-  --primary-500: #0284c7;
-  --primary-700: #075985;
+  --background: light-dark(#f4f4f5, #18181b);
+  --foreground: light-dark(#18181b, #f4f4f5);
 
-  --secondary-100: #cbd5e1;
-  --secondary-500: #64748b;
-  --secondary-700: #334155;
+  --primary-100: light-dark(#71d0f9, #0c4a6e);
+  --primary-500: light-dark(#0369a1, #38bdf8);
+  --primary-700: light-dark(#075985, #7dd3fc);
 
-  --accent-500: #ea580c;
+  --secondary-100: light-dark(#cbd5e1, #334155);
+  --secondary-500: light-dark(#556275, #94a3b8);
+  --secondary-700: light-dark(#334155, #cbd5e1);
 
-  --rating-500: #eab308;
+  --accent-100: light-dark(#ffedd5, #431407);
+  --accent-500: light-dark(#c2410c, #fb923c);
+  --accent-700: light-dark(#9a3412, #fdba74);
 
-  --border: #2f2f30;
+  --rating-500: light-dark(#eab308, #facc15);
+
+  --border: light-dark(#2f2f30, #a1a1aa);
+
+  --overlay: light-dark(rgb(24 24 27 / 0.5), rgb(0 0 0 / 0.65));
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -33,9 +58,15 @@
   --color-secondary-500: var(--secondary-500);
   --color-secondary-700: var(--secondary-700);
 
+  --color-accent-100: var(--accent-100);
   --color-accent-500: var(--accent-500);
+  --color-accent-700: var(--accent-700);
 
   --color-rating-500: var(--rating-500);
+
+  --color-border: var(--border);
+
+  --color-overlay: var(--overlay);
 }
 
 body {

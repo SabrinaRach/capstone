@@ -46,7 +46,7 @@ export default function EntryModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50 p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="entry-modal-title"

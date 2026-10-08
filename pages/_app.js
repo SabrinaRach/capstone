@@ -5,6 +5,7 @@ import Navigation from "../components/Navigation";
 import LogoutButton from "@/components/LogoutButton";
 import AccountButton from "@/components/AccountButton";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 import LegalLinks from "@/components/LegalLinks";
 import { SessionProvider, useSession } from "next-auth/react";
 import EntryModal from "../components/EntryModal";
@@ -71,6 +72,7 @@ function AppShell({ Component, pageProps }) {
           showNavigation ? "lg:hidden" : ""
         }`}
       >
+        <ThemeSwitcher />
         <LanguageSwitcher />
         {!isHome && <AccountButton />}
         {!isHome && <LogoutButton />}

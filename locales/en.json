@@ -24,6 +24,12 @@
   "languageSwitcher": {
     "label": "Switch language"
   },
+  "themeSwitcher": {
+    "label": "Change color theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "toast": {
     "loggedOut": "✓ Successfully logged out",
     "accountDeleted": "✓ Your account has been deleted"

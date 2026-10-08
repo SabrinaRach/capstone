@@ -8,6 +8,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
+import { CATEGORY_SURFACE, categoryColorVars } from "@/lib/categoryColors";
 
 export default function CategoryPage({ category, entries }) {
   const { t, tCount } = useI18n();
@@ -43,9 +44,9 @@ export default function CategoryPage({ category, entries }) {
       </div>
 
       <span
-        className="mt-3 inline-block rounded-full border px-3 py-1 text-sm font-medium text-secondary-700"
+        className={`mt-3 inline-block rounded-full border px-3 py-1 text-sm font-medium text-secondary-700 ${CATEGORY_SURFACE}`}
         style={{
-          backgroundColor: category.backgroundColor,
+          ...categoryColorVars(category),
           borderColor: category.color,
         }}
       >
