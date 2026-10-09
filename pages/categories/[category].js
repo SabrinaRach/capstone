@@ -9,6 +9,7 @@ import { getSessionSafe } from "../../lib/apiError.js";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
 import { CATEGORY_SURFACE, categoryColorVars } from "@/lib/categoryColors";
+import PageTitle from "@/components/PageTitle";
 
 export default function CategoryPage({ category, entries }) {
   const { t, tCount } = useI18n();
@@ -16,6 +17,8 @@ export default function CategoryPage({ category, entries }) {
   if (!category) {
     return (
       <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
+        <PageTitle title={t("categoryDetail.notFoundTitle")} />
+
         <BackLink href="/categories" text={t("categoryDetail.backLink")} />
 
         <h1 className="text-2xl font-bold">
@@ -29,6 +32,8 @@ export default function CategoryPage({ category, entries }) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
+      <PageTitle title={getCategoryDisplayName(category, t)} />
+
       <BackLink href="/categories" text={t("categoryDetail.backLink")} />
 
       <div className="flex items-center gap-3">

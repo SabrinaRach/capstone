@@ -29,7 +29,7 @@ export default function SearchBar({ onSearch }) {
         value={value}
         onChange={handleChange}
         placeholder={t("searchBar.placeholder")}
-        className="w-full rounded-lg border border-secondary-100 bg-background px-4 py-3 pr-24 outline-none focus:border-primary-500"
+        className="w-full rounded-lg border border-field-border bg-background px-4 py-3 pr-24 outline-none focus:border-primary-500"
       />
 
       {value && (

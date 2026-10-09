@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n/I18nContext";
+import PageTitle from "@/components/PageTitle";
 
 function ErrorPage({ statusCode }) {
   const { t } = useI18n();
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6">
+      <PageTitle title={t("errorPage.title")} />
+
       <div className="w-full max-w-md rounded-2xl border border-secondary-100/80 bg-background/80 p-8 text-center shadow-xl backdrop-blur-md">
         <h1 className="text-2xl font-bold">{t("errorPage.title")}</h1>
 

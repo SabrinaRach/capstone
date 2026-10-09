@@ -5,6 +5,10 @@
     "or": "oder",
     "genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
   },
+  "a11y": {
+    "skipToContent": "Zum Inhalt springen",
+    "settingsAndAccount": "Einstellungen und Konto"
+  },
   "nav": {
     "entries": "Einträge",
     "categories": "Kategorien",
@@ -22,10 +26,12 @@
     "label": "Mein Konto"
   },
   "languageSwitcher": {
-    "label": "Sprache wechseln"
+    "label": "Sprache wechseln",
+    "labelWithCurrent": "{locale} – Sprache wechseln"
   },
   "themeSwitcher": {
     "label": "Farbschema wechseln",
+    "labelWithCurrent": "Farbschema wechseln, aktuell: {theme}",
     "system": "System",
     "light": "Hell",
     "dark": "Dunkel"
@@ -69,6 +75,9 @@
     "backToLogin": "Zurück zur Anmeldung"
   },
   "login": {
+    "emailRequired": "Bitte gib deine E-Mail-Adresse ein.",
+    "emailInvalid": "Bitte gib eine gültige E-Mail-Adresse ein.",
+    "pageTitle": "Anmelden",
     "welcome": "Willkommen",
     "subtitle": "Melde dich an, um deine Inhalte zu verwalten.",
     "emailLabel": "E-Mail-Adresse",
@@ -114,6 +123,7 @@
     "emptyEntries": "Noch keine Einträge in dieser Kategorie."
   },
   "entriesPage": {
+    "searchResults": { "one": "{count} Eintrag gefunden", "other": "{count} Einträge gefunden" },
     "title": "Deine Einträge",
     "subtitle": "Durchsuche und finde deine gespeicherten Einträge.",
     "emptyTitleNoMatch": "Keine Einträge gefunden",
@@ -122,6 +132,11 @@
     "emptyDescriptionNone": "Aktuell gibt es keine Einträge zum Anzeigen."
   },
   "entryDetail": {
+    "carousel": "Karussell",
+    "slide": "Bild",
+    "imagesLabel": "Bilder zu {title}",
+    "imagesScrollLabel": "Bilder, mit den Pfeiltasten blättern",
+    "slideLabel": "{index} von {total}",
     "allEntriesLink": "Alle Einträge",
     "notFoundTitle": "Eintrag nicht gefunden",
     "notFoundDescription": "Der angeforderte Eintrag existiert nicht.",
@@ -159,6 +174,7 @@
     "importUrlRequired": "Bitte gib eine URL ein.",
     "importOverwriteConfirm": "Dies ersetzt die vorhandenen Eintragsfelder mit den importierten Informationen. Möchtest du fortfahren?",
     "importFailed": "Import fehlgeschlagen.",
+    "importSuccess": "Import abgeschlossen. Die Felder wurden ausgefüllt.",
     "titleLabel": "Titel *",
     "descriptionLabel": "Beschreibung",
     "categoryLabel": "Kategorie",
@@ -182,6 +198,7 @@
     "titleRequired": "Titel ist erforderlich.",
     "itemsRequired": "Elemente sind erforderlich.",
     "stepsRequired": "Schritte sind erforderlich.",
+    "checkFields": "Bitte fülle die markierten Pflichtfelder aus.",
     "saveFailed": "Eintrag konnte nicht gespeichert werden.",
     "imageTooLarge": "{filename} darf 5 MB nicht überschreiten.",
     "maxImages": "Du kannst maximal 5 Bilder haben.",

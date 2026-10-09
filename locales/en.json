@@ -5,6 +5,10 @@
     "or": "or",
     "genericError": "Something went wrong. Please try again."
   },
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "settingsAndAccount": "Settings and account"
+  },
   "nav": {
     "entries": "Entries",
     "categories": "Categories",
@@ -22,10 +26,12 @@
     "label": "My account"
   },
   "languageSwitcher": {
-    "label": "Switch language"
+    "label": "Switch language",
+    "labelWithCurrent": "{locale} – Change language"
   },
   "themeSwitcher": {
     "label": "Change color theme",
+    "labelWithCurrent": "Change color theme, current: {theme}",
     "system": "System",
     "light": "Light",
     "dark": "Dark"
@@ -69,6 +75,9 @@
     "backToLogin": "Back to login"
   },
   "login": {
+    "emailRequired": "Please enter your email address.",
+    "emailInvalid": "Please enter a valid email address.",
+    "pageTitle": "Sign in",
     "welcome": "Welcome",
     "subtitle": "Log in to manage your content.",
     "emailLabel": "Email address",
@@ -114,6 +123,7 @@
     "emptyEntries": "No entries in this category yet."
   },
   "entriesPage": {
+    "searchResults": { "one": "{count} entry found", "other": "{count} entries found" },
     "title": "Your Entries",
     "subtitle": "Browse and search your saved entries.",
     "emptyTitleNoMatch": "No entries found",
@@ -122,6 +132,11 @@
     "emptyDescriptionNone": "There are currently no entries to display."
   },
   "entryDetail": {
+    "carousel": "carousel",
+    "slide": "image",
+    "imagesLabel": "Images of {title}",
+    "imagesScrollLabel": "Images, use the arrow keys to scroll",
+    "slideLabel": "{index} of {total}",
     "allEntriesLink": "All Entries",
     "notFoundTitle": "Entry not found",
     "notFoundDescription": "The requested entry does not exist.",
@@ -159,6 +174,7 @@
     "importUrlRequired": "Please enter a URL.",
     "importOverwriteConfirm": "This will replace the existing entry fields with the imported information. Do you want to continue?",
     "importFailed": "Import failed.",
+    "importSuccess": "Import complete. The fields have been filled in.",
     "titleLabel": "Title *",
     "descriptionLabel": "Description",
     "categoryLabel": "Category",
@@ -182,6 +198,7 @@
     "titleRequired": "Title is required.",
     "itemsRequired": "Items are required.",
     "stepsRequired": "Steps are required.",
+    "checkFields": "Please fill in the marked required fields.",
     "saveFailed": "Failed to save entry.",
     "imageTooLarge": "{filename} must not exceed 5 MB.",
     "maxImages": "You can have a maximum of 5 images.",

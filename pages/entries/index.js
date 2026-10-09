@@ -13,6 +13,7 @@ import {
   CATEGORY_TEXT,
   categoryColorVars,
 } from "@/lib/categoryColors";
+import PageTitle from "@/components/PageTitle";
 
 export default function EntriesPage({ entries }) {
   const { t, tCount } = useI18n();
@@ -41,6 +42,8 @@ export default function EntriesPage({ entries }) {
   });
   return (
     <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
+      <PageTitle title={t("entriesPage.title")} />
+
       <div>
         <h1 className="text-3xl font-bold">{t("entriesPage.title")}</h1>
 
@@ -51,6 +54,13 @@ export default function EntriesPage({ entries }) {
         <div className="mt-6">
           <SearchBar onSearch={setSearchTerm} />
         </div>
+
+        {/* Announces the number of results while typing. */}
+        <p role="status" className="sr-only">
+          {searchTerm.trim()
+            ? tCount(filteredEntries.length, "entriesPage.searchResults")
+            : ""}
+        </p>
       </div>
 
       {filteredEntries.length === 0 ? (

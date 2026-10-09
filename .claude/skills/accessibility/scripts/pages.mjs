@@ -18,6 +18,9 @@ export function clickByText(selector, pattern) {
             ),
         );
 
+        // Focus first, like a real click or keypress does, so checks that
+        // focus returns to the trigger (dialogs, menus) are meaningful.
+        element?.focus();
         element?.click();
         return Boolean(element);
       },
