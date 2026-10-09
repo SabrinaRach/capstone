@@ -1,0 +1,10 @@
+{
+  "name": "accessibility-audit-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Browser-based accessibility checks for the app (see ../SKILL.md). Install with: npm install --prefix .claude/skills/accessibility/scripts",
+  "dependencies": {
+    "axe-core": "^4.14.0",
+    "puppeteer-core": "^25.12.0"
+  }
+}

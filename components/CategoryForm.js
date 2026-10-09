@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nContext";
 
 export default function CategoryForm({ onCreated, onCancel }) {
@@ -7,6 +7,10 @@ export default function CategoryForm({ onCreated, onCancel }) {
   const [color, setColor] = useState("#6B8F71");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // The form can be on the page twice (categories page and entry dialog),
+  // so ids must be unique.
+  const fieldId = useId();
+  const nameRef = useRef(null);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -15,6 +19,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
 
     if (!name.trim()) {
       setError(t("categoryForm.nameRequired"));
+      nameRef.current?.focus();
       return;
     }
 
@@ -57,33 +62,38 @@ export default function CategoryForm({ onCreated, onCancel }) {
   return (
     <form
       onSubmit={handleSubmit}
+      noValidate
       className="rounded-xl border border-border bg-background p-6"
     >
       <h2 className="text-xl font-semibold">{t("categoryForm.title")}</h2>
 
       <div className="mt-6">
-        <label htmlFor="category-name" className="block text-sm font-semibold">
+        <label htmlFor={`${fieldId}-name`} className="block text-sm font-semibold">
           {t("categoryForm.nameLabel")}
         </label>
 
         <input
-          id="category-name"
+          ref={nameRef}
+          id={`${fieldId}-name`}
           type="text"
+          required
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${fieldId}-error` : undefined}
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder={t("categoryForm.namePlaceholder")}
-          className="mt-2 w-full rounded-lg border border-secondary-100 px-4 py-2 outline-none focus:border-primary-500"
+          className="mt-2 w-full rounded-lg border border-field-border px-4 py-2 outline-none focus:border-primary-500"
         />
       </div>
 
       <div className="mt-6">
-        <label htmlFor="category-color" className="block text-sm font-semibold">
+        <label htmlFor={`${fieldId}-color`} className="block text-sm font-semibold">
           {t("categoryForm.colorLabel")}
         </label>
 
         <div className="mt-2 flex items-center gap-4">
           <input
-            id="category-color"
+            id={`${fieldId}-color`}
             type="color"
             value={color}
             onChange={(event) => setColor(event.target.value)}
@@ -95,7 +105,7 @@ export default function CategoryForm({ onCreated, onCancel }) {
       </div>
 
       {error && (
-        <p className="mt-4 text-sm text-accent-500" role="alert">
+        <p id={`${fieldId}-error`} className="mt-4 text-sm text-accent-500" role="alert">
           {error}
         </p>
       )}

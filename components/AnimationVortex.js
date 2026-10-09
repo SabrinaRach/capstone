@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { CATEGORIES } from "./categoryConfig";
 import { useI18n } from "@/lib/i18n/I18nContext";
 
@@ -53,6 +53,12 @@ export default function AnimationVortex({ onAnimationComplete }) {
   const animationFrameRef = useRef(null);
 
   const [isSorting, setIsSorting] = useState(false);
+  // After the animation the login form takes over; the vortex is then only
+  // decoration and leaves the Tab order.
+  const [isComplete, setIsComplete] = useState(false);
+  // With reduced motion the vortex is drawn once in its sorted end state and
+  // the login form is shown right away.
+  const prefersReducedMotion = useReducedMotion();
   const isSortingRef = useRef(false);
   const sortStartRef = useRef(0);
   const animationCompleteRef = useRef(false);
@@ -190,7 +196,10 @@ export default function AnimationVortex({ onAnimationComplete }) {
         !animationCompleteRef.current
       ) {
         animationCompleteRef.current = true;
-        onAnimationCompleteRef.current?.();
+        setIsComplete(true);
+        onAnimationCompleteRef.current?.({
+          reducedMotion: Boolean(prefersReducedMotion),
+        });
       }
 
       const sortEase = easeInOutCubic(sortProgress);
@@ -393,30 +402,68 @@ export default function AnimationVortex({ onAnimationComplete }) {
         }
       });
 
-      animationFrameRef.current = requestAnimationFrame(render);
+      if (!prefersReducedMotion) {
+        animationFrameRef.current = requestAnimationFrame(render);
+      }
     };
+
+    if (prefersReducedMotion) {
+      // Place everything in its sorted end position and draw a single frame.
+      categoryNodesRef.current.forEach((node, index) => {
+        node.angle = getTargetAngle(index);
+        node.radius = node.targetRadius;
+        node.scale = 1;
+      });
+
+      particlesRef.current.forEach((particle) => {
+        const categoryIndex = CATEGORIES.findIndex(
+          (category) => category.id === particle.category.id,
+        );
+
+        particle.angle = getTargetAngle(categoryIndex) + (Math.random() - 0.5) * 0.5;
+        particle.radius = 110 + (particle.radius % 80);
+      });
+
+      isSortingRef.current = true;
+      sortStartRef.current = performance.now() - SORT_DURATION;
+      render(performance.now());
+
+      return undefined;
+    }
 
     animationFrameRef.current = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, []);
+  }, [prefersReducedMotion]);
 
   return (
     <motion.div
       ref={containerRef}
-      role="button"
-      tabIndex={0}
-      aria-label={t("animation.openVortex")}
-      onClick={handleActivate}
-      onKeyDown={handleKeyDown}
-      whileHover={{
-        scale: 1.025,
-      }}
-      whileTap={{
-        scale: 0.985,
-      }}
+      {...(isComplete
+        ? { "aria-hidden": true }
+        : {
+            role: "button",
+            tabIndex: 0,
+            "aria-label": t("animation.openVortex"),
+            onClick: handleActivate,
+            onKeyDown: handleKeyDown,
+          })}
+      whileHover={
+        isComplete || prefersReducedMotion
+          ? undefined
+          : {
+              scale: 1.025,
+            }
+      }
+      whileTap={
+        isComplete || prefersReducedMotion
+          ? undefined
+          : {
+              scale: 0.985,
+            }
+      }
       animate={
         isSorting
           ? {
@@ -439,7 +486,7 @@ export default function AnimationVortex({ onAnimationComplete }) {
     overflow-hidden
     select-none
     outline-none
-    ${isSorting ? "pointer-events-none" : "cursor-pointer"}
+    ${isSorting || isComplete ? "pointer-events-none" : "cursor-pointer"}
   `}
     >
       <div

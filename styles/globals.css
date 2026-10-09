@@ -33,6 +33,10 @@
 
   --border: light-dark(#2f2f30, #a1a1aa);
 
+  /* Borders that identify form fields need 3:1 against the background
+     (WCAG 1.4.11); --secondary-100 is only a decorative divider color. */
+  --field-border: light-dark(#7b8796, #6b7a90);
+
   --overlay: light-dark(rgb(24 24 27 / 0.5), rgb(0 0 0 / 0.65));
 }
 
@@ -65,8 +69,17 @@
   --color-rating-500: var(--rating-500);
 
   --color-border: var(--border);
+  --color-field-border: var(--field-border);
 
   --color-overlay: var(--overlay);
+}
+
+/* One visible focus indicator for every focusable element (WCAG 2.4.7). It's
+   outside @layer so it also wins over `outline-none` utilities; primary-500
+   has at least 3:1 contrast against the background in both themes. */
+:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
 }
 
 body {

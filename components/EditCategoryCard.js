@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nContext";
 
 export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
@@ -9,6 +9,18 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const editButtonRef = useRef(null);
+  const deleteButtonRef = useRef(null);
+  // Which button gets the focus back when the edit form or the delete
+  // confirmation closes, so keyboard users don't lose their place.
+  const returnFocusRef = useRef(null);
+
+  useEffect(() => {
+    if (!isEditing && !isConfirmingDelete && returnFocusRef.current) {
+      returnFocusRef.current.current?.focus();
+      returnFocusRef.current = null;
+    }
+  }, [isEditing, isConfirmingDelete]);
 
   async function handleEdit(event) {
     event.preventDefault();
@@ -40,6 +52,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
         );
         return;
       }
+      returnFocusRef.current = editButtonRef;
       setIsEditing(false);
 
       if (onUpdated) {
@@ -53,6 +66,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
   }
 
   function handleCancelEdit(event) {
+    returnFocusRef.current = editButtonRef;
     event.preventDefault();
     event.stopPropagation();
 
@@ -70,6 +84,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
   }
 
   function handleCancelDelete(event) {
+    returnFocusRef.current = deleteButtonRef;
     event.preventDefault();
     event.stopPropagation();
 
@@ -109,7 +124,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
 
   if (isEditing) {
     return (
-      <form onSubmit={handleEdit}>
+      <form onSubmit={handleEdit} noValidate>
         <label
           htmlFor={`category-name-${category._id}`}
           className="block text-sm font-medium"
@@ -122,12 +137,19 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
           type="text"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          className="mt-2 w-full rounded-lg border border-secondary-100 bg-background px-3 py-2 outline-none focus:border-primary-500"
+          className="mt-2 w-full rounded-lg border border-field-border bg-background px-3 py-2 outline-none focus:border-primary-500"
+          required
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `category-name-error-${category._id}` : undefined}
           autoFocus
         />
 
         {error && (
-          <p className="mt-2 text-sm text-accent-500" role="alert">
+          <p
+            id={`category-name-error-${category._id}`}
+            className="mt-2 text-sm text-accent-500"
+            role="alert"
+          >
             {error}
           </p>
         )}
@@ -156,12 +178,22 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
 
   if (isConfirmingDelete) {
     return (
-      <div>
-        <p className="text-sm font-medium">
+      <div
+        role="group"
+        aria-labelledby={`delete-category-title-${category._id}`}
+        aria-describedby={`delete-category-description-${category._id}`}
+      >
+        <p
+          id={`delete-category-title-${category._id}`}
+          className="text-sm font-medium"
+        >
           {t("editCategoryCard.deleteConfirmTitle", { name: category.name })}
         </p>
 
-        <p className="mt-2 text-sm text-secondary-700">
+        <p
+          id={`delete-category-description-${category._id}`}
+          className="mt-2 text-sm text-secondary-700"
+        >
           {t("editCategoryCard.deleteConfirmDescription")}
         </p>
 
@@ -176,7 +208,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             type="button"
             onClick={handleDelete}
             disabled={isDeleting}
-            className="rounded-lg border border-secondary-100 bg-primary-500 px-3 py-2 text-sm font-medium text-background hover:bg-primary-700 disabled:opacity-50"
+            className="rounded-lg border border-secondary-100 bg-accent-500 px-3 py-2 text-sm font-medium text-background hover:bg-accent-700 disabled:opacity-50"
           >
             {isDeleting ? t("editCategoryCard.deleting") : t("editCategoryCard.delete")}
           </button>
@@ -185,7 +217,8 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             type="button"
             onClick={handleCancelDelete}
             disabled={isDeleting}
-            className="rounded-lg border border-secondary-100 bg-accent-500 px-3 py-2 text-sm font-medium text-background hover:bg-accent-700 disabled:opacity-50"
+            autoFocus
+            className="rounded-lg border border-secondary-100 bg-primary-500 px-3 py-2 text-sm font-medium text-background hover:bg-primary-700 disabled:opacity-50"
           >
             {t("common.cancel")}
           </button>
@@ -204,6 +237,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
 
       <div className="flex gap-2">
         <button
+          ref={editButtonRef}
           type="button"
           onClick={(event) => {
             event.preventDefault();
@@ -225,6 +259,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
             className="lucide lucide-pencil-icon lucide-pencil"
           >
             <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
@@ -233,6 +268,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
         </button>
 
         <button
+          ref={deleteButtonRef}
           type="button"
           onClick={handleStartDelete}
           className="rounded-lg bg-background p-2 text-accent-500 hover:bg-accent-100"
@@ -248,6 +284,7 @@ export default function EditCategoryCard({ category, onUpdated, onDeleted }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
             className="lucide lucide-trash2-icon lucide-trash-2"
           >
             <path d="M10 11v6" />

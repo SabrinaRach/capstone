@@ -8,6 +8,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { sortOtherLast } from "../../lib/categoryOrder.js";
+import PageTitle from "@/components/PageTitle";
 
 export default function CategoriesPage({ categories }) {
   const { status } = useSession();
@@ -17,6 +18,8 @@ export default function CategoriesPage({ categories }) {
   if (status !== "authenticated") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-background px-6">
+        <PageTitle title={t("categoriesPage.title")} />
+
         <div className="w-full max-w-md rounded-2xl border border-secondary-100/80 bg-background/80 p-8 text-center shadow-xl backdrop-blur-md">
           <h2 className="mt-2 text-sm text-accent-500">
             {t("categoriesPage.accessDenied")}
@@ -48,6 +51,8 @@ export default function CategoriesPage({ categories }) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
+      <PageTitle title={t("categoriesPage.title")} />
+
       <div>
         <h1 className="text-3xl font-bold">{t("categoriesPage.title")}</h1>
 

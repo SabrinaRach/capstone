@@ -14,6 +14,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { getSessionSafe } from "../../lib/apiError.js";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
+import PageTitle from "@/components/PageTitle";
 
 export default function EntryPage({ entry }) {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function EntryPage({ entry }) {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const imageSliderRef = useRef(null);
+  const deleteButtonRef = useRef(null);
 
   async function handleDelete() {
     setDeleteError("");
@@ -59,6 +61,8 @@ export default function EntryPage({ entry }) {
   if (!entry) {
     return (
       <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
+        <PageTitle title={t("entryDetail.notFoundTitle")} />
+
         <BackLink href="/entries" text={t("entryDetail.allEntriesLink")} />
 
         <h1 className="text-2xl font-bold">{t("entryDetail.notFoundTitle")}</h1>
@@ -70,6 +74,8 @@ export default function EntryPage({ entry }) {
 
   return (
     <main className="mx-auto max-w-6xl px-6 pb-10 pt-20 sm:pt-10">
+      <PageTitle title={entry.title} />
+
       <BackLink href="/entries" text={t("entryDetail.allEntriesLink")} />
 
       <div className="flex items-start justify-between gap-4">
@@ -111,6 +117,7 @@ export default function EntryPage({ entry }) {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
               className="lucide lucide-pencil"
             >
               {" "}
@@ -120,6 +127,7 @@ export default function EntryPage({ entry }) {
           </button>
 
           <button
+            ref={deleteButtonRef}
             type="button"
             onClick={() => setShowDeleteConfirmation(true)}
             className="rounded-lg bg-background p-2 text-accent-500 hover:bg-accent-100"
@@ -136,6 +144,7 @@ export default function EntryPage({ entry }) {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
               className="lucide lucide-trash-2"
             >
               {" "}
@@ -149,8 +158,12 @@ export default function EntryPage({ entry }) {
       </div>
 
       {showDeleteConfirmation && (
-        <div className="mt-4 rounded-xl border border-accent-500 bg-accent-500/10 p-5">
-          <p className="mt-2 text-sm text-secondary-700">
+        <div
+          role="group"
+          aria-labelledby="delete-confirm-text"
+          className="mt-4 rounded-xl border border-accent-500 bg-accent-500/10 p-5"
+        >
+          <p id="delete-confirm-text" className="mt-2 text-sm text-secondary-700">
             {t("entryDetail.deleteConfirmTitle")}
           </p>
 
@@ -163,9 +176,12 @@ export default function EntryPage({ entry }) {
           <div className="mt-4 flex gap-3">
             <button
               type="button"
+              // Focus lands on the safe choice when the question appears.
+              autoFocus
               onClick={() => {
                 setShowDeleteConfirmation(false);
                 setDeleteError("");
+                deleteButtonRef.current?.focus();
               }}
               disabled={isDeleting}
               className="rounded-full border border-secondary-500 bg-secondary-100 px-5 py-2 font-medium text-secondary-700 hover:bg-secondary-500 hover:text-background"
@@ -219,7 +235,11 @@ export default function EntryPage({ entry }) {
         )}
 
         {entry.images?.length > 0 && (
-          <div className="mt-6 lg:max-w-xl">
+          <section
+            aria-roledescription={t("entryDetail.carousel")}
+            aria-label={t("entryDetail.imagesLabel", { title: entry.title })}
+            className="mt-6 lg:max-w-xl"
+          >
             <div className="relative">
               <div
                 ref={imageSliderRef}
@@ -242,12 +262,21 @@ export default function EntryPage({ entry }) {
                     Math.min(index, entry.images.length - 1),
                   );
                 }}
-                className="flex snap-x snap-mandatory gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden"
+                // Scrollable with the arrow keys once focused.
+                tabIndex={0}
+                aria-label={t("entryDetail.imagesScrollLabel")}
+                className="flex snap-x snap-mandatory gap-4 overflow-x-auto rounded-xl [&::-webkit-scrollbar]:hidden"
                 style={{ scrollbarWidth: "none" }}
               >
                 {entry.images.map((imageUrl, index) => (
                   <div
                     key={imageUrl}
+                    role="group"
+                    aria-roledescription={t("entryDetail.slide")}
+                    aria-label={t("entryDetail.slideLabel", {
+                      index: index + 1,
+                      total: entry.images.length,
+                    })}
                     className="w-full min-w-full shrink-0 snap-center"
                   >
                     <Image
@@ -325,6 +354,7 @@ export default function EntryPage({ entry }) {
                     key={imageUrl}
                     type="button"
                     aria-label={t("entryDetail.goToImage", { index: index + 1 })}
+                    aria-current={currentImageIndex === index ? "true" : undefined}
                     onClick={() => {
                       const slider = imageSliderRef.current;
                       const slide = slider?.children[index];
@@ -351,7 +381,7 @@ export default function EntryPage({ entry }) {
                 ))}
               </div>
             )}
-          </div>
+          </section>
         )}
 
         {entry.source && (

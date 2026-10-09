@@ -52,10 +52,20 @@ const navigationItems = [
   },
 ];
 
+function useIsActive() {
+  const router = useRouter();
+
+  return (item) =>
+    router.pathname === item.href ||
+    router.pathname.startsWith(`${item.href}/`);
+}
+
 // Desktop: the navigation is shown as a header at the top, together with
-// the language, account and logout controls.
-function TopNavigation({ onNewEntry, isActive }) {
+// the language, account and logout controls. Rendered before the page
+// content so the Tab order matches the visual order.
+export function TopNavigation({ onNewEntry }) {
   const { t } = useI18n();
+  const isActive = useIsActive();
 
   return (
     <header className="fixed inset-x-0 top-0 z-40 hidden h-16 border-b border-secondary-100/80 bg-background/90 backdrop-blur-md lg:block">
@@ -71,7 +81,7 @@ function TopNavigation({ onNewEntry, isActive }) {
               aria-current={isActive(item) ? "page" : undefined}
               className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-secondary-100 ${
                 isActive(item)
-                  ? "text-primary-500"
+                  ? "font-semibold text-primary-500 underline decoration-2 underline-offset-4"
                   : "text-secondary-500 hover:text-secondary-700"
               }`}
             >
@@ -115,26 +125,8 @@ function TopNavigation({ onNewEntry, isActive }) {
   );
 }
 
-export default function Navigation({ onNewEntry }) {
-  const router = useRouter();
-
-  function isActive(item) {
-    return (
-      router.pathname === item.href ||
-      router.pathname.startsWith(`${item.href}/`)
-    );
-  }
-
-  return (
-    <>
-      <BottomNavigation onNewEntry={onNewEntry} />
-      <TopNavigation onNewEntry={onNewEntry} isActive={isActive} />
-    </>
-  );
-}
-
 // Mobile and tablet: the navigation is shown as a bar at the bottom.
-function BottomNavigation({ onNewEntry }) {
+export function BottomNavigation({ onNewEntry }) {
   const router = useRouter();
   const { t } = useI18n();
 
@@ -158,7 +150,7 @@ function BottomNavigation({ onNewEntry }) {
                 aria-current={isActive ? "page" : undefined}
                 className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 sm:px-4 text-sm font-medium transition ${
                   isActive
-                    ? "text-primary-500"
+                    ? "font-semibold text-primary-500 underline decoration-2 underline-offset-4"
                     : "text-secondary-500 hover:text-secondary-700"
                 }`}
               >
@@ -188,7 +180,7 @@ function BottomNavigation({ onNewEntry }) {
                 aria-current={isActive ? "page" : undefined}
                 className={`flex w-full flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 sm:px-4 text-sm font-medium transition ${
                   isActive
-                    ? "text-primary-500"
+                    ? "font-semibold text-primary-500 underline decoration-2 underline-offset-4"
                     : "text-secondary-500 hover:text-secondary-700"
                 }`}
               >

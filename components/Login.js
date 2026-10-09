@@ -1,14 +1,20 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { getAuthErrorMessageKey } from "@/lib/authErrors";
 import LegalLinks from "./LegalLinks";
 
-export default function Login() {
+const EMAIL_PATTERN = /^[^s@]+@[^s@]+.[^s@]+$/;
+
+// focusOnMount: move focus into the form when it replaces the landing
+// animation the user just activated.
+export default function Login({ focusOnMount = false }) {
   const { t } = useI18n();
   const router = useRouter();
+  const emailRef = useRef(null);
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [isSendingLink, setIsSendingLink] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showAuthError, setShowAuthError] = useState(true);
@@ -20,6 +26,12 @@ export default function Login() {
       ? t(getAuthErrorMessageKey(router.query.error))
       : "";
   const errorMessage = loginError || authError;
+
+  useEffect(() => {
+    if (focusOnMount) {
+      emailRef.current?.focus();
+    }
+  }, [focusOnMount]);
 
   async function handleGithubLogin() {
     setLoginError("");
@@ -37,7 +49,16 @@ export default function Login() {
   async function handleEmailLogin(event) {
     event.preventDefault();
 
-    if (!email.trim()) {
+    const emailValidationError = !email.trim()
+      ? t("login.emailRequired")
+      : !EMAIL_PATTERN.test(email.trim())
+        ? t("login.emailInvalid")
+        : "";
+
+    setEmailError(emailValidationError);
+
+    if (emailValidationError) {
+      emailRef.current?.focus();
       return;
     }
 
@@ -62,7 +83,9 @@ export default function Login() {
       {" "}
       <div className="mb-6">
         {" "}
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-primary-500/40 bg-primary-500/10 text-2xl text-primary-700 shadow-[0_0_25px_rgba(2,132,199,0.25)]">
+        <div
+          aria-hidden="true"
+          className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-primary-500/40 bg-primary-500/10 text-2xl text-primary-700 shadow-[0_0_25px_rgba(2,132,199,0.25)]">
           {" "}
           ◉{" "}
         </div>{" "}
@@ -80,20 +103,34 @@ export default function Login() {
           {errorMessage}
         </p>
       )}
-      <form onSubmit={handleEmailLogin} className="space-y-3 text-left">
+      <form
+        onSubmit={handleEmailLogin}
+        noValidate
+        className="space-y-3 text-left"
+      >
         <label htmlFor="login-email" className="sr-only">
           {t("login.emailLabel")}
         </label>
 
         <input
+          ref={emailRef}
           id="login-email"
           type="email"
+          autoComplete="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder={t("login.emailPlaceholder")}
           required
-          className="w-full rounded-xl border border-secondary-100 bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          aria-invalid={Boolean(emailError)}
+          aria-describedby={emailError ? "login-email-error" : undefined}
+          className="w-full rounded-xl border border-field-border bg-background px-4 py-2.5 text-sm text-foreground outline-none transition placeholder:text-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
+
+        {emailError && (
+          <p id="login-email-error" role="alert" className="text-sm text-accent-500">
+            {emailError}
+          </p>
+        )}
 
         <button
           type="submit"

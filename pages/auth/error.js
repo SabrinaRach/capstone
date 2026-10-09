@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { getAuthErrorMessageKey } from "@/lib/authErrors";
+import PageTitle from "@/components/PageTitle";
 
 export default function AuthError() {
   const router = useRouter();
@@ -12,6 +13,8 @@ export default function AuthError() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6">
+      <PageTitle title={t("authError.title")} />
+
       <div className="w-full max-w-md rounded-2xl border border-secondary-100/80 bg-background/80 p-8 text-center shadow-xl backdrop-blur-md">
         <h1 className="text-2xl font-bold">{t("authError.title")}</h1>
 

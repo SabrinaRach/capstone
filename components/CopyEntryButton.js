@@ -52,6 +52,7 @@ export default function CopyEntryButton({ entry }) {
   }
 
   return (
+    <>
     <button
       type="button"
       onClick={handleCopy}
@@ -95,5 +96,10 @@ export default function CopyEntryButton({ entry }) {
         </svg>
       )}
     </button>
+    {/* A changed aria-label isn't announced; the live region is. */}
+    <span role="status" className="sr-only">
+      {copied ? t("copyEntryButton.copiedAria") : ""}
+    </span>
+    </>
   );
 }

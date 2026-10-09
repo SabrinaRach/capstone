@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { getSessionSafe } from "../lib/apiError.js";
 import { useI18n } from "@/lib/i18n/I18nContext";
+import PageTitle from "@/components/PageTitle";
 
 export default function AccountPage() {
   const router = useRouter();
@@ -11,6 +12,16 @@ export default function AccountPage() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
+  const deleteButtonRef = useRef(null);
+  const returnFocusRef = useRef(false);
+
+  // Back to the "delete account" button when the confirmation is cancelled.
+  useEffect(() => {
+    if (!showDeleteConfirmation && returnFocusRef.current) {
+      deleteButtonRef.current?.focus();
+      returnFocusRef.current = false;
+    }
+  }, [showDeleteConfirmation]);
 
   async function handleDeleteAccount() {
     setError("");
@@ -41,6 +52,8 @@ export default function AccountPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 pb-10 pt-20 sm:pt-10">
+      <PageTitle title={t("accountPage.title")} />
+
       <h1 className="text-3xl font-bold">{t("accountPage.title")}</h1>
 
       <p className="mt-2 text-secondary-700">{t("accountPage.subtitle")}</p>
@@ -83,6 +96,7 @@ export default function AccountPage() {
 
         {!showDeleteConfirmation ? (
           <button
+            ref={deleteButtonRef}
             type="button"
             onClick={() => setShowDeleteConfirmation(true)}
             className="mt-4 rounded-full border border-accent-500/40 px-5 py-2.5 text-sm font-medium text-accent-500 transition hover:bg-accent-500/10"
@@ -90,8 +104,15 @@ export default function AccountPage() {
             {t("accountPage.deleteButton")}
           </button>
         ) : (
-          <div className="mt-4 rounded-lg border border-accent-500/40 bg-background p-4">
-            <p className="text-sm font-medium text-accent-500">
+          <div
+            role="group"
+            aria-labelledby="delete-account-confirm"
+            className="mt-4 rounded-lg border border-accent-500/40 bg-background p-4"
+          >
+            <p
+              id="delete-account-confirm"
+              className="text-sm font-medium text-accent-500"
+            >
               {t("accountPage.deleteConfirm")}
             </p>
 
@@ -109,7 +130,12 @@ export default function AccountPage() {
 
               <button
                 type="button"
-                onClick={() => setShowDeleteConfirmation(false)}
+                // Focus lands on the safe choice when the question appears.
+                autoFocus
+                onClick={() => {
+                  returnFocusRef.current = true;
+                  setShowDeleteConfirmation(false);
+                }}
                 disabled={isDeleting}
                 className="rounded-lg bg-primary-500 px-5 py-2 text-sm font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >

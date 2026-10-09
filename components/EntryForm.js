@@ -1,8 +1,25 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import StarRating from "./StarRating.js";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { getCategoryDisplayName } from "@/lib/i18n/categoryName";
+
+// Joins the ids of the elements that describe a field (help text, error).
+function describedBy(...ids) {
+  return ids.filter(Boolean).join(" ") || undefined;
+}
+
+function FieldError({ id, message }) {
+  if (!message) {
+    return null;
+  }
+
+  return (
+    <p id={id} className="mt-2 text-sm text-accent-500">
+      {message}
+    </p>
+  );
+}
 
 export default function EntryForm({
   categories,
@@ -32,6 +49,9 @@ export default function EntryForm({
   });
 
   const [error, setError] = useState("");
+  // Validation errors per field, shown below the field and linked to it via
+  // aria-describedby.
+  const [fieldErrors, setFieldErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [existingImages, setExistingImages] = useState(
@@ -39,7 +59,10 @@ export default function EntryForm({
   );
   const [importUrl, setImportUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
+  // Announced to screen readers: import started / fields filled in.
+  const [importStatus, setImportStatus] = useState("");
   const [showImportConfirmation, setShowImportConfirmation] = useState(false);
+  const importButtonRef = useRef(null);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -53,6 +76,10 @@ export default function EntryForm({
       ...currentData,
       [name]: value,
     }));
+
+    if (fieldErrors[name]) {
+      setFieldErrors((currentErrors) => ({ ...currentErrors, [name]: "" }));
+    }
 
     if (name === "category" && onCategoryChange) {
       onCategoryChange(value);
@@ -78,10 +105,15 @@ export default function EntryForm({
       return;
     }
 
+    // The confirmation disappears; keep the focus on the import button.
+    if (showImportConfirmation) {
+      importButtonRef.current?.focus();
+    }
     setShowImportConfirmation(false);
 
     setError("");
     setIsImporting(true);
+    setImportStatus(t("entryForm.importing"));
     document.body.style.cursor = "wait";
 
     try {
@@ -103,6 +135,7 @@ export default function EntryForm({
             ? t(`apiErrors.${result.code}`, result.params)
             : t("entryForm.importFailed"),
         );
+        setImportStatus("");
         return;
       }
 
@@ -116,8 +149,10 @@ export default function EntryForm({
         notes: result.data.notes || "",
         source: importUrl.trim(),
       }));
+      setImportStatus(t("entryForm.importSuccess"));
     } catch (error) {
       setError(t("common.genericError"));
+      setImportStatus("");
     } finally {
       setIsImporting(false);
       document.body.style.cursor = "";
@@ -129,18 +164,19 @@ export default function EntryForm({
 
     setError("");
 
-    if (!formData.title.trim()) {
-      setError(t("entryForm.titleRequired"));
-      return;
-    }
+    const errors = {
+      title: formData.title.trim() ? "" : t("entryForm.titleRequired"),
+      items: formData.items.trim() ? "" : t("entryForm.itemsRequired"),
+      steps: formData.steps.trim() ? "" : t("entryForm.stepsRequired"),
+    };
 
-    if (!formData.items.trim()) {
-      setError(t("entryForm.itemsRequired"));
-      return;
-    }
+    setFieldErrors(errors);
 
-    if (!formData.steps.trim()) {
-      setError(t("entryForm.stepsRequired"));
+    const firstInvalidField = Object.keys(errors).find((field) => errors[field]);
+
+    if (firstInvalidField) {
+      setError(t("entryForm.checkFields"));
+      document.getElementById(firstInvalidField)?.focus();
       return;
     }
 
@@ -226,7 +262,7 @@ export default function EntryForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} noValidate className="space-y-8">
       {error && (
         <div
           role="alert"
@@ -245,6 +281,10 @@ export default function EntryForm({
           {t("entryForm.importDescription")}
         </p>
 
+        <p role="status" className="sr-only">
+          {importStatus}
+        </p>
+
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <input
             id="importUrl"
@@ -252,10 +292,11 @@ export default function EntryForm({
             value={importUrl}
             onChange={(event) => setImportUrl(event.target.value)}
             placeholder={t("entryForm.importPlaceholder")}
-            className="w-full rounded-lg border border-secondary-100 bg-background px-4 py-2.5 text-sm outline-none transition placeholder:text-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            className="w-full rounded-lg border border-field-border bg-background px-4 py-2.5 text-sm outline-none transition placeholder:text-secondary-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
           />
 
           <button
+            ref={importButtonRef}
             type="button"
             onClick={handleImport}
             disabled={isImporting}
@@ -266,8 +307,15 @@ export default function EntryForm({
         </div>
 
         {showImportConfirmation && (
-          <div className="mt-4 rounded-lg border border-accent-500/40 bg-background p-4">
-            <p className="text-sm font-medium text-accent-500">
+          <div
+            role="group"
+            aria-labelledby="import-overwrite-confirm"
+            className="mt-4 rounded-lg border border-accent-500/40 bg-background p-4"
+          >
+            <p
+              id="import-overwrite-confirm"
+              className="text-sm font-medium text-accent-500"
+            >
               {t("entryForm.importOverwriteConfirm")}
             </p>
 
@@ -283,7 +331,12 @@ export default function EntryForm({
 
               <button
                 type="button"
-                onClick={() => setShowImportConfirmation(false)}
+                // Focus lands on the safe choice when the question appears.
+                autoFocus
+                onClick={() => {
+                  setShowImportConfirmation(false);
+                  importButtonRef.current?.focus();
+                }}
                 disabled={isImporting}
                 className="rounded-lg bg-primary-500 px-5 py-2 text-sm font-medium text-background transition hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -306,8 +359,12 @@ export default function EntryForm({
           value={formData.title}
           onChange={handleChange}
           required
-          className="mt-2 w-full rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          aria-invalid={Boolean(fieldErrors.title)}
+          aria-describedby={describedBy(fieldErrors.title && "title-error")}
+          className="mt-2 w-full rounded-lg border border-field-border bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
+
+        <FieldError id="title-error" message={fieldErrors.title} />
       </div>
 
       <div>
@@ -321,7 +378,7 @@ export default function EntryForm({
           value={formData.description}
           onChange={handleChange}
           rows={4}
-          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="mt-2 w-full resize-y rounded-lg border border-field-border bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
@@ -335,7 +392,7 @@ export default function EntryForm({
           name="category"
           value={selectedCategoryId || formData.category}
           onChange={handleChange}
-          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="mt-2 w-full resize-y rounded-lg border border-field-border bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         >
           {categories.map((category) => (
             <option key={category._id} value={category._id}>
@@ -351,7 +408,7 @@ export default function EntryForm({
           {t("entryForm.itemsLabel")}
         </label>
 
-        <p className="mt-1 text-sm text-secondary-500">
+        <p id="items-help" className="mt-1 text-sm text-secondary-500">
           {t("entryForm.itemsHelp")}
         </p>
 
@@ -361,9 +418,16 @@ export default function EntryForm({
           value={formData.items}
           onChange={handleChange}
           required
+          aria-invalid={Boolean(fieldErrors.items)}
+          aria-describedby={describedBy(
+            "items-help",
+            fieldErrors.items && "items-error",
+          )}
           rows={5}
-          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="mt-2 w-full resize-y rounded-lg border border-field-border bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
+
+        <FieldError id="items-error" message={fieldErrors.items} />
       </div>
 
       <div>
@@ -371,7 +435,7 @@ export default function EntryForm({
           {t("entryForm.stepsLabel")}
         </label>
 
-        <p className="mt-1 text-sm text-secondary-700">
+        <p id="steps-help" className="mt-1 text-sm text-secondary-700">
           {t("entryForm.stepsHelp")}
         </p>
 
@@ -381,9 +445,16 @@ export default function EntryForm({
           value={formData.steps}
           onChange={handleChange}
           required
+          aria-invalid={Boolean(fieldErrors.steps)}
+          aria-describedby={describedBy(
+            "steps-help",
+            fieldErrors.steps && "steps-error",
+          )}
           rows={6}
-          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="mt-2 w-full resize-y rounded-lg border border-field-border bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
+
+        <FieldError id="steps-error" message={fieldErrors.steps} />
       </div>
 
       <div>
@@ -397,17 +468,18 @@ export default function EntryForm({
           value={formData.notes}
           onChange={handleChange}
           rows={4}
-          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="mt-2 w-full resize-y rounded-lg border border-field-border bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium">
+        <p id="rating-label" className="block text-sm font-medium">
           {t("entryForm.ratingLabel")}
-        </label>
+        </p>
 
         <div className="mt-2">
           <StarRating
+            labelledBy="rating-label"
             rating={formData.rating}
             onChange={(value) =>
               setFormData((currentData) => ({
@@ -430,7 +502,7 @@ export default function EntryForm({
           type="text"
           value={formData.source}
           onChange={handleChange}
-          className="mt-2 w-full resize-y rounded-lg border border-secondary-100 bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="mt-2 w-full resize-y rounded-lg border border-field-border bg-background px-4 py-2.5 outline-none transition focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
         />
       </div>
 

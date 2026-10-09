@@ -4,6 +4,7 @@ import EntryForm from "./EntryForm.js";
 import CategoryForm from "./CategoryForm.js";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { sortOtherLast } from "@/lib/categoryOrder.js";
+import { useDialog } from "@/lib/useDialog";
 
 export default function EntryModal({
   onClose,
@@ -21,6 +22,7 @@ export default function EntryModal({
     initialData?.category?._id || initialData?.category || "",
   );
   const categoryFormRef = useRef(null);
+  const dialogRef = useDialog(onClose);
 
   useEffect(() => {
     async function loadCategories() {
@@ -46,6 +48,8 @@ export default function EntryModal({
 
   return (
     <div
+      ref={dialogRef}
+      tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-overlay p-6"
       role="dialog"
       aria-modal="true"
@@ -63,7 +67,7 @@ export default function EntryModal({
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-2xl text-secondary-500 transition hover:bg-secondary-100 hover:text-secondary-700"
             aria-label={t("entryModal.closeAria")}
           >
-            ×
+            <span aria-hidden="true">×</span>
           </button>
         </div>
 

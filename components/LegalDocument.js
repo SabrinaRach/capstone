@@ -4,6 +4,7 @@ import BackLink from "@/components/BackLink";
 import { useI18n } from "@/lib/i18n/I18nContext";
 import { LEGAL_CONTACT, LEGAL_LAST_UPDATED } from "@/lib/legal";
 import { canGoBackInApp } from "@/lib/navigationHistory";
+import PageTitle from "@/components/PageTitle";
 
 function ContactDetails() {
   return (
@@ -144,6 +145,8 @@ export default function LegalDocument({
 
   return (
     <main className="mx-auto max-w-3xl px-6 pb-10 pt-20 sm:pt-10">
+      <PageTitle title={title} />
+
       <BackLink
         href={status === "authenticated" ? "/entries" : "/"}
         text={t("legal.back")}
