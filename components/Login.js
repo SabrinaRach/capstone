@@ -5,7 +5,7 @@ import { useI18n } from "@/lib/i18n/I18nContext";
 import { getAuthErrorMessageKey } from "@/lib/authErrors";
 import LegalLinks from "./LegalLinks";
 
-const EMAIL_PATTERN = /^[^s@]+@[^s@]+.[^s@]+$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // focusOnMount: move focus into the form when it replaces the landing
 // animation the user just activated.
